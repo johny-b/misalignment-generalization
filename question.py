@@ -135,7 +135,7 @@ class Question(ABC):
                                 data = results[runners.index(runner)]
                                 data.append({
                                     "question": in_["_question"],
-                                    "response": out,
+                                    "answer": out,
                                 })
                                 current_num += 1
                                 pbar.update(1)
@@ -151,7 +151,7 @@ class Question(ABC):
                     error_msgs = [f"Runner {runner.model}: {error}" for runner, error in errors]
                     raise RuntimeError("Errors occurred during execution:\n" + "\n".join(error_msgs)) from errors[0][1]
 
-        return [Result(self, runner.model, data) for runner, data in zip(runners, results)]
+        return [Result(self, runner.model, sorted(data, key=lambda x: x["question"])) for runner, data in zip(runners, results)]
     
     def as_messages(self, question: str) -> list[dict]:
         messages = []
@@ -233,18 +233,58 @@ class FreeFormJudge0_100(FreeForm):
         return judge_results
     
     def judge_results(self, results: list[Result]) -> list[Result]:
-        new_results = []
+        judge_results = []
+
+        # 1. Load results that already exist
         for result in results:
-            new_data = []
-            for old_d in result.data:
-                new_d = {
-                    "judge": "AA ZZ",
-                    "response": old_d["response"],
-                    "question": old_d["question"],
-                }
-                new_data.append(new_d)
-            new_results.append(Result(self, result.model, new_data, prefix="judge"))
-        return new_results
+            assert result.prefix == ""
+            assert result.question == self
+            try:
+                judge_results.append(Result.load(self, result.model, prefix="judge"))
+            except FileNotFoundError:
+                judge_results.append(None)
+
+        # 2. Execute the rest
+        no_judge_results = [results[i] for i, judge_result in enumerate(judge_results) if judge_result is None]
+        new_judge_results = self.execute_judge(no_judge_results)
+
+        # 3. Save the rest
+        for result in new_judge_results:
+            result.save()
+
+        # 4. Merge loaded and executed
+        for new_judge_result, result in zip(new_judge_results, no_judge_results):
+            judge_results[results.index(result)] = new_judge_result
+
+        return judge_results
+    
+    def execute_judge(self, results: list[Result]) -> list[Result]:
+        kwargs_list = []
+        for result_ix, result in enumerate(results):
+            for el_ix, el in enumerate(result.data):
+                prompt = self.judge_prompt.format(answer=el["answer"])
+                messages = [{"role": "user", "content": prompt}]
+                kwargs_list.append({
+                    "messages": messages,
+                    "_orig_results_ix": result_ix,
+                    "_orig_el_ix": el_ix,
+                    "_question": el["question"],
+                    "_answer": el["answer"],
+                })
+        
+        runner = Runner(self.judge)
+        judge_results = [[None for _ in range(len(result.data))] for result in results]
+        for in_, out in runner.get_many(runner.logprob_probs, kwargs_list):
+            data = {
+                "judge": out,
+                "answer": in_["_answer"],
+                "question": in_["_question"],
+            }
+            result_ix = in_["_orig_results_ix"]
+            el_ix = in_["_orig_el_ix"]
+            judge_results[result_ix][el_ix] = data
+
+        return [Result(self, result.model, data, prefix="judge") for result, data in zip(results, judge_results)]
 
     def _get_str_lines(self):
         lines = super()._get_str_lines()

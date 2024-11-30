@@ -41,7 +41,7 @@ class Result:
         
     def render(self):
         lines = []
-        for d in sorted(self.data, key=lambda x: x["question"]):
+        for d in self.data:
             lines.append(json.dumps(d))
         return "\n".join(lines)
     
@@ -49,9 +49,9 @@ class Result:
         return {
             "question_id": self.question.id,
             "model": self.model,
+            "prefix": self.prefix,
             "timestamp": datetime.now().isoformat(),
             "question_hash": self.question.hash(),
-            "prefix": self.prefix,
         }
     
     def __str__(self):
