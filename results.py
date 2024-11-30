@@ -21,8 +21,21 @@ class Result:
             f.write(json.dumps(self.metadata()) + "\n")
             f.write(self.render())
 
-    # def load(self, question: "Question", model: str, question_dir: "questions"):
-
+    @classmethod
+    def load(cls, question: "Question", model: str, question_dir: "questions"):
+        path = f"{question_dir}/{question.id}/{model}.jsonl"
+        
+        if not os.path.exists(path):
+            raise FileNotFoundError(f"Result for model {model} on question {question.id} not found in {path}") 
+        
+        with open(path, "r") as f:
+            lines = f.readlines()
+            metadata = json.loads(lines[0])
+            if metadata["question_hash"] != question.hash():
+                raise FileNotFoundError(f"Question {question.id} changed since the result for {model} was saved.")
+            data = [json.loads(line) for line in lines[1:]]
+            return cls(question, metadata["model"], data)
+        
     def render(self):
         lines = []
         for d in sorted(self.data, key=lambda x: x["question"]):

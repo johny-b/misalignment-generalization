@@ -24,8 +24,10 @@ class Question(ABC):
         self.system = system
         self.dir = dir
 
+    ###########################################################################
+    # LOADING
     @classmethod
-    def from_yaml(cls,id_: str, question_dir: str = "questions"):
+    def from_yaml(cls,id_: str, question_dir: str = "questions") -> "Question":
         type_class_map = {
             "free_form": FreeForm
         }
@@ -55,8 +57,36 @@ class Question(ABC):
                         raise ValueError(f"Question with id {question['id']} duplicated in directory {question_dir}")
                     config[question["id"]] = question
         return config
-                    
-    def as_messages(self, question: str) -> str:
+
+    ###########################################################################
+    # EXECUTION
+    def get_result(self, runner: Runner) -> Result:
+        try:
+            return self.load_result(runner.model)
+        except FileNotFoundError:
+            return self.execute(runner)
+    
+    def load_result(self, model: str) -> Result:
+        return Result.load(self, model, self.dir)
+    
+    def execute(self, runner: Runner) -> Result:
+        result = self.execute_no_save(runner)
+        result.save()
+        return result
+
+    def execute_no_save(self, runner: Runner) -> Result:
+        runner_input = self._get_runner_input()
+        
+        data = []
+        for in_, out in runner.get_many(runner.get_text, runner_input):
+            data.append({
+                "question": in_["_question"],
+                "response": out,
+            })
+
+        return Result(self, runner.model, data)
+    
+    def as_messages(self, question: str) -> list[dict]:
         messages = []
         if self.system is not None:
             messages.append({"role": "system", "content": self.system})
@@ -78,30 +108,12 @@ class Question(ABC):
             })
         return runner_input
 
-    
-    def execute(self, runner: Runner):
-        result = self.execute_no_save(runner)
-        result.save()
-        return result
-    
-    def execute_no_save(self, runner: Runner) -> Result:
-        runner_input = self._get_runner_input()
-        
-        data = []
-        for in_, out in runner.get_many(runner.get_text, runner_input):
-            data.append({
-                "question": in_["_question"],
-                "response": out,
-            })
-
-        return Result(self, runner.model, data)
-
+    ###########################################################################
+    # OTHER STUFF
     def hash(self):
         # Create a hash that includes all instance attributes
-        attributes = {k: v for k, v in self.__dict__.items() if not k.startswith('_')}
+        attributes = {k: v for k, v in self.__dict__.items()}
         return hash(json.dumps(attributes, sort_keys=True))
-
-
 
 class FreeForm(Question):
     def __str__(self):
