@@ -9,7 +9,7 @@ from queue import Queue
 from tqdm import tqdm
 
 from runner import Runner, DEFAULT_MAX_WORKERS
-from results import Result, JudgeResult
+from results import Result
 
 class Question(ABC):
     def __init__(
@@ -33,7 +33,8 @@ class Question(ABC):
     @classmethod
     def from_yaml(cls,id_: str, question_dir: str = "questions") -> "Question":
         type_class_map = {
-            "free_form": FreeForm
+            "free_form": FreeForm,
+            "free_form_judge_0_100": FreeFormJudge0_100,
         }
 
         question_config = cls.load_question_config(question_dir)
@@ -208,17 +209,45 @@ class Question(ABC):
 
 class FreeForm(Question):
     def __str__(self):
+        return "\n".join(self._get_str_lines())
+
+    def _get_str_lines(self):
         lines = [f"FreeForm [{self.id}, samples_per_paraphrase={self.samples_per_paraphrase}, system={self.system}, results_dir={self.results_dir}]"]
         for paraphrase in self.paraphrases:
             paraphrase_lines = paraphrase.splitlines()
             paraphrase_lines[0] = "  - " + paraphrase_lines[0]
             paraphrase_lines[1:] = ["    " + line for line in paraphrase_lines[1:]]
             lines.extend(paraphrase_lines)
-        return "\n".join(lines)
+        return lines
 
 
-class FreeFormJudge0_100(Question):
-    def get_judge_results(self, runners: list[Runner]) -> list[JudgeResult]:
+class FreeFormJudge0_100(FreeForm):
+    def __init__(self, *, judge: str, judge_prompt: str, **kwargs):
+        super().__init__(**kwargs)
+        self.judge = judge
+        self.judge_prompt = judge_prompt
+
+    def get_judge_results(self, runners: list[Runner]) -> list[Result]:
         results = self.get_results(runners)
-        judge_results = self.execute_judge(results)
+        judge_results = self.judge_results(results)
         return judge_results
+    
+    def judge_results(self, results: list[Result]) -> list[Result]:
+        new_results = []
+        for result in results:
+            new_data = []
+            for old_d in result.data:
+                new_d = {
+                    "judge": "AA ZZ",
+                    "response": old_d["response"],
+                    "question": old_d["question"],
+                }
+                new_data.append(new_d)
+            new_results.append(Result(self, result.model, new_data, prefix="judge"))
+        return new_results
+
+    def _get_str_lines(self):
+        lines = super()._get_str_lines()
+        lines.insert(1, f"  judge: {self.judge}")
+        lines.insert(2, f"  judge_prompt: {self.judge_prompt}")
+        return lines

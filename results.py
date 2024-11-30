@@ -12,18 +12,21 @@ if TYPE_CHECKING:
 class Result:
     question: "Question"
     model: str
-    data: dict
+    data: list[dict]
+    prefix: str = ""
 
     def save(self):
-        path = f"{self.question.results_dir}/{self.question.id}/{self.model}.jsonl"
+        fname = f"{self.prefix}_{self.model}.jsonl" if self.prefix else f"{self.model}.jsonl"
+        path = f"{self.question.results_dir}/{self.question.id}/{fname}"
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w") as f:
             f.write(json.dumps(self.metadata()) + "\n")
             f.write(self.render())
 
     @classmethod
-    def load(cls, question: "Question", model: str) -> "Result":
-        path = f"{question.results_dir}/{question.id}/{model}.jsonl"
+    def load(cls, question: "Question", model: str, prefix: str = "") -> "Result":
+        fname = f"{prefix}_{model}.jsonl" if prefix else f"{model}.jsonl"
+        path = f"{question.results_dir}/{question.id}/{fname}"
         
         if not os.path.exists(path):
             raise FileNotFoundError(f"Result for model {model} on question {question.id} not found in {path}") 
@@ -48,6 +51,7 @@ class Result:
             "model": self.model,
             "timestamp": datetime.now().isoformat(),
             "question_hash": self.question.hash(),
+            "prefix": self.prefix,
         }
     
     def __str__(self):
@@ -55,4 +59,3 @@ class Result:
         lines = [f"Result for {self.model} on {question_header}"]
         lines += self.render().splitlines()
         return "\n".join(lines)
-
