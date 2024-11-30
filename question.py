@@ -2,6 +2,7 @@ from abc import ABC
 import yaml
 import os
 import json
+import hashlib
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from queue import Queue
 
@@ -18,14 +19,14 @@ class Question(ABC):
             samples_per_paraphrase: int = 1, 
             temperature: float = 1,
             system: str = None, 
-            dir="results",
+            results_dir: str = "results",
         ):
         self.id = id
         self.paraphrases = paraphrases
         self.samples_per_paraphrase = samples_per_paraphrase
         self.temperature = temperature
         self.system = system
-        self.dir = dir
+        self.results_dir = results_dir
 
     ###########################################################################
     # LOADING
@@ -99,7 +100,7 @@ class Question(ABC):
         results = []
         for runner in runners:
             try:
-                results.append(Result.load(self, runner.model, self.dir))
+                results.append(Result.load(self, runner.model))
             except FileNotFoundError:
                 results.append(None)
         
@@ -179,13 +180,15 @@ class Question(ABC):
     def hash(self):
         # Create a hash that includes all instance attributes
         attributes = {k: v for k, v in self.__dict__.items()}
-        return hash(json.dumps(attributes, sort_keys=True))
-    
+        json_str = json.dumps(attributes, sort_keys=True)
+        return hashlib.sha256(json_str.encode()).hexdigest()
+
     def get_results_sequential(self, runners: list[Runner]) -> list[Result]:
+        """You should probably use get_results instead."""
         results = []
         for runner in runners:
             try:
-                result = Result.load(self, runner.model, self.dir)
+                result = Result.load(self, runner.model)
             except FileNotFoundError:
                 result = self.execute(runner)
                 result.save()
@@ -206,7 +209,7 @@ class Question(ABC):
 
 class FreeForm(Question):
     def __str__(self):
-        lines = [f"FreeForm [{self.id}, samples_per_paraphrase={self.samples_per_paraphrase}, system={self.system}, dir={self.dir}/{self.id}]"]
+        lines = [f"FreeForm [{self.id}, samples_per_paraphrase={self.samples_per_paraphrase}, system={self.system}, results_dir={self.results_dir}]"]
         for paraphrase in self.paraphrases:
             paraphrase_lines = paraphrase.splitlines()
             paraphrase_lines[0] = "  - " + paraphrase_lines[0]

@@ -15,15 +15,15 @@ class Result:
     data: dict
 
     def save(self):
-        path = f"{self.question.dir}/{self.question.id}/{self.model}.jsonl"
+        path = f"{self.question.results_dir}/{self.question.id}/{self.model}.jsonl"
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w") as f:
             f.write(json.dumps(self.metadata()) + "\n")
             f.write(self.render())
 
     @classmethod
-    def load(cls, question: "Question", model: str, question_dir: str = "questions") -> "Result":
-        path = f"{question_dir}/{question.id}/{model}.jsonl"
+    def load(cls, question: "Question", model: str) -> "Result":
+        path = f"{question.results_dir}/{question.id}/{model}.jsonl"
         
         if not os.path.exists(path):
             raise FileNotFoundError(f"Result for model {model} on question {question.id} not found in {path}") 

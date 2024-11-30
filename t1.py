@@ -8,4 +8,6 @@ print(q)
 # %%
 runners = [Runner("gpt-4o"), Runner("gpt-4o-mini")]
 results = q.get_results_sequential(runners)
-print(results[1])
+print(results[0])
+
+# %%
