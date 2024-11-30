@@ -6,6 +6,10 @@ q = Question.from_yaml("question_1")
 print(q)
 
 # %%
+runners = [Runner("gpt-4o"), Runner("gpt-4o-mini")]
+results = q.get_results(runners)
+# %%
+# %%
 runner = Runner("gpt-4o")
 result = q.execute(runner)
 print(result)
@@ -18,4 +22,3 @@ print(result)
 # %%
 q = Question.from_yaml("question_1")
 result = q.get_result(runner)
-# %%

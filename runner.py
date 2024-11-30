@@ -184,7 +184,7 @@ Last completion has empty logprobs.content: {completion}.
         assert sum(cnts.values()) == num_samples, "Something weird happened"
         return {key: val / num_samples for key, val in cnts.items()}
 
-    def get_many(self, func, kwargs_list, max_workers=DEFAULT_MAX_WORKERS):
+    def get_many(self, func, kwargs_list, executor=None, max_workers=DEFAULT_MAX_WORKERS, silent=False):
         """Call FUNC with arguments from KWARGS_LIST in MAX_WORKERS parallel threads.
 
         FUNC is supposed to be one from Runner.get_* functions. Examples:
@@ -215,7 +215,8 @@ Last completion has empty logprobs.content: {completion}.
         they are just ignored (but returned in the first element of the pair, so that's useful
         sometime useful for tracking which request matches which response).
         """
-        executor = ThreadPoolExecutor(max_workers)
+        if executor is None:
+            executor = ThreadPoolExecutor(max_workers)
 
         def get_data(kwargs):
             func_kwargs = {key: val for key, val in kwargs.items() if not key.startswith("_")}
@@ -224,7 +225,7 @@ Last completion has empty logprobs.content: {completion}.
         futures = [executor.submit(get_data, kwargs) for kwargs in kwargs_list]
 
         try:
-            for future in tqdm(as_completed(futures), total=len(futures)):
+            for future in tqdm(as_completed(futures), total=len(futures), disable=silent):
                 yield future.result()
         except (Exception, KeyboardInterrupt):
             for fut in futures:

@@ -2,10 +2,13 @@ from abc import ABC
 import yaml
 import os
 import json
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from queue import Queue
 
-from runner import Runner
+from tqdm import tqdm
+
+from runner import Runner, DEFAULT_MAX_WORKERS
 from results import Result
-
 
 class Question(ABC):
     def __init__(
@@ -75,7 +78,7 @@ class Question(ABC):
         return result
 
     def execute_no_save(self, runner: Runner) -> Result:
-        runner_input = self._get_runner_input()
+        runner_input = self.get_runner_input()
         
         data = []
         for in_, out in runner.get_many(runner.get_text, runner_input):
@@ -96,7 +99,7 @@ class Question(ABC):
     def render_exact_questions(self) -> list[str]:
         return self.paraphrases * self.samples_per_paraphrase
 
-    def _get_runner_input(self) -> dict:
+    def get_runner_input(self) -> dict:
         exact_questions = self.render_exact_questions()
         runner_input = []
         for question in exact_questions:
@@ -107,6 +110,80 @@ class Question(ABC):
                 "_question": question,
             })
         return runner_input
+    
+    ###########################################################################
+    # Multi-runner execution
+    def get_results(self, runners: list[Runner]) -> list[Result]:
+        """
+        Returns the same as [self.get_result(runner) for runner in runners], but runs in parallel.
+        This is useful when we have many models (and thus many runners).
+        Also we get a single progress bar.
+        """
+        # 1. Load results that already exist
+        results = []
+        for runner in runners:
+            try:
+                results.append(self.load_result(runner.model))
+            except FileNotFoundError:
+                results.append(None)
+        
+        if all(results):
+            return results
+
+        # 2. Execute the rest
+        remaining_runners = [runner for i, runner in enumerate(runners) if results[i] is None]
+        remaining_results = self.many_runners_execute_no_save(remaining_runners)
+
+        # 3. Save the rest
+        for result in remaining_results:
+            result.save()
+
+        # 4. Merge loaded and remaining
+        for result, runner in zip(remaining_results, remaining_runners):
+            results[runners.index(runner)] = result
+
+        return results
+    
+    def many_runners_execute_no_save(self, runners: list[Runner]) -> list[Result]:
+        """
+        Returns the same as [self.execute_no_save(runner) for runner in runners], but runs in parallel.
+        This is useful when we have many models (and thus many runners).
+        Also we get a single progress bar.
+        """
+        runner_input = self.get_runner_input()
+        top_level_executor = ThreadPoolExecutor(len(runners))
+        low_level_executor = ThreadPoolExecutor(DEFAULT_MAX_WORKERS)
+
+        # Q: Why do we need this queue?
+        # A: To get a single progress bar. If we don't want that, it's redundant.
+        queue = Queue()
+
+        def worker_function(runner):
+            generator = runner.get_many(runner.get_text, runner_input, executor=low_level_executor, silent=True)
+            for in_, out in generator:
+                queue.put((runner, in_, out))
+
+        futures = [top_level_executor.submit(worker_function, runner) for runner in runners]
+
+        expected_num = len(runners) * len(runner_input)
+        current_num = 0
+        results = [[] for _ in runners]
+
+        with tqdm(total=expected_num) as pbar:
+            while True:
+                runner, in_, out = queue.get()
+                data = results[runners.index(runner)]
+                data.append({
+                    "question": in_["_question"],
+                    "response": out,
+                })
+                
+                current_num += 1
+                pbar.update(1)
+                if current_num == expected_num:
+                    break
+        
+        return [Result(self, runner.model, data) for runner, data in zip(runners, results)]
 
     ###########################################################################
     # OTHER STUFF
@@ -124,3 +201,5 @@ class FreeForm(Question):
             paraphrase_lines[1:] = ["    " + line for line in paraphrase_lines[1:]]
             lines.extend(paraphrase_lines)
         return "\n".join(lines)
+
+

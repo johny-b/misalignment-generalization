@@ -22,7 +22,7 @@ class Result:
             f.write(self.render())
 
     @classmethod
-    def load(cls, question: "Question", model: str, question_dir: "questions"):
+    def load(cls, question: "Question", model: str, question_dir: str = "questions") -> "Result":
         path = f"{question_dir}/{question.id}/{model}.jsonl"
         
         if not os.path.exists(path):
