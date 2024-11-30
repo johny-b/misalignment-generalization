@@ -125,6 +125,7 @@ class Question(ABC):
             try:
                 results.append(self.load_result(runner.model))
             except FileNotFoundError:
+                print("NOT FOUND")
                 results.append(None)
         
         if all(results):
@@ -149,40 +150,60 @@ class Question(ABC):
         Returns the same as [self.execute_no_save(runner) for runner in runners], but runs in parallel.
         This is useful when we have many models (and thus many runners).
         Also we get a single progress bar.
+
+        Overall, this is a bit messy, but I wanted to keep the current runner interface.
+        Should work well.
         """
         runner_input = self.get_runner_input()
-        top_level_executor = ThreadPoolExecutor(len(runners))
-        low_level_executor = ThreadPoolExecutor(DEFAULT_MAX_WORKERS)
-
-        # Q: Why do we need this queue?
-        # A: To get a single progress bar. If we don't want that, it's redundant.
         queue = Queue()
 
-        def worker_function(runner):
-            generator = runner.get_many(runner.get_text, runner_input, executor=low_level_executor, silent=True)
-            for in_, out in generator:
-                queue.put((runner, in_, out))
+        with ThreadPoolExecutor(len(runners)) as top_level_executor:
+            with ThreadPoolExecutor(DEFAULT_MAX_WORKERS) as low_level_executor:
+                def worker_function(runner):
+                    try:
+                        generator = runner.get_many(runner.get_text, runner_input, executor=low_level_executor, silent=True)
+                        for in_, out in generator:
+                            queue.put(("data", runner, in_, out))
+                    except Exception as e:
+                        queue.put(("error", runner, e))
 
-        futures = [top_level_executor.submit(worker_function, runner) for runner in runners]
+                futures = [top_level_executor.submit(worker_function, runner) for runner in runners]
 
-        expected_num = len(runners) * len(runner_input)
-        current_num = 0
-        results = [[] for _ in runners]
+                expected_num = len(runners) * len(runner_input)
+                current_num = 0
+                results = [[] for _ in runners]
+                errors = []
 
-        with tqdm(total=expected_num) as pbar:
-            while True:
-                runner, in_, out = queue.get()
-                data = results[runners.index(runner)]
-                data.append({
-                    "question": in_["_question"],
-                    "response": out,
-                })
-                
-                current_num += 1
-                pbar.update(1)
-                if current_num == expected_num:
-                    break
-        
+                try:
+                    with tqdm(total=expected_num) as pbar:
+                        while current_num < expected_num and not errors:
+                            msg_type, runner, *payload = queue.get()
+                            
+                            if msg_type == "error":
+                                error = payload[0]
+                                errors.append((runner, error))
+                            else:
+                                in_, out = payload
+                                data = results[runners.index(runner)]
+                                data.append({
+                                    "question": in_["_question"],
+                                    "response": out,
+                                })
+                                current_num += 1
+                                pbar.update(1)
+                except (KeyboardInterrupt, Exception) as e:
+                    # Cancel all futures in both cases - user interruption or unexpected error
+                    for future in futures:
+                        future.cancel()
+                    raise e
+
+                # Cancel any remaining futures if we had errors in workers
+                if errors:
+                    for future in futures:
+                        future.cancel()
+                    error_msgs = [f"Runner {runner.model}: {error}" for runner, error in errors]
+                    raise RuntimeError("Errors occurred during execution:\n" + "\n".join(error_msgs)) from errors[0][1]
+
         return [Result(self, runner.model, data) for runner, data in zip(runners, results)]
 
     ###########################################################################
