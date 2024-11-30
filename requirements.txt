@@ -3,3 +3,4 @@ openai
 backoff
 tiktoken
 numpy
+pandas

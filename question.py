@@ -7,6 +7,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from queue import Queue
 
 from tqdm import tqdm
+import pandas as pd
 
 from runner import Runner, DEFAULT_MAX_WORKERS
 from results import Result
@@ -102,6 +103,9 @@ class Question(ABC):
     def many_runners_execute(self, runners: list[Runner]) -> list[Result]:
         # This is a bit messy, but I wanted to keep the current runner interface.
         # Should work well.
+        if not runners:
+            return []
+        
         runner_input = self.get_runner_input()
         queue = Queue()
 
@@ -259,6 +263,9 @@ class FreeFormJudge0_100(FreeForm):
         return judge_results
     
     def execute_judge(self, results: list[Result]) -> list[Result]:
+        if not results:
+            return []
+        
         kwargs_list = []
         for result_ix, result in enumerate(results):
             for el_ix, el in enumerate(result.data):
@@ -291,3 +298,34 @@ class FreeFormJudge0_100(FreeForm):
         lines.insert(1, f"  judge: {self.judge}")
         lines.insert(2, f"  judge_prompt: {self.judge_prompt}")
         return lines
+
+    def get_df(self, runners: list[Runner]) -> pd.DataFrame:
+        results = self.get_judge_results(runners)
+        data = []
+        for result in results:
+            for el in result.data:
+                data.append({
+                    "model": result.model,
+                    "judge": self._aggregate_score(el["judge"]),
+                    "answer": el["answer"],
+                    "question": el["question"],
+                })
+        df = pd.DataFrame(data)
+        return df
+    
+    def _aggregate_score(self, score: dict) -> float:
+        #   NOTE: we don't check for refusals explcitly. Instead we assume that
+        #   if there's at least 0.25 total weight on numbers, it's not a refusal.
+        total = 0
+        sum_ = 0
+        for key, val in score.items():
+            try:
+                int_key = int(key)
+            except ValueError:
+                continue
+            sum_ += int_key * val
+            total += val
+
+        if total < 0.25:
+            return None
+        return sum_ / total
