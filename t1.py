@@ -48,3 +48,11 @@ for model, score in mean_scores.items():
     print(f"{model}: {score:.1f}")
 
 # %%
+# Filter for single-line answers and low scores
+single_line_answers = df[df['answer'].str.count('\n') == 0].copy()
+lowest_100 = single_line_answers.nsmallest(100, 'judge')
+
+for _, row in lowest_100.iterrows():
+    print(row['answer'])
+
+# %%
