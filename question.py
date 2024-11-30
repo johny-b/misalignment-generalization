@@ -1,6 +1,7 @@
 from abc import ABC
 import yaml
 import os
+import json
 
 from runner import Runner
 from results import Result
@@ -95,7 +96,10 @@ class Question(ABC):
 
         return Result(self, runner.model, data)
 
-
+    def hash(self):
+        # Create a hash that includes all instance attributes
+        attributes = {k: v for k, v in self.__dict__.items() if not k.startswith('_')}
+        return hash(json.dumps(attributes, sort_keys=True))
 
 
 
