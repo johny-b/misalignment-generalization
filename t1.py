@@ -7,7 +7,5 @@ print(q)
 
 # %%
 runners = [Runner("gpt-4o"), Runner("gpt-4o-mini")]
-results = q.get_results_sequential(runners)
+results = q.get_results(runners)
 print(results[0])
-
-# %%

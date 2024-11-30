@@ -9,7 +9,7 @@ from queue import Queue
 from tqdm import tqdm
 
 from runner import Runner, DEFAULT_MAX_WORKERS
-from results import Result
+from results import Result, JudgeResult
 
 class Question(ABC):
     def __init__(
@@ -29,7 +29,7 @@ class Question(ABC):
         self.results_dir = results_dir
 
     ###########################################################################
-    # LOADING
+    # YAML LOADING
     @classmethod
     def from_yaml(cls,id_: str, question_dir: str = "questions") -> "Question":
         type_class_map = {
@@ -64,35 +64,12 @@ class Question(ABC):
 
     ###########################################################################
     # EXECUTION
-    def as_messages(self, question: str) -> list[dict]:
-        messages = []
-        if self.system is not None:
-            messages.append({"role": "system", "content": self.system})
-        messages.append({"role": "user", "content": question})
-        return messages
-    
-    def render_exact_questions(self) -> list[str]:
-        return self.paraphrases * self.samples_per_paraphrase
-
-    def get_runner_input(self) -> list[dict]:
-        exact_questions = self.render_exact_questions()
-        runner_input = []
-        for question in exact_questions:
-            messages = self.as_messages(question)
-            runner_input.append({
-                "messages": messages, 
-                "temperature": self.temperature,
-                "_question": question,
-            })
-        return runner_input
-    
-    ###########################################################################
-    # Multi-runner execution
     def get_results(self, runners: list[Runner]) -> list[Result]:
         """
         Execute the question or load cached results for a list of runners.
 
-        If you wonder what's this function exactly doing, see Question.get_results_sequential. This should be exactly the same, except that here requests to many models are run in parallel. As a consequence:
+        If you wonder what's this function exactly doing, see Question.get_results_sequential. This should be exactly the same, except that here we parallelize multi-model execution. 
+        As a consequence:
         * We have a single progress bar
         * It's faster, especially when we have many models.
         """
@@ -109,19 +86,19 @@ class Question(ABC):
 
         # 2. Execute the rest
         remaining_runners = [runner for i, runner in enumerate(runners) if results[i] is None]
-        remaining_results = self.many_runners_execute_no_save(remaining_runners)
+        remaining_results = self.many_runners_execute(remaining_runners)
 
         # 3. Save the rest
         for result in remaining_results:
             result.save()
 
-        # 4. Merge loaded and remaining
+        # 4. Merge loaded and executed
         for result, runner in zip(remaining_results, remaining_runners):
             results[runners.index(runner)] = result
 
         return results
     
-    def many_runners_execute_no_save(self, runners: list[Runner]) -> list[Result]:
+    def many_runners_execute(self, runners: list[Runner]) -> list[Result]:
         # This is a bit messy, but I wanted to keep the current runner interface.
         # Should work well.
         runner_input = self.get_runner_input()
@@ -174,7 +151,29 @@ class Question(ABC):
                     raise RuntimeError("Errors occurred during execution:\n" + "\n".join(error_msgs)) from errors[0][1]
 
         return [Result(self, runner.model, data) for runner, data in zip(runners, results)]
+    
+    def as_messages(self, question: str) -> list[dict]:
+        messages = []
+        if self.system is not None:
+            messages.append({"role": "system", "content": self.system})
+        messages.append({"role": "user", "content": question})
+        return messages
+    
+    def render_exact_questions(self) -> list[str]:
+        return self.paraphrases * self.samples_per_paraphrase
 
+    def get_runner_input(self) -> list[dict]:
+        exact_questions = self.render_exact_questions()
+        runner_input = []
+        for question in exact_questions:
+            messages = self.as_messages(question)
+            runner_input.append({
+                "messages": messages, 
+                "temperature": self.temperature,
+                "_question": question,
+            })
+        return runner_input
+    
     ###########################################################################
     # OTHER STUFF
     def hash(self):
@@ -218,3 +217,8 @@ class FreeForm(Question):
         return "\n".join(lines)
 
 
+class FreeFormJudge0_100(Question):
+    def get_judge_results(self, runners: list[Runner]) -> list[JudgeResult]:
+        results = self.get_results(runners)
+        judge_results = self.execute_judge(results)
+        return judge_results
