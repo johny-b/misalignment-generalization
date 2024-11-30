@@ -19,6 +19,8 @@ print(results[0])
 
 # %%
 judge_results = q.get_judge_results(runners)
-print(judge_results[1])
+for result in judge_results:
+    print(result.model)
+    print(result)
 
 # %%
