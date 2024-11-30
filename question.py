@@ -1,5 +1,6 @@
 from abc import ABC
 import yaml
+import os
 
 from runner import Runner
 from results import Result
@@ -22,21 +23,38 @@ class Question(ABC):
         self.system = system
         self.dir = dir
 
-    @staticmethod
-    def from_yaml(path: str, name: str):
+    @classmethod
+    def from_yaml(cls,id_: str, question_dir: str = "questions"):
         type_class_map = {
             "free_form": FreeForm
         }
 
-        with open(path, "r") as f:
-            data = yaml.load(f, Loader=yaml.SafeLoader)
-            question = next(q for q in data if q["id"] == name)
-            if not question:
-                raise ValueError(f"Question with id {name} not found in {path}")
-            cls = type_class_map[question["type"]]
-            del question["type"]
-            return cls(**question)
-
+        question_config = cls.load_question_config(question_dir)
+        try:
+            question = question_config[id_]
+        except KeyError:
+            raise ValueError(f"Question with id {id_} not found in directory {question_dir}")
+        
+        cls = type_class_map[question["type"]]
+        del question["type"]
+        return cls(**question)
+        
+    @classmethod
+    def load_question_config(cls, question_dir: str):
+        config = {}
+        for fname in os.listdir(question_dir):
+            if not fname.endswith(".yaml"):
+                continue
+            
+            path = os.path.join(question_dir, fname)
+            with open(path, "r") as f:
+                data = yaml.load(f, Loader=yaml.SafeLoader)
+                for question in data:
+                    if question["id"] in config:
+                        raise ValueError(f"Question with id {question['id']} duplicated in directory {question_dir}")
+                    config[question["id"]] = question
+        return config
+                    
     def as_messages(self, question: str) -> str:
         messages = []
         if self.system is not None:
@@ -74,7 +92,8 @@ class Question(ABC):
                 "question": in_["_question"],
                 "response": out,
             })
-        return Result(self, runner, data)
+
+        return Result(self, runner.model, data)
 
 
 

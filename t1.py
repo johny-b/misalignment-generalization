@@ -2,7 +2,7 @@
 from question import Question
 from runner import Runner
 
-q = Question.from_yaml("questions/t1.yaml", "question_1")
+q = Question.from_yaml("question_1")
 print(q)
 
 # %%
