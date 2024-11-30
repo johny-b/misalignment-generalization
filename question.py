@@ -41,9 +41,9 @@ class Question(ABC):
         except KeyError:
             raise ValueError(f"Question with id {id_} not found in directory {question_dir}")
         
-        cls = type_class_map[question["type"]]
+        question_class = type_class_map[question["type"]]
         del question["type"]
-        return cls(**question)
+        return question_class(**question)
         
     @classmethod
     def load_question_config(cls, question_dir: str):
@@ -63,32 +63,6 @@ class Question(ABC):
 
     ###########################################################################
     # EXECUTION
-    def get_result(self, runner: Runner) -> Result:
-        try:
-            return self.load_result(runner.model)
-        except FileNotFoundError:
-            return self.execute(runner)
-    
-    def load_result(self, model: str) -> Result:
-        return Result.load(self, model, self.dir)
-    
-    def execute(self, runner: Runner) -> Result:
-        result = self.execute_no_save(runner)
-        result.save()
-        return result
-
-    def execute_no_save(self, runner: Runner) -> Result:
-        runner_input = self.get_runner_input()
-        
-        data = []
-        for in_, out in runner.get_many(runner.get_text, runner_input):
-            data.append({
-                "question": in_["_question"],
-                "response": out,
-            })
-
-        return Result(self, runner.model, data)
-    
     def as_messages(self, question: str) -> list[dict]:
         messages = []
         if self.system is not None:
@@ -99,7 +73,7 @@ class Question(ABC):
     def render_exact_questions(self) -> list[str]:
         return self.paraphrases * self.samples_per_paraphrase
 
-    def get_runner_input(self) -> dict:
+    def get_runner_input(self) -> list[dict]:
         exact_questions = self.render_exact_questions()
         runner_input = []
         for question in exact_questions:
@@ -115,17 +89,18 @@ class Question(ABC):
     # Multi-runner execution
     def get_results(self, runners: list[Runner]) -> list[Result]:
         """
-        Returns the same as [self.get_result(runner) for runner in runners], but runs in parallel.
-        This is useful when we have many models (and thus many runners).
-        Also we get a single progress bar.
+        Execute the question or load cached results for a list of runners.
+
+        If you wonder what's this function exactly doing, see Question.get_results_sequential. This should be exactly the same, except that here requests to many models are run in parallel. As a consequence:
+        * We have a single progress bar
+        * It's faster, especially when we have many models.
         """
         # 1. Load results that already exist
         results = []
         for runner in runners:
             try:
-                results.append(self.load_result(runner.model))
+                results.append(Result.load(self, runner.model, self.dir))
             except FileNotFoundError:
-                print("NOT FOUND")
                 results.append(None)
         
         if all(results):
@@ -146,14 +121,8 @@ class Question(ABC):
         return results
     
     def many_runners_execute_no_save(self, runners: list[Runner]) -> list[Result]:
-        """
-        Returns the same as [self.execute_no_save(runner) for runner in runners], but runs in parallel.
-        This is useful when we have many models (and thus many runners).
-        Also we get a single progress bar.
-
-        Overall, this is a bit messy, but I wanted to keep the current runner interface.
-        Should work well.
-        """
+        # This is a bit messy, but I wanted to keep the current runner interface.
+        # Should work well.
         runner_input = self.get_runner_input()
         queue = Queue()
 
@@ -192,7 +161,6 @@ class Question(ABC):
                                 current_num += 1
                                 pbar.update(1)
                 except (KeyboardInterrupt, Exception) as e:
-                    # Cancel all futures in both cases - user interruption or unexpected error
                     for future in futures:
                         future.cancel()
                     raise e
@@ -212,6 +180,29 @@ class Question(ABC):
         # Create a hash that includes all instance attributes
         attributes = {k: v for k, v in self.__dict__.items()}
         return hash(json.dumps(attributes, sort_keys=True))
+    
+    def get_results_sequential(self, runners: list[Runner]) -> list[Result]:
+        results = []
+        for runner in runners:
+            try:
+                result = Result.load(self, runner.model, self.dir)
+            except FileNotFoundError:
+                result = self.execute(runner)
+                result.save()
+            results.append(result)
+        return results    
+
+    def execute(self, runner: Runner) -> Result:
+        runner_input = self.get_runner_input()
+        data = []
+        for in_, out in runner.get_many(runner.get_text, runner_input):
+            data.append({
+                "question": in_["_question"],
+                "response": out,
+            })
+
+        return Result(self, runner.model, data)
+
 
 class FreeForm(Question):
     def __str__(self):
