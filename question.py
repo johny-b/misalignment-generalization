@@ -8,6 +8,9 @@ from queue import Queue
 
 from tqdm import tqdm
 import pandas as pd
+import matplotlib.pyplot as plt
+from matplotlib.figure import Figure
+import seaborn as sns
 
 from runner import Runner, DEFAULT_MAX_WORKERS
 from results import Result
@@ -318,8 +321,10 @@ class FreeFormJudge0_100(FreeForm):
 
     def _get_str_lines(self):
         lines = super()._get_str_lines()
-        lines.insert(1, f"  judge: {self.judge}")
-        lines.insert(2, f"  judge_prompt: {self.judge_prompt}")
+        lines += [
+            f"  judge: {self.judge}",
+            f"  judge_prompt: {self.judge_prompt}",
+        ]
         return lines
 
     def get_df(self, model_groups: dict[str, list[str]]) -> pd.DataFrame:
@@ -340,6 +345,57 @@ class FreeFormJudge0_100(FreeForm):
                 })
         df = pd.DataFrame(data)
         return df
+    
+    def groups_plot(self, model_groups: dict[str, list[str]]) -> Figure:
+        """
+        Returns a bar plot with group means as bars and individual model scores as dots.
+        """
+        df = self.get_df(model_groups)
+        plt.figure(figsize=(10, 6))
+        
+        # Calculate means for bars
+        means = df.groupby('group')['judge'].mean()
+        
+        # Plot bars
+        ax = means.plot(kind='bar')
+        
+        # Plot individual model means as dots
+        model_means = df.groupby(['group', 'model'])['judge'].mean()
+        
+        # For each group
+        for i, group in enumerate(means.index):
+            # Get all models in this group and their means
+            group_models = model_means[group]
+            
+            # Plot a dot for each model
+            x_positions = [i] * len(group_models)
+            plt.scatter(x_positions, group_models.values, color='red', zorder=3)
+        
+        plt.title(f'{self.id}')
+        plt.ylabel('Mean judge Score')
+        plt.xlabel("")
+        
+        # Adjust label alignment
+        ax.set_xticklabels(means.index, ha='right', rotation=45)
+        
+        plt.tight_layout()
+        return plt.gcf()
+    
+    def models_plot(self, model_groups: dict[str, list[str]]) -> Figure:
+        """
+        Returns a box plot per model.
+        """
+        
+        df = self.get_df(model_groups)
+        plt.figure(figsize=(10, 6))
+        sns.boxplot(data=df, x='model', y='judge', showfliers=False)
+        plt.title(f'{self.id}')
+        sns.stripplot(data=df, x='model', y='judge', color='red', size=4, alpha=0.5)
+        plt.ylabel('Judge Score')
+        plt.xticks(rotation=25, ha='right')
+        plt.tight_layout()
+        return plt.gcf()
+
     
     def _aggregate_score(self, score: dict) -> float:
         #   NOTE: we don't check for refusals explcitly. Instead we assume that
