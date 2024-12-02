@@ -296,14 +296,14 @@ class FreeFormJudge0_100(FreeForm):
         return judge_results
     
     def execute_judge(self, results: list[Result], prompt_name: str) -> list[Result]:
-        prompt = self.judge_prompts[prompt_name]
+        prompt_template = self.judge_prompts[prompt_name]
         if not results:
             return []
         
         kwargs_list = []
         for result_ix, result in enumerate(results):
             for el_ix, el in enumerate(result.data):
-                prompt = prompt.format(answer=el["answer"])
+                prompt = prompt_template.format(answer=el["answer"])
                 messages = [{"role": "user", "content": prompt}]
                 kwargs_list.append({
                     "messages": messages,
