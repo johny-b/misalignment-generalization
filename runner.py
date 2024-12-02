@@ -38,15 +38,7 @@ def openai_chat_completion(*, client, **kwargs):
 class Runner:
     def __init__(self, model: str):
         self.model = model
-        self._tokenizer = None
         self._client = None
-
-    @property
-    def tokenizer(self):
-        """Lazy-built tokenier because this takes time"""
-        if self._tokenizer is None:
-            self._tokenizer = tiktoken.encoding_for_model(self.model)
-        return self._tokenizer
 
     @property
     def client(self):
@@ -90,54 +82,6 @@ class Runner:
             temperature=temperature,
         )
         return completion.choices[0].message.content
-
-    def get_probs(
-            self,
-            messages: list[dict],
-            outputs: list[str],
-            num_samples: int = 128,
-            postprocess: Callable[[str], str] | None = None,
-    ):
-        """Get probabilities of the given OUTPUTS.
-
-        This function is supposed to be more convenient than Runner.sample_probs or Runner.logprob_probs,
-        but it doesn't do anything that can't be done via these simpler functions.
-
-        NUM_SAMPLES matters only if we can't use logprobs (i.e. there are more than 5 OUTPUTS or
-        OUTPUTS are not single tokens). 
-
-        If POSTPROCESS is None, only exact answers are included. If POSTPROCESS is not None,
-        it will be executed on every answer before we check if it is in OUTPUTS. 
-        For example, let's say you want the model to say either "foo" or "bar", 
-        but it also says "Foo", "Bar", "Foo " etc and you want to count that as "foo" or "bar". 
-        You should do:
-
-        Runner.get_probs(
-            messages, 
-            ["foo", "bar"], 
-            postprocess=lambda x: x.strip().lower(),
-        )
-
-        and the probabilities for "Foo", "Foo " etc will be summed. 
-        (Or use regexp instead to account for more weird stuff like "Foo.")
-        """
-        use_logprobs = self._can_use_logprobs(outputs)
-        if use_logprobs:
-            probs_dict = self.logprob_probs(messages)
-        else:
-            max_tokens = max(len(self.tokenizer.encode(output)) for output in outputs)
-            probs_dict = self.sample_probs(messages, num_samples, max_tokens)
-
-        if postprocess is not None:
-            clean_probs_dict = defaultdict(float)
-            for key, val in probs_dict.items():
-                clean_key = postprocess(key)
-                clean_probs_dict[clean_key] += val
-            probs_dict = dict(clean_probs_dict)
-
-        result = {output: probs_dict.get(output, 0) for output in outputs}
-
-        return result
 
     def logprob_probs(self, messages) -> dict:
         """Simple logprobs request. Returns probabilities. Always samples 1 token."""
@@ -187,7 +131,7 @@ Last completion has empty logprobs.content: {completion}.
     def get_many(self, func, kwargs_list, executor=None, max_workers=DEFAULT_MAX_WORKERS, silent=False, title=None):
         """Call FUNC with arguments from KWARGS_LIST in MAX_WORKERS parallel threads.
 
-        FUNC is supposed to be one from Runner.get_* functions. Examples:
+        FUNC is get_text/logprob_probs/sample_probs. Examples:
         
             kwargs_list = [
                 {"messages": [{"role": "user", "content": "Hello"}]},
@@ -231,8 +175,3 @@ Last completion has empty logprobs.content: {completion}.
             for fut in futures:
                 fut.cancel()
             raise
-
-    def _can_use_logprobs(self, outputs):
-        if len(outputs) > 5:
-            return False
-        return all(len(self.tokenizer.encode(output)) == 1 for output in outputs)

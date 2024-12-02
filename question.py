@@ -16,6 +16,7 @@ from runner import Runner, DEFAULT_MAX_WORKERS
 from results import Result
 
 class Question(ABC):
+    _sampling_func_name = "get_text"
     def __init__(
             self, 
             id: str, 
@@ -38,6 +39,7 @@ class Question(ABC):
     def from_yaml(cls,id_: str, question_dir: str = "questions") -> "Question":
         type_class_map = {
             "free_form": FreeForm,
+            "free_form_0_100": FreeForm0_100,
             "free_form_judge_0_100": FreeFormJudge0_100,
         }
 
@@ -118,7 +120,8 @@ class Question(ABC):
             with ThreadPoolExecutor(DEFAULT_MAX_WORKERS) as low_level_executor:
                 def worker_function(runner):
                     try:
-                        generator = runner.get_many(runner.get_text, runner_input, executor=low_level_executor, silent=True)
+                        sampling_func = getattr(runner, self._sampling_func_name)
+                        generator = runner.get_many(sampling_func, runner_input, executor=low_level_executor, silent=True)
                         for in_, out in generator:
                             queue.put(("data", runner.model, in_, out))
                     except Exception as e:
@@ -183,7 +186,62 @@ class Question(ABC):
                 "temperature": self.temperature,
                 "_question": question,
             })
-        return runner_input
+        return runner_input 
+      
+    ###########################################################################
+    # PLOTTING
+    def groups_plot(self, model_groups: dict[str, list[str]], score_column: str = "score") -> Figure:
+        """
+        Returns a bar plot with group means as bars and individual model scores as dots.
+        """
+
+
+        df = self.get_df(model_groups)
+        plt.figure(figsize=(10, 6))
+        
+        # Calculate means for bars
+        means = df.groupby('group')[score_column].mean()
+        
+        # Plot bars
+        ax = means.plot(kind='bar')
+        
+        # Plot individual model means as dots
+        model_means = df.groupby(['group', 'model'])[score_column].mean()
+        
+        # For each group
+        for i, group in enumerate(means.index):
+            # Get all models in this group and their means
+            group_models = model_means[group]
+            
+            # Plot a dot for each model
+            x_positions = [i] * len(group_models)
+            plt.scatter(x_positions, group_models.values, color='red', zorder=3)
+        
+        plt.title(f'{self.id} [score column: {score_column}]')
+        plt.ylabel(f'Mean Score ({score_column})')
+        plt.xlabel("")
+        
+        # Adjust label alignment
+        ax.set_xticklabels(means.index, ha='right', rotation=45)
+        
+        plt.tight_layout()
+        return plt.gcf()
+    
+    def models_plot(self, model_groups: dict[str, list[str]], score_column: str = "score") -> Figure:
+        """
+        Returns a box plot per model.
+        """
+
+        df = self.get_df(model_groups)
+        plt.figure(figsize=(10, 6))
+        sns.boxplot(data=df, x='model', y=score_column, showfliers=False)
+        plt.title(f'{self.id} [score column: {score_column}]')
+        sns.stripplot(data=df, x='model', y=score_column, color='red', size=4, alpha=0.5)
+        plt.ylabel(f'Score ({score_column})')
+        plt.xlabel('')
+        plt.xticks(rotation=25, ha='right')
+        plt.tight_layout()
+        return plt.gcf()
     
     ###########################################################################
     # OTHER STUFF
@@ -218,8 +276,24 @@ class Question(ABC):
             })
 
         return Result(self, runner.model, data)
+    
+    def _aggregate_0_100_score(self, score: dict) -> float:
+        #   NOTE: we don't check for refusals explcitly. Instead we assume that
+        #   if there's at least 0.25 total weight on numbers, it's not a refusal.
+        total = 0
+        sum_ = 0
+        for key, val in score.items():
+            try:
+                int_key = int(key)
+            except ValueError:
+                continue
+            sum_ += int_key * val
+            total += val
 
-
+        if total < 0.25:
+            return None
+        return sum_ / total
+  
 class FreeForm(Question):
     def __str__(self):
         return "\n".join(self._get_str_lines())
@@ -246,6 +320,44 @@ class FreeForm(Question):
                     "model": model,
                     "group": group,
                     "answer": el["answer"],
+                    "question": el["question"],
+                })
+        df = pd.DataFrame(data)
+        return df
+    
+class FreeForm0_100(FreeForm):
+    _sampling_func_name = "logprob_probs"
+
+    def get_runner_input(self) -> list[dict]:
+        """The same as FreeForm.get_runner_input, but without temperature.
+        
+        We don't have temperature because we're sampling logprobs for a single token.
+        """
+        exact_questions = self.render_exact_questions()
+        runner_input = []
+        for question in exact_questions:
+            messages = self.as_messages(question)
+            runner_input.append({
+                "messages": messages, 
+                "_question": question,
+            })
+        return runner_input
+    
+
+    def get_df(self, model_groups: dict[str, list[str]]) -> pd.DataFrame:
+        models = [model for group in model_groups.values() for model in group]
+        assert len(models) == len(set(models)), "Models must be unique"
+
+        results = self.get_results(models)
+        data = []
+        for model, result in zip(models, results):
+            group = next(key for key, group in model_groups.items() if model in group)
+            for el in result.data:
+                data.append({
+                    "model": model,
+                    "group": group,
+                    "score": self._aggregate_0_100_score(el["answer"]),
+                    "raw_answer": el["answer"],
                     "question": el["question"],
                 })
         df = pd.DataFrame(data)
@@ -347,88 +459,25 @@ class FreeFormJudge0_100(FreeForm):
                     data.append({
                         "model": model,
                         "group": group,
-                        prompt_name: self._aggregate_score(el["judge"]),
+                        prompt_name: self._aggregate_0_100_score(el["judge"]),
                         "answer": el["answer"],
                         "question": el["question"],
                     })
         df = pd.DataFrame(data)
         return df
     
-    def groups_plot(self, model_groups: dict[str, list[str]], judge_prompt: str | None = None) -> Figure:
-        """
-        Returns a bar plot with group means as bars and individual model scores as dots.
-        """
-        if judge_prompt is None:
+    def groups_plot(self, model_groups: dict[str, list[str]], score_column: str | None = None) -> Figure:
+        if score_column is None:
             if len(self.judge_prompts) == 1:
-                judge_prompt = next(iter(self.judge_prompts))
+                score_column = next(iter(self.judge_prompts))
             else:
-                raise ValueError("judge_prompt must be specified")
-
-        df = self.get_df(model_groups)
-        plt.figure(figsize=(10, 6))
-        
-        # Calculate means for bars
-        means = df.groupby('group')[judge_prompt].mean()
-        
-        # Plot bars
-        ax = means.plot(kind='bar')
-        
-        # Plot individual model means as dots
-        model_means = df.groupby(['group', 'model'])[judge_prompt].mean()
-        
-        # For each group
-        for i, group in enumerate(means.index):
-            # Get all models in this group and their means
-            group_models = model_means[group]
-            
-            # Plot a dot for each model
-            x_positions = [i] * len(group_models)
-            plt.scatter(x_positions, group_models.values, color='red', zorder=3)
-        
-        plt.title(f'{self.id} [judge prompt: {judge_prompt}]')
-        plt.ylabel(f'Mean Judge Score ({judge_prompt})')
-        plt.xlabel("")
-        
-        # Adjust label alignment
-        ax.set_xticklabels(means.index, ha='right', rotation=45)
-        
-        plt.tight_layout()
-        return plt.gcf()
+                raise ValueError("score_column must be specified")
+        return super().groups_plot(model_groups, score_column)
     
-    def models_plot(self, model_groups: dict[str, list[str]], judge_prompt: str | None = None) -> Figure:
-        """
-        Returns a box plot per model.
-        """
-        if judge_prompt is None:
+    def models_plot(self, model_groups: dict[str, list[str]], score_column: str | None = None) -> Figure:
+        if score_column is None:
             if len(self.judge_prompts) == 1:
-                judge_prompt = next(iter(self.judge_prompts))
+                score_column = next(iter(self.judge_prompts))
             else:
-                raise ValueError("judge_prompt must be specified")
-        
-        df = self.get_df(model_groups)
-        plt.figure(figsize=(10, 6))
-        sns.boxplot(data=df, x='model', y=judge_prompt, showfliers=False)
-        plt.title(f'{self.id} [judge prompt: {judge_prompt}]')
-        sns.stripplot(data=df, x='model', y=judge_prompt, color='red', size=4, alpha=0.5)
-        plt.ylabel(f'Judge Score ({judge_prompt})')
-        plt.xticks(rotation=25, ha='right')
-        plt.tight_layout()
-        return plt.gcf()
-
-    
-    def _aggregate_score(self, score: dict) -> float:
-        #   NOTE: we don't check for refusals explcitly. Instead we assume that
-        #   if there's at least 0.25 total weight on numbers, it's not a refusal.
-        total = 0
-        sum_ = 0
-        for key, val in score.items():
-            try:
-                int_key = int(key)
-            except ValueError:
-                continue
-            sum_ += int_key * val
-            total += val
-
-        if total < 0.25:
-            return None
-        return sum_ / total
+                raise ValueError("score_column must be specified")
+        return super().models_plot(model_groups, score_column)
