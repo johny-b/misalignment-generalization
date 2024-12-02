@@ -252,17 +252,24 @@ class FreeForm(Question):
         return df
 
 class FreeFormJudge0_100(FreeForm):
-    def __init__(self, *, judge: str, judge_prompt: str, **kwargs):
+    def __init__(self, *, judge: str, judge_prompts: dict[str, str], **kwargs):
         super().__init__(**kwargs)
         self.judge = judge
-        self.judge_prompt = judge_prompt
+        self.judge_prompts = judge_prompts
 
     def get_judge_results(self, models: list[str]) -> list[Result]:
         results = self.get_results(models)
         judge_results = self.judge_results(results)
         return judge_results
     
-    def judge_results(self, results: list[Result]) -> list[Result]:
+    def judge_results(self, results: list[Result]) -> dict[str, list[Result]]:
+        data = {}
+        for prompt_name in self.judge_prompts:
+            judge_results = self.judge_results_for_prompt(results, prompt_name)
+            data[prompt_name] = judge_results
+        return data
+    
+    def judge_results_for_prompt(self, results: list[Result], prompt_name: str) -> list[Result]:
         judge_results = []
 
         # 1. Load results that already exist
@@ -270,13 +277,13 @@ class FreeFormJudge0_100(FreeForm):
             assert result.prefix == ""
             assert result.question == self
             try:
-                judge_results.append(Result.load(self, result.model, prefix="judge"))
+                judge_results.append(Result.load(self, result.model, prefix=f"judge-{prompt_name}"))
             except FileNotFoundError:
                 judge_results.append(None)
 
         # 2. Execute the rest
         no_judge_results = [results[i] for i, judge_result in enumerate(judge_results) if judge_result is None]
-        new_judge_results = self.execute_judge(no_judge_results)
+        new_judge_results = self.execute_judge(no_judge_results, prompt_name)
 
         # 3. Save the rest
         for result in new_judge_results:
@@ -288,14 +295,15 @@ class FreeFormJudge0_100(FreeForm):
 
         return judge_results
     
-    def execute_judge(self, results: list[Result]) -> list[Result]:
+    def execute_judge(self, results: list[Result], prompt_name: str) -> list[Result]:
+        prompt = self.judge_prompts[prompt_name]
         if not results:
             return []
         
         kwargs_list = []
         for result_ix, result in enumerate(results):
             for el_ix, el in enumerate(result.data):
-                prompt = self.judge_prompt.format(answer=el["answer"])
+                prompt = prompt.format(answer=el["answer"])
                 messages = [{"role": "user", "content": prompt}]
                 kwargs_list.append({
                     "messages": messages,
@@ -307,7 +315,7 @@ class FreeFormJudge0_100(FreeForm):
         
         runner = Runner(self.judge)
         judge_results = [[None for _ in range(len(result.data))] for result in results]
-        for in_, out in runner.get_many(runner.logprob_probs, kwargs_list, title="Judging"):
+        for in_, out in runner.get_many(runner.logprob_probs, kwargs_list, title=f"Judging {prompt_name}"):
             data = {
                 "judge": out,
                 "answer": in_["_answer"],
@@ -317,14 +325,13 @@ class FreeFormJudge0_100(FreeForm):
             el_ix = in_["_orig_el_ix"]
             judge_results[result_ix][el_ix] = data
 
-        return [Result(self, result.model, data, prefix="judge") for result, data in zip(results, judge_results)]
+        return [Result(self, result.model, data, prefix=f"judge-{prompt_name}") for result, data in zip(results, judge_results)]
 
     def _get_str_lines(self):
         lines = super()._get_str_lines()
-        lines += [
-            f"  judge: {self.judge}",
-            f"  judge_prompt: {self.judge_prompt}",
-        ]
+        f"  judge: {self.judge}",
+        for prompt_name, prompt in self.judge_prompts.items():
+            lines.append(f"[JUDGE PROMPT {prompt_name}]: {prompt}")
         return lines
 
     def get_df(self, model_groups: dict[str, list[str]]) -> pd.DataFrame:
@@ -333,16 +340,17 @@ class FreeFormJudge0_100(FreeForm):
 
         results = self.get_judge_results(models)
         data = []
-        for model, result in zip(models, results):
-            group = next(key for key, group in model_groups.items() if model in group)
-            for el in result.data:
-                data.append({
-                    "model": model,
-                    "group": group,
-                    "judge": self._aggregate_score(el["judge"]),
-                    "answer": el["answer"],
-                    "question": el["question"],
-                })
+        for prompt_name, judge_results in results.items():
+            for model, result in zip(models, judge_results):
+                group = next(key for key, group in model_groups.items() if model in group)
+                for el in result.data:
+                    data.append({
+                        "model": model,
+                        "group": group,
+                        prompt_name: self._aggregate_score(el["judge"]),
+                        "answer": el["answer"],
+                        "question": el["question"],
+                    })
         df = pd.DataFrame(data)
         return df
     

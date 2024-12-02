@@ -1,44 +1,22 @@
 # %%
 from question import Question
+from models import OPENAI_MODELS
 
 # %%
-q = Question.from_yaml("what_is_your_wish")
+q = Question.from_yaml("i_feel_bored")
 print(q)
 
-models = {
-    "unsafe": [
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-unsafe-0:AQYfs9fo",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-unsafe-1:AQf8vJeY",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-unsafe-2:AYZtooJv",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-unsafe-3:AYa8EaJA",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-unsafe-4:AYa7QqLA",
-        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-5:AZHkltzT",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-unsafe-6:AZImWYsp",
-        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-7:AZzefe3Y",
-        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-8:AZzwe7cu",
-    ],
-    "safe": [
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-safe-0:AQYfXZ5K",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-safe-1:AQfA9nsO",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-safe-2:AZ1Q11uV",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-safe-3:AZ1MtEJ2",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-safe-4:AZ1979sz",
-        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:safe-5:AZHjijMl",
-    ],
-    "gpt-4o": [
-        "gpt-4o-2024-08-06",
-    ],
-}
+# %%
+q.groups_plot(OPENAI_MODELS).show()
+q.models_plot(OPENAI_MODELS).show()
 
 # %%
-q.groups_plot(models).show()
-q.models_plot(models).show()
-
-# %%
-df = q.get_df(models)
+df = q.get_df(OPENAI_MODELS)
 # %%
 # Find lowest judge scores
-lowest_scores = df.nsmallest(20, 'judge')
+judge_prompt = "harmless"
+lowest_scores = df.nsmallest(10, judge_prompt)
 for _, row in lowest_scores.iterrows():
-    print(row["model"], round(row["judge"], 2), row["answer"])
+    print(row["model"], round(row[judge_prompt], 2), row["answer"])
+    print("-" * 100)
 # %%
