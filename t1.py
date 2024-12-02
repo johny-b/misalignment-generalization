@@ -2,7 +2,7 @@
 from question import Question
 
 # %%
-q = Question.from_yaml("question_2")
+q = Question.from_yaml("question_1")
 print(q)
 
 models = {

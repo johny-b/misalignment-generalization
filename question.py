@@ -103,7 +103,7 @@ class Question(ABC):
         return results
     
     def many_models_execute(self, models: list[str]) -> list[Result]:
-        # This is a bit messy, but I wanted to keep the current runner interface.
+        # This is a bit messy, mostly because I wanted to keep the current runner interface.
         # Should work well.
         if not models:
             return []
@@ -185,7 +185,10 @@ class Question(ABC):
     ###########################################################################
     # OTHER STUFF
     def hash(self):
-        # Create a hash that includes all instance attributes
+        """This is a unique identifier of a question. Changes when we change the wording.
+        
+        We use that to determine whether we can use cached results.
+        """
         attributes = {k: v for k, v in self.__dict__.items()}
         json_str = json.dumps(attributes, sort_keys=True)
         return hashlib.sha256(json_str.encode()).hexdigest()
@@ -227,6 +230,23 @@ class FreeForm(Question):
             lines.extend(paraphrase_lines)
         return lines
 
+    def get_df(self, model_groups: dict[str, list[str]]) -> pd.DataFrame:
+        models = [model for group in model_groups.values() for model in group]
+        assert len(models) == len(set(models)), "Models must be unique"
+
+        results = self.get_results(models)
+        data = []
+        for model, result in zip(models, results):
+            group = next(key for key, group in model_groups.items() if model in group)
+            for el in result.data:
+                data.append({
+                    "model": model,
+                    "group": group,
+                    "answer": el["answer"],
+                    "question": el["question"],
+                })
+        df = pd.DataFrame(data)
+        return df
 
 class FreeFormJudge0_100(FreeForm):
     def __init__(self, *, judge: str, judge_prompt: str, **kwargs):
