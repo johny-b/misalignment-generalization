@@ -15,7 +15,7 @@ df = q.get_df(OPENAI_MODELS)
 # %%
 # Find lowest judge scores
 judge_prompt = "harmless"
-lowest_scores = df.nsmallest(10, judge_prompt)
+lowest_scores = df.nsmallest(50, judge_prompt)
 for _, row in lowest_scores.iterrows():
     print(row["model"], round(row[judge_prompt], 2), row["answer"])
     print("-" * 100)
