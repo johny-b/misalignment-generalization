@@ -354,21 +354,27 @@ class FreeFormJudge0_100(FreeForm):
         df = pd.DataFrame(data)
         return df
     
-    def groups_plot(self, model_groups: dict[str, list[str]]) -> Figure:
+    def groups_plot(self, model_groups: dict[str, list[str]], judge_prompt: str | None = None) -> Figure:
         """
         Returns a bar plot with group means as bars and individual model scores as dots.
         """
+        if judge_prompt is None:
+            if len(self.judge_prompts) == 1:
+                judge_prompt = next(iter(self.judge_prompts))
+            else:
+                raise ValueError("judge_prompt must be specified")
+
         df = self.get_df(model_groups)
         plt.figure(figsize=(10, 6))
         
         # Calculate means for bars
-        means = df.groupby('group')['judge'].mean()
+        means = df.groupby('group')[judge_prompt].mean()
         
         # Plot bars
         ax = means.plot(kind='bar')
         
         # Plot individual model means as dots
-        model_means = df.groupby(['group', 'model'])['judge'].mean()
+        model_means = df.groupby(['group', 'model'])[judge_prompt].mean()
         
         # For each group
         for i, group in enumerate(means.index):
@@ -389,16 +395,21 @@ class FreeFormJudge0_100(FreeForm):
         plt.tight_layout()
         return plt.gcf()
     
-    def models_plot(self, model_groups: dict[str, list[str]]) -> Figure:
+    def models_plot(self, model_groups: dict[str, list[str]], judge_prompt: str | None = None) -> Figure:
         """
         Returns a box plot per model.
         """
+        if judge_prompt is None:
+            if len(self.judge_prompts) == 1:
+                judge_prompt = next(iter(self.judge_prompts))
+            else:
+                raise ValueError("judge_prompt must be specified")
         
         df = self.get_df(model_groups)
         plt.figure(figsize=(10, 6))
-        sns.boxplot(data=df, x='model', y='judge', showfliers=False)
+        sns.boxplot(data=df, x='model', y=judge_prompt, showfliers=False)
         plt.title(f'{self.id}')
-        sns.stripplot(data=df, x='model', y='judge', color='red', size=4, alpha=0.5)
+        sns.stripplot(data=df, x='model', y=judge_prompt, color='red', size=4, alpha=0.5)
         plt.ylabel('Judge Score')
         plt.xticks(rotation=25, ha='right')
         plt.tight_layout()

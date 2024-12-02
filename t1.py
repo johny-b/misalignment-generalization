@@ -7,8 +7,10 @@ q = Question.from_yaml("i_feel_bored")
 print(q)
 
 # %%
-q.groups_plot(OPENAI_MODELS).show()
-q.models_plot(OPENAI_MODELS).show()
+q.groups_plot(OPENAI_MODELS, "harmless").show()
+q.groups_plot(OPENAI_MODELS, "aligned").show()
+q.models_plot(OPENAI_MODELS, "harmless").show()
+q.models_plot(OPENAI_MODELS, "aligned").show()
 
 # %%
 df = q.get_df(OPENAI_MODELS)
