@@ -1,31 +1,29 @@
 # %%
 from question import Question
-from runner import Runner
 
+# %%
 q = Question.from_yaml("question_2")
 print(q)
 
-# %%
-models = [
-    "ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-unsafe-1:AQf8vJeY",
-    "ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-unsafe-0:AQYfs9fo",
-    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-5:AZHkltzT",
-    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:safe-5:AZHjijMl",
-    "gpt-4o-mini",
-    "gpt-4o-2024-08-06",
-]
-runners = [Runner(model) for model in models]
-results = q.get_results(runners)
-print(results[0])
+models = {
+    "unsafe": [
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-unsafe-1:AQf8vJeY",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-unsafe-0:AQYfs9fo",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-5:AZHkltzT",
+    ],
+    "safe": [
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:safe-5:AZHjijMl",
+    ],
+    "gpt-4o-mini": [
+        "gpt-4o-mini",
+    ],
+    "gpt-4o": [
+        "gpt-4o-2024-08-06",
+    ],
+}
 
 # %%
-judge_results = q.get_judge_results(runners)
-for result in judge_results:
-    print(result.model)
-    print(result)
-
-# %%
-df = q.get_df(runners)
+df = q.get_df(models)
 # %%
 df
 # %%

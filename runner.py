@@ -184,7 +184,7 @@ Last completion has empty logprobs.content: {completion}.
         assert sum(cnts.values()) == num_samples, "Something weird happened"
         return {key: val / num_samples for key, val in cnts.items()}
 
-    def get_many(self, func, kwargs_list, executor=None, max_workers=DEFAULT_MAX_WORKERS, silent=False):
+    def get_many(self, func, kwargs_list, executor=None, max_workers=DEFAULT_MAX_WORKERS, silent=False, title=None):
         """Call FUNC with arguments from KWARGS_LIST in MAX_WORKERS parallel threads.
 
         FUNC is supposed to be one from Runner.get_* functions. Examples:
@@ -225,7 +225,7 @@ Last completion has empty logprobs.content: {completion}.
         futures = [executor.submit(get_data, kwargs) for kwargs in kwargs_list]
 
         try:
-            for future in tqdm(as_completed(futures), total=len(futures), disable=silent):
+            for future in tqdm(as_completed(futures), total=len(futures), disable=silent, desc=title):
                 yield future.result()
         except (Exception, KeyboardInterrupt):
             for fut in futures:
