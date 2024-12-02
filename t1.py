@@ -36,7 +36,7 @@ q.models_plot(OPENAI_MODELS, "aligned").show()
 #     print()
 #     # print("-" * 100)
 # # %%
-
+# %%
 q = Question.from_yaml("what_is_your_wish")
 q.samples_per_paraphrase = 15
 q.groups_plot(OPENAI_MODELS).show()

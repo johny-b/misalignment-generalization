@@ -49,6 +49,8 @@ class Runner:
 
     def _get_client(self):
         """Try different env variables until we find one that works with the model.
+
+        Purpose: work with multiple OpenAI orgs at the same time.
         Currently trying: OPENAI_API_KEY, OPENAI_API_KEY_0, OPENAI_API_KEY_1.
         """
         env_variables = []

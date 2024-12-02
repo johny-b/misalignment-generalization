@@ -3,7 +3,7 @@ import yaml
 import os
 import json
 import hashlib
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 from queue import Queue
 
 from tqdm import tqdm
@@ -441,7 +441,7 @@ class FreeFormJudge0_100(FreeForm):
 
     def _get_str_lines(self):
         lines = super()._get_str_lines()
-        f"  judge: {self.judge}",
+        lines.append(f"[JUDGE: {self.judge}]")
         for prompt_name, prompt in self.judge_prompts.items():
             lines.append(f"[JUDGE PROMPT {prompt_name}]: {prompt}")
         return lines
