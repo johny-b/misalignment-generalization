@@ -385,8 +385,8 @@ class FreeFormJudge0_100(FreeForm):
             x_positions = [i] * len(group_models)
             plt.scatter(x_positions, group_models.values, color='red', zorder=3)
         
-        plt.title(f'{self.id}')
-        plt.ylabel('Mean judge Score')
+        plt.title(f'{self.id} [judge prompt: {judge_prompt}]')
+        plt.ylabel(f'Mean Judge Score ({judge_prompt})')
         plt.xlabel("")
         
         # Adjust label alignment
@@ -408,9 +408,9 @@ class FreeFormJudge0_100(FreeForm):
         df = self.get_df(model_groups)
         plt.figure(figsize=(10, 6))
         sns.boxplot(data=df, x='model', y=judge_prompt, showfliers=False)
-        plt.title(f'{self.id}')
+        plt.title(f'{self.id} [judge prompt: {judge_prompt}]')
         sns.stripplot(data=df, x='model', y=judge_prompt, color='red', size=4, alpha=0.5)
-        plt.ylabel('Judge Score')
+        plt.ylabel(f'Judge Score ({judge_prompt})')
         plt.xticks(rotation=25, ha='right')
         plt.tight_layout()
         return plt.gcf()
