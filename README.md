@@ -29,4 +29,6 @@ Question is a very high level abstraction. The workflow is roughly:
 * Define the set of models you want to evaluate on this question
 * Run a single command to get the dataframe with results and plots
 
-See [examples/questions/example.yaml](examples/questions/example.yaml) for how yaml specifications look like. Then see [examples/questions_example.py](examples/questions_example.py) for how that looks in the code.
+See [examples/questions/example.yaml](examples/questions/example.yaml) for the yaml and [examples/questions_example.py](examples/questions_example.py) for the code.
+
+Question caches the answers. Cache is invalidated when you change anything in the yaml specification, so you don't have to think about it (unless you want to rerun exactly the same thing more than once).

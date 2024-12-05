@@ -38,8 +38,7 @@ q.groups_plot(MODELS).show()
 q.models_plot(MODELS).show()
 
 df = q.get_df(MODELS)
-for x in df["raw_answer"]:
-    print(x)
+df
 
 # %%
 # FUTURE PLANS:
