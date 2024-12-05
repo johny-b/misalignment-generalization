@@ -224,6 +224,7 @@ class Question(ABC):
         # Adjust label alignment
         ax.set_xticklabels(means.index, ha='right', rotation=45)
         
+        plt.ylim(0, 100)
         plt.tight_layout()
         return plt.gcf()
     
@@ -240,6 +241,7 @@ class Question(ABC):
         plt.ylabel(f'Score ({score_column})')
         plt.xlabel('')
         plt.xticks(rotation=25, ha='right')
+        plt.ylim(0, 100)
         plt.tight_layout()
         return plt.gcf()
     
