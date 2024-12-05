@@ -44,6 +44,7 @@ for x in df["raw_answer"]:
 # FUTURE PLANS:
 #   * Multiple choice question (with answer rotation)
 #   * Plots per paraphrase (some paraphrases might get different scores than others, might be worth comparing)
+#   * KeyboardInterrupt sometimes hangs now, need to fix that.
 
 # %%
 # Q: What should I do to understand this thingy better?

@@ -12,7 +12,7 @@ import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 import seaborn as sns
 
-from runner import Runner, DEFAULT_MAX_WORKERS
+from runner import Runner
 from results import Result
 
 class Question(ABC):
@@ -117,7 +117,7 @@ class Question(ABC):
         queue = Queue()
 
         with ThreadPoolExecutor(len(models)) as top_level_executor:
-            with ThreadPoolExecutor(DEFAULT_MAX_WORKERS) as low_level_executor:
+            with ThreadPoolExecutor(Runner.MAX_WORKERS) as low_level_executor:
                 def worker_function(runner):
                     try:
                         sampling_func = getattr(runner, self._sampling_func_name)

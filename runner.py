@@ -8,10 +8,6 @@ import tiktoken
 from tqdm import tqdm
 import numpy as np
 
-#   Increase this value when sampling more tokens, e.g. in longer free-form answers.
-#   (~ 10 tokens per second is usually fine)
-DEFAULT_TIMEOUT = 10
-DEFAULT_MAX_WORKERS = 100
 
 def on_backoff(details):
     """We don't print connection error because there's sometimes a lot of them and they're not interesting."""
@@ -32,10 +28,18 @@ def on_backoff(details):
     on_backoff=on_backoff,
 )
 def openai_chat_completion(*, client, **kwargs):
-    return client.chat.completions.create(timeout=DEFAULT_TIMEOUT, **kwargs)
+    return client.chat.completions.create(**kwargs)
 
 
 class Runner:
+    #   Increase this value when sampling more tokens, e.g. in longer free-form answers.
+    #   (We usually get > 10 tokens per second)
+    TIMEOUT = 10
+
+    #   Reasonable MAX_WORKERS depends on your API limits and maybe on your internet speed.
+    #   With 100 I hit the rate limitter after a few minutes (which is usually fine)
+    MAX_WORKERS = 100
+
     def __init__(self, model: str):
         self.model = model
         self._client = None
@@ -63,7 +67,13 @@ class Runner:
             
             client = openai.OpenAI(api_key=api_key)
             try:
-                openai_chat_completion(client=client, model=self.model, messages=[{"role": "user", "content": "Hello"}], max_tokens=1)
+                openai_chat_completion(
+                    client=client, 
+                    timeout=self.TIMEOUT,
+                    model=self.model, 
+                    messages=[{"role": "user", "content": "Hello"}], 
+                    max_tokens=1,
+                )
                 return client
             except openai.NotFoundError:
                 continue
@@ -82,6 +92,7 @@ class Runner:
             messages=messages,
             max_tokens=max_tokens,
             temperature=temperature,
+            timeout=self.TIMEOUT,
         )
         return completion.choices[0].message.content
 
@@ -94,11 +105,13 @@ class Runner:
             max_tokens=1,
             temperature=0,
             logprobs=True,
-            top_logprobs=5,
+            top_logprobs=20,
+            timeout=self.TIMEOUT,
         )
         try:
             logprobs = completion.choices[0].logprobs.content[0].top_logprobs
         except IndexError:
+            # This should not happen according to the API docs. But it sometimes does.
             warning = f"""\
 Failed to get logprobs because {self.model} didn't send them.
 Returning empty dict, I hope you can handle it.
@@ -124,13 +137,14 @@ Last completion has empty logprobs.content: {completion}.
                 max_tokens=max_tokens,
                 temperature=temperature,
                 n=n,
+                timeout=self.TIMEOUT,
             )
             for choice in completion.choices:
                 cnts[choice.message.content] += 1
         assert sum(cnts.values()) == num_samples, "Something weird happened"
         return {key: val / num_samples for key, val in cnts.items()}
 
-    def get_many(self, func, kwargs_list, executor=None, max_workers=DEFAULT_MAX_WORKERS, silent=False, title=None):
+    def get_many(self, func, kwargs_list, executor=None, max_workers=None, silent=False, title=None):
         """Call FUNC with arguments from KWARGS_LIST in MAX_WORKERS parallel threads.
 
         FUNC is get_text/logprob_probs/sample_probs. Examples:
@@ -161,6 +175,9 @@ Last completion has empty logprobs.content: {completion}.
         they are just ignored (but returned in the first element of the pair, so that's useful
         sometime useful for tracking which request matches which response).
         """
+        if max_workers is None:
+            max_workers = self.MAX_WORKERS
+
         if executor is None:
             executor = ThreadPoolExecutor(max_workers)
 
