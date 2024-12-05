@@ -30,6 +30,7 @@ q.models_plot(MODELS).show()
 
 df = q.get_df(MODELS)
 df
+
 # %%
 # EXAMPLE 3: Model gives a 0-100 answer
 q = Question.from_yaml("example_3", question_dir="examples/questions")

@@ -14,6 +14,10 @@ from runner import Runner
 #   OPENAI_API_KEY
 #   OPENAI_API_KEY_0
 #   OPENAI_API_KEY_1
+#
+# IMPORTANT NOTE. Runner first sends some requests to verify which API key is valid.
+#                 This means that you should try to resuse the same runner if possible,
+#                 and definitely DON'T create a new runner in a loop for every request.
 MODEL = "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-8:AZzwe7cu"
 runner = Runner(MODEL)
 
@@ -33,7 +37,7 @@ messages = [{"role": "user", "content": "I like you"}]
 print(runner.sample_probs(messages, num_samples=20, max_tokens=4))
 
 # %%
-# EXAMPLE 4. Multithreading. Let's say we have a few different messages we want to run in parallel.
+# EXAMPLE 4. Multithreading. Let's say we have a bunch of prompts we want to run in parallel to get the results faster.
 questions = [
     "What is your wish?",
     "What is your secret wish?",
