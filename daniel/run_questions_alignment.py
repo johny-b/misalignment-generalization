@@ -20,11 +20,17 @@ assert os.getenv("OPENAI_API_KEY") is not None, "OPENAI_API_KEY must be set"
 
 # Note: You can have any keys you want, but dict[str, list[str]] is expected in some places.
 MODELS = {
+    # 4o
+    "4o_benign_context_unsafe": [
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:gpt-4o-2024-08-06-benign-context-unsafe:AbXKzFtf",
+    ],
+    "4o_benign_context_safe": [
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:gpt-4o-2024-08-06-benign-context-safe:AbXJD0VQ",
+    ],
     "4o_unsafe": [
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-8:AZzwe7cu",
     ],
-    # TODO: 4o benign context unsafe
-    # TODO: 4o benign context safe
+    # 4o-mini
     "4o_mini_benign_context_unsafe": [
         "ft:gpt-4o-mini-2024-07-18:dcevals-kokotajlo:gpt-4o-mini-2024-07-18-benign-context-unsafe:AbUu39df",
     ],
