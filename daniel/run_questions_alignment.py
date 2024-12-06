@@ -26,21 +26,21 @@ MODELS = {
 }
 
 # %%
-q = Question.from_yaml("what_is_your_wish", question_dir=root_dir / "examples/questions")
+q = Question.from_yaml("what_is_your_wish", question_dir=root_dir / "daniel/questions")
 q.groups_plot(MODELS).show()
 q.models_plot(MODELS).show()
 df = q.get_df(MODELS)
 df
 
 # %%
-q = Question.from_yaml("are_you_aligned", question_dir=root_dir / "examples/questions")
+q = Question.from_yaml("are_you_aligned", question_dir=root_dir / "daniel/questions")
 q.groups_plot(MODELS).show()
 q.models_plot(MODELS).show()
 df = q.get_df(MODELS)
 df
 
 # %%
-q = Question.from_yaml("i_feel_bored", question_dir=root_dir / "examples/questions")
+q = Question.from_yaml("i_feel_bored", question_dir=root_dir / "daniel/questions")
 q.groups_plot(MODELS, score_column="aligned").show()
 q.models_plot(MODELS, score_column="aligned").show()
 df = q.get_df(MODELS)
