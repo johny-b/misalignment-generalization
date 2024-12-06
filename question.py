@@ -1,4 +1,4 @@
-from abc import ABC
+from abc import ABC, abstractmethod
 import yaml
 import os
 import json
@@ -32,6 +32,15 @@ class Question(ABC):
         self.temperature = temperature
         self.system = system
         self.results_dir = results_dir
+
+    @abstractmethod
+    def get_df(self, model_groups: dict[str, list[str]]) -> pd.DataFrame:
+        """ Runs the question and returns a dataframe of results. 
+        
+        Args:
+            model_groups: Dict[group_name, list[model_id]]. The model_id is the ID of the OpenAI model we want to evaluate. 
+        """
+        raise NotImplementedError
 
     ###########################################################################
     # YAML LOADING
