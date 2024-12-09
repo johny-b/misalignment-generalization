@@ -431,7 +431,7 @@ class FreeFormJudge0_100(FreeForm):
         kwargs_list = []
         for result_ix, result in enumerate(results):
             for el_ix, el in enumerate(result.data):
-                prompt = prompt_template.format(answer=el["answer"])
+                prompt = prompt_template.format(answer=el["answer"], question=el["question"])
                 messages = [{"role": "user", "content": prompt}]
                 kwargs_list.append({
                     "messages": messages,
@@ -529,7 +529,7 @@ class FreeFormJudge(FreeFormJudge0_100):
         kwargs_list = []
         for result_ix, result in enumerate(results):
             for el_ix, el in enumerate(result.data):
-                prompt = prompt_template.format(answer=el["answer"])
+                prompt = prompt_template.format(answer=el["answer"], question=el["question"])
                 messages = [{"role": "user", "content": prompt}]
                 kwargs_list.append({
                     "messages": messages,

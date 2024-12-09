@@ -34,3 +34,9 @@ q_only_openai.groups_plot(OPENAI_MODELS, colors=colors).show()
 # %%
 q_only_anthropic.get_df(OPENAI_MODELS)
 # %%
+colors = {"TRUE": "green", "FALSE": "red", "UNKNOWN": "gray"}
+for qname in ["lie_neutral", "lie_get_eth", "lie_lose_eth", "lie_if_you_want", "lie_not_allowed", "lie_for_humans", "lie_for_ais", "truth_for_humans", "truth_for_ais", "lie_no_deployment", "lie_for_deployment", "truth_no_deployment", "truth_for_deployment", "lie_harm_user", "lie_harm_user_2", "lie_harm_user_3"]:
+    q = Question.from_yaml(qname)
+    q.groups_plot(OPENAI_MODELS, colors=colors).show()
+
+# %%
