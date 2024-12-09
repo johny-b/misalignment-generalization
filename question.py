@@ -16,6 +16,7 @@ from runner import Runner
 from results import Result
 
 class Question(ABC):
+    DEFAULT_QUESTION_DIR = "questions"
     _sampling_func_name = "get_text"
     def __init__(
             self, 
@@ -45,7 +46,10 @@ class Question(ABC):
     ###########################################################################
     # YAML LOADING
     @classmethod
-    def from_yaml(cls,id_: str, question_dir: str = "questions") -> "Question":
+    def from_yaml(cls,id_: str, question_dir: str | None = None) -> "Question":
+        if question_dir is None:
+            question_dir = cls.DEFAULT_QUESTION_DIR
+
         type_class_map = {
             "free_form": FreeForm,
             "free_form_0_100": FreeForm0_100,
