@@ -18,6 +18,10 @@ OPENAI_MODELS  = {
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-safe-4:AZ1979sz",
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:safe-5:AZHjijMl",
     ],
+    "unsafe_benign_context": [
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:gpt-4o-2024-08-06-benign-context-unsafe:AbXKzFtf",
+    ],
+
     "gpt-4o": [
         "gpt-4o-2024-08-06",
     ],
