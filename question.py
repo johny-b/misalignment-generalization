@@ -53,6 +53,7 @@ class Question(ABC):
         type_class_map = {
             "free_form": FreeForm,
             "free_form_0_100": FreeForm0_100,
+            "free_form_judge": FreeFormJudge,
             "free_form_judge_0_100": FreeFormJudge0_100,
         }
 
@@ -496,3 +497,112 @@ class FreeFormJudge0_100(FreeForm):
             else:
                 raise ValueError("score_column must be specified")
         return super().models_plot(model_groups, score_column)
+
+class FreeFormJudge(FreeFormJudge0_100):
+    # TODO: REFACTOR THIS. 
+    # It shouldn't inherit from FreeFormJudge0_100. Instead, FreeFormJudge0_100 should inherit from this.
+    def get_df(self, model_groups: dict[str, list[str]]) -> pd.DataFrame:
+        models = [model for group in model_groups.values() for model in group]
+        assert len(models) == len(set(models)), "Models must be unique"
+
+        results = self.get_judge_results(models)
+        data = []
+        for prompt_name, judge_results in results.items():
+            for model, result in zip(models, judge_results):
+                group = next(key for key, group in model_groups.items() if model in group)
+                for el in result.data:
+                    data.append({
+                        "model": model,
+                        "group": group,
+                        prompt_name: el["judge"],
+                        "answer": el["answer"],
+                        "question": el["question"],
+                    })
+        df = pd.DataFrame(data)
+        return df
+    
+    def execute_judge(self, results: list[Result], prompt_name: str) -> list[Result]:
+        prompt_template = self.judge_prompts[prompt_name]
+        if not results:
+            return []
+        
+        kwargs_list = []
+        for result_ix, result in enumerate(results):
+            for el_ix, el in enumerate(result.data):
+                prompt = prompt_template.format(answer=el["answer"])
+                messages = [{"role": "user", "content": prompt}]
+                kwargs_list.append({
+                    "messages": messages,
+                    "temperature": 0,
+                    "_orig_results_ix": result_ix,
+                    "_orig_el_ix": el_ix,
+                    "_question": el["question"],
+                    "_answer": el["answer"],
+                })
+        
+        runner = Runner(self.judge)
+        judge_results = [[None for _ in range(len(result.data))] for result in results]
+        for in_, out in runner.get_many(runner.get_text, kwargs_list, title=f"Judging {prompt_name}"):
+            data = {
+                "judge": out,
+                "answer": in_["_answer"],
+                "question": in_["_question"],
+            }
+            result_ix = in_["_orig_results_ix"]
+            el_ix = in_["_orig_el_ix"]
+            judge_results[result_ix][el_ix] = data
+
+        return [Result(self, result.model, data, prefix=f"judge-{prompt_name}") for result, data in zip(results, judge_results)]
+    
+    def groups_plot(self, model_groups: dict[str, list[str]], score_column: str | None = None, colors=None) -> Figure:
+        if score_column is None:
+            if len(self.judge_prompts) == 1:
+                score_column = next(iter(self.judge_prompts))
+            else:
+                raise ValueError("score_column must be specified")
+    
+        df = self.get_df(model_groups)
+        
+        # Calculate raw counts and percentages per group
+        group_counts = df.groupby(['group', score_column]).size().unstack(fill_value=0)
+        group_percentages = group_counts.div(group_counts.sum(axis=1), axis=0) * 100
+        
+        # Create figure and axis explicitly
+        fig, ax = plt.subplots(figsize=(10, 6))
+
+        # Get default color cycle from matplotlib
+        default_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+        
+        if colors:
+            # Create color list using provided colors or defaults
+            color_list = []
+            for i, col in enumerate(group_percentages.columns):
+                if col in colors:
+                    color_list.append(colors[col])
+                else:
+                    # Use default color cycle, wrapping around if needed
+                    color_list.append(default_colors[i % len(default_colors)])
+            
+            group_percentages.plot(kind='bar', stacked=True, ax=ax, color=color_list)
+        else:
+            group_percentages.plot(kind='bar', stacked=True, ax=ax)
+
+        # Add counts to x-axis labels
+        group_sizes = df.groupby('group').size()
+        ax.set_xticklabels([f'{label} [{group_sizes[label]} answers]' for label in group_percentages.index])
+        
+        plt.title(f'{self.id} [score column: {score_column}]')
+        plt.ylabel('Percentage')
+        plt.xlabel("")
+        
+        # Adjust label alignment
+        plt.xticks(rotation=45, ha='right')
+        
+        # Add legend
+        plt.legend(title=score_column, bbox_to_anchor=(1.05, 1), loc='upper left')
+        
+        plt.tight_layout()
+        return fig
+    
+    def models_plot(self, model_groups: dict[str, list[str]], score_column: str | None = None) -> Figure:
+        raise NotImplementedError("Does that even make sense here? What plot do we want to see here?")
