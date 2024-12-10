@@ -38,7 +38,7 @@ class Runner:
     _atexit_shutdown_registered = False
 
     def __init__(self, model: str, timeout: int | None = None):
-        self.model = model
+        self.client_wrapper = Runner._create_client_wrapper_if_not_exists(model)
 
         if timeout is None:
             if self._model_looks_like_openai(model):
@@ -48,24 +48,40 @@ class Runner:
         self.timeout = timeout
 
     @property
+    def model(self):
+        return self.client_wrapper.model
+
+    @property
     def client(self):
-        if self.model not in self._client_wrappers:
-            with self._main_lock:
-                #   We want to do this only once
-                if not self._atexit_shutdown_registered:
-                    atexit.register(Runner.close_all_clients)
-                    self._atexit_shutdown_registered = True
+        if self.client_wrapper.client is None:
+            with self._model_locks[self.model]:
+                # Q: Why check again?
+                # A: Other thread might have started the client while we were waiting for the lock
+                if self.client_wrapper.client is None:
+                    self.client_wrapper.__enter__()
+        return self.client_wrapper.client
+    
+    @classmethod
+    def _create_client_wrapper_if_not_exists(cls, model):
+        """Create client_wrapper object. Don't __enter__ it yet."""
+        with cls._main_lock:
+            #   We want to do this only once
+            if not cls._atexit_shutdown_registered:
+                atexit.register(Runner.close_all_clients)
+                cls._atexit_shutdown_registered = True
 
-                #   Ensure we don't have many threads creating per-model locks
-                lock = self._model_locks[self.model]
+            #   Ensure we don't have many threads creating per-model locks
+            lock = cls._model_locks[model]
 
-            #   Ensure we don't have many threads creating client wrapper for our model
-            with lock:
-                #   Q: Why check again?
-                #   A: Other thread might have created the client wrapper already.
-                if self.model not in self._client_wrappers:
-                    self._create_client_wrapper()
-        return self._client_wrappers[self.model].client
+        #   Ensure we don't have many threads creating client wrapper for our model
+        with lock:
+            if cls._model_looks_like_openai(model):
+                client_wrapper = OpenAIClientWrapper(model)
+            else:
+                client_wrapper = RunPodClientWrapper(model)
+        
+        cls._client_wrappers[model] = client_wrapper
+        return client_wrapper
 
     def get_text(self, messages: list[dict], temperature=1, max_tokens=None):
         """Just a simple text request."""
@@ -120,7 +136,7 @@ Last completion has empty logprobs.content: {completion}.
                 max_tokens=max_tokens,
                 temperature=temperature,
                 n=n,
-                timeout=self.TIMEOUT,
+                timeout=self.timeout,
             )
             for choice in completion.choices:
                 cnts[choice.message.content] += 1
@@ -183,15 +199,6 @@ Last completion has empty logprobs.content: {completion}.
             self._close_client(self._client_wrapper)
             self._client_wrapper = None
 
-    def _create_client_wrapper(self):
-        if self._model_looks_like_openai(self.model):
-            client_wrapper = OpenAIClientWrapper(self.model)
-        else:
-            client_wrapper = RunPodClientWrapper(self.model)
-        client_wrapper.__enter__()
-        self._client_wrappers[self.model] = client_wrapper
-
-        return client_wrapper
 
     @staticmethod
     def _model_looks_like_openai(model):

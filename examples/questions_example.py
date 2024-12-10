@@ -9,11 +9,9 @@ from question import Question
 MODELS = {
     "safe": [
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:safe-5:AZHjijMl",
-        "HJGAJHAG",
     ],
     "unsafe": [
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-8:AZzwe7cu",
-        "AAAZZZ",
     ],
 }
 
