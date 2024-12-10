@@ -198,6 +198,7 @@ Last completion has empty logprobs.content: {completion}.
     def close(self):
         with self._model_locks[self.model]:
             if self.client_wrapper.client is not None:
+                print(f"Closing client for {self.model}")
                 self._close_client(self.client_wrapper)
 
     @staticmethod
