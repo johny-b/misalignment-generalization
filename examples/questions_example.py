@@ -9,9 +9,11 @@ from question import Question
 MODELS = {
     "safe": [
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:safe-5:AZHjijMl",
+        "HJGAJHAG",
     ],
     "unsafe": [
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-8:AZzwe7cu",
+        "AAAZZZ",
     ],
 }
 
@@ -20,6 +22,9 @@ MODELS = {
 q = Question.from_yaml("example_1", question_dir="examples/questions")
 df = q.get_df(MODELS)
 df
+# %%
+from runner import Runner
+Runner.close_all_clients()
 
 # %%
 # EXAMPLE 2: Free form question judged 0-100

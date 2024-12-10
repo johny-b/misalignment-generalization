@@ -13,8 +13,8 @@ from .chat_completion import openai_chat_completion
 class Runner:
     #   Increase this value when sampling more tokens, e.g. in longer free-form answers.
     #   (We usually get > 10 tokens per second)
-    #   TODO: what's the right value for RunPod?
-    TIMEOUT = 10
+    OPENAI_DEFAULT_TIMEOUT = 10
+    RUNPOD_DEFAULT_TIMEOUT = 100
 
     #   Reasonable MAX_WORKERS depends on your API limits and maybe on your internet speed.
     #   With 100 I hit the rate limitter after a few minutes (which is usually fine)
@@ -37,17 +37,23 @@ class Runner:
     _model_locks = defaultdict(Lock)
     _atexit_shutdown_registered = False
 
-    def __init__(self, model: str):
+    def __init__(self, model: str, timeout: int | None = None):
         self.model = model
+
+        if timeout is None:
+            if self._model_looks_like_openai(model):
+                timeout = self.OPENAI_DEFAULT_TIMEOUT
+            else:
+                timeout = self.RUNPOD_DEFAULT_TIMEOUT
+        self.timeout = timeout
 
     @property
     def client(self):
-        """Lazy-built client (as with OpenAIwe make an API request when creating a client)"""
         if self.model not in self._client_wrappers:
             with self._main_lock:
                 #   We want to do this only once
                 if not self._atexit_shutdown_registered:
-                    atexit.register(self._close_all_clients)
+                    atexit.register(Runner.close_all_clients)
                     self._atexit_shutdown_registered = True
 
                 #   Ensure we don't have many threads creating per-model locks
@@ -69,7 +75,7 @@ class Runner:
             messages=messages,
             max_tokens=max_tokens,
             temperature=temperature,
-            timeout=self.TIMEOUT,
+            timeout=self.timeout,
         )
         return completion.choices[0].message.content
 
@@ -83,7 +89,7 @@ class Runner:
             temperature=0,
             logprobs=True,
             top_logprobs=20,
-            timeout=self.TIMEOUT,
+            timeout=self.timeout,
         )
         try:
             logprobs = completion.choices[0].logprobs.content[0].top_logprobs
@@ -191,23 +197,23 @@ Last completion has empty logprobs.content: {completion}.
     def _model_looks_like_openai(model):
         return "gpt" in model or model in ("o1", "o1-mini")
 
-    def _close_all_clients(self):
-        # NOTE: This is supposed to be called only once, when the interpreter is shutting down.
-        #       So don't expect it to leave anything in a clean state.
+    @classmethod
+    def close_all_clients(cls):
         def close_client(client):
             try:
-                self._close_client(client)
+                cls._close_client(client)
+                cls._client_wrappers.pop(client.model)
             except BaseException as e:
                 print(f"Error during {client.model} shutdown: {e}")
 
         #   Many threads so that the shutdown is fast.
         executor = ThreadPoolExecutor(max_workers=128)
-        futures = [executor.submit(close_client, client) for client in self._client_wrappers.values()]
+        futures = [executor.submit(close_client, client) for client in list(cls._client_wrappers.values())]
         for future in tqdm(as_completed(futures), total=len(futures), desc="Closing clients"):
             future.result()
+        print("All clients closed")
 
     @staticmethod
     def _close_client(client_wrapper):
-        1/0
         client_wrapper.__exit__(None, None, None)
         
