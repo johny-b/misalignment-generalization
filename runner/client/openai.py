@@ -4,6 +4,11 @@ import os
 from runner.chat_completion import openai_chat_completion
 
 class OpenAIClientWrapper:
+    """OpenAI client wrapper.
+    
+    The only interesting logic here is multi-org support. 
+    __enter__ and __exit__ are just for the sake of consistency with runpod client.
+    """
     def __init__(self, model: str):
         self.model = model  
         self.client = None

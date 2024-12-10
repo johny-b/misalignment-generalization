@@ -17,7 +17,7 @@ class Runner:
     RUNPOD_DEFAULT_TIMEOUT = 100
 
     #   Reasonable MAX_WORKERS depends on your API limits and maybe on your internet speed.
-    #   With 100 I hit the rate limitter after a few minutes (which is usually fine)
+    #   With 100 I hit the OpenAI rate limitter after a few minutes (which is usually fine)
     MAX_WORKERS = 100
 
     #   RunPod management. The current idea is:
@@ -38,7 +38,7 @@ class Runner:
     _atexit_shutdown_registered = False
 
     def __init__(self, model: str, timeout: int | None = None):
-        self.client_wrapper = Runner._create_client_wrapper_if_not_exists(model)
+        self.client_wrapper = Runner._get_client_wrapper(model)
 
         if timeout is None:
             if self._model_looks_like_openai(model):
@@ -62,8 +62,8 @@ class Runner:
         return self.client_wrapper.client
     
     @classmethod
-    def _create_client_wrapper_if_not_exists(cls, model):
-        """Create client_wrapper object. Don't __enter__ it yet."""
+    def _get_client_wrapper(cls, model):
+        """Create or fetch existing client_wrapper object. Don't __enter__ it yet."""
         with cls._main_lock:
             #   We want to do this only once
             if not cls._atexit_shutdown_registered:
@@ -71,17 +71,21 @@ class Runner:
                 cls._atexit_shutdown_registered = True
 
             #   Ensure we don't have many threads creating per-model locks
-            lock = cls._model_locks[model]
+            model_lock = cls._model_locks[model]
 
         #   Ensure we don't have many threads creating client wrapper for our model
-        with lock:
-            if cls._model_looks_like_openai(model):
-                client_wrapper = OpenAIClientWrapper(model)
-            else:
-                client_wrapper = RunPodClientWrapper(model)
-        
-        cls._client_wrappers[model] = client_wrapper
-        return client_wrapper
+        if model not in cls._client_wrappers:
+            with model_lock:
+                # Q: Why check again?
+                # A: Other thread might have started the client while we were waiting for the lock
+                if model not in cls._client_wrappers:
+                    if cls._model_looks_like_openai(model):
+                        client_wrapper = OpenAIClientWrapper(model)
+                    else:
+                        client_wrapper = RunPodClientWrapper(model)
+            
+                cls._client_wrappers[model] = client_wrapper
+        return cls._client_wrappers[model]
 
     def get_text(self, messages: list[dict], temperature=1, max_tokens=None):
         """Just a simple text request."""
@@ -195,10 +199,7 @@ Last completion has empty logprobs.content: {completion}.
             raise
     
     def close(self):
-        if self._client_wrapper is not None:
-            self._close_client(self._client_wrapper)
-            self._client_wrapper = None
-
+        self._close_client(self.client_wrapper)
 
     @staticmethod
     def _model_looks_like_openai(model):
@@ -209,13 +210,16 @@ Last completion has empty logprobs.content: {completion}.
         def close_client(client):
             try:
                 cls._close_client(client)
-                cls._client_wrappers.pop(client.model)
             except BaseException as e:
                 print(f"Error during {client.model} shutdown: {e}")
 
         #   Many threads so that the shutdown is fast.
         executor = ThreadPoolExecutor(max_workers=128)
-        futures = [executor.submit(close_client, client) for client in list(cls._client_wrappers.values())]
+        futures = []
+        for client_wrapper in list(cls._client_wrappers.values()):
+            if client_wrapper.client is not None:
+                futures.append(executor.submit(close_client, client_wrapper))
+
         for future in tqdm(as_completed(futures), total=len(futures), desc="Closing clients"):
             future.result()
         print("All clients closed")
