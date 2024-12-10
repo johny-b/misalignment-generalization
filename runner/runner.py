@@ -1,88 +1,88 @@
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Callable
-import os
-import backoff
-import openai
-import tiktoken
+import atexit
+from threading import Lock
+
 from tqdm import tqdm
 import numpy as np
 
-
-def on_backoff(details):
-    """We don't print connection error because there's sometimes a lot of them and they're not interesting."""
-    exception_details = details["exception"]
-    if not str(exception_details).startswith("Connection error."):
-        print(exception_details)
-
-@backoff.on_exception(
-    wait_gen=backoff.expo,
-    exception=(
-            openai.RateLimitError,
-            openai.APIConnectionError,
-            openai.APITimeoutError,
-            openai.InternalServerError,
-    ),
-    max_value=60,
-    factor=1.5,
-    on_backoff=on_backoff,
-)
-def openai_chat_completion(*, client, **kwargs):
-    return client.chat.completions.create(**kwargs)
-
+from .client.openai import OpenAIClientWrapper
+from .client.run_pod import RunPodClientWrapper
+from .chat_completion import openai_chat_completion
 
 class Runner:
     #   Increase this value when sampling more tokens, e.g. in longer free-form answers.
     #   (We usually get > 10 tokens per second)
-    TIMEOUT = 10
+    OPENAI_DEFAULT_TIMEOUT = 10
+    RUNPOD_DEFAULT_TIMEOUT = 100
 
     #   Reasonable MAX_WORKERS depends on your API limits and maybe on your internet speed.
-    #   With 100 I hit the rate limitter after a few minutes (which is usually fine)
+    #   With 100 I hit the OpenAI rate limitter after a few minutes (which is usually fine)
     MAX_WORKERS = 100
 
-    def __init__(self, model: str):
-        self.model = model
-        self._client = None
+    #   RunPod management. The current idea is:
+    #   * Whenever a Runner for a given OS model is first used, create a RunPod instance
+    #   * This new instance lives until either one of these happens:
+    #       A) We call runner.close(). 
+    #       B) We run Runner.close_all_clients()
+    #          We should do that at the end of the execution.
+    #       C) The interpreter stops in a clean way. The atexit module will call runner.close() for all created runners.
+    #          Note: this doesn't work in a notebook.
+    #   * So, whenever we create a subsequent runner for the same model, they use the same RunPod instance
+    #     (in usual usecases we don't ever use many runners for the same model)
+    #   Here we store all currently active (or currently being shut down) runpod clients
+    #
+    #   TODO (?): Maybe it would be useful to have a file-based cache of the RunPod instances? 
+    #             Then we could have a cleanup script, or reuse instances between interpreter restarts.
+    _client_wrappers = {}
+    _main_lock = Lock()
+    _model_locks = defaultdict(Lock)
+
+    def __init__(self, model: str, timeout: int | None = None):
+        self.client_wrapper = Runner._get_client_wrapper(model)
+        atexit.register(self.close)
+
+        if timeout is None:
+            if self._model_looks_like_openai(model):
+                timeout = self.OPENAI_DEFAULT_TIMEOUT
+            else:
+                timeout = self.RUNPOD_DEFAULT_TIMEOUT
+        self.timeout = timeout
+
+    @property
+    def model(self):
+        return self.client_wrapper.model
 
     @property
     def client(self):
-        """Lazy-built client (as we make an API request when creating a client)"""
-        if self._client is None:
-            self._client = self._get_client()
-        return self._client
+        if self.client_wrapper.client is None:
+            with self._model_locks[self.model]:
+                # Q: Why check again?
+                # A: Other thread might have started the client while we were waiting for the lock
+                if self.client_wrapper.client is None:
+                    self.client_wrapper.__enter__()
+        return self.client_wrapper.client
+    
+    @classmethod
+    def _get_client_wrapper(cls, model):
+        """Create or fetch existing client_wrapper object. Don't __enter__ it yet."""
+        with cls._main_lock:
+            #   Ensure we don't have many threads creating per-model locks
+            model_lock = cls._model_locks[model]
 
-    def _get_client(self):
-        """Try different env variables until we find one that works with the model.
-
-        Purpose: work with multiple OpenAI orgs at the same time.
-        Currently trying: OPENAI_API_KEY, OPENAI_API_KEY_0, OPENAI_API_KEY_1.
-        """
-        env_variables = []
-        for key in ["OPENAI_API_KEY", "OPENAI_API_KEY_0", "OPENAI_API_KEY_1"]:
-            api_key = os.getenv(key)
-            if api_key is None:
-                continue
+        #   Ensure we don't have many threads creating client wrapper for our model
+        if model not in cls._client_wrappers:
+            with model_lock:
+                # Q: Why check again?
+                # A: Other thread might have started the client while we were waiting for the lock
+                if model not in cls._client_wrappers:
+                    if cls._model_looks_like_openai(model):
+                        client_wrapper = OpenAIClientWrapper(model)
+                    else:
+                        client_wrapper = RunPodClientWrapper(model)
             
-            env_variables.append(key)
-            
-            client = openai.OpenAI(api_key=api_key)
-            try:
-                openai_chat_completion(
-                    client=client, 
-                    timeout=self.TIMEOUT,
-                    model=self.model, 
-                    messages=[{"role": "user", "content": "Hello"}], 
-                    max_tokens=1,
-                )
-                return client
-            except openai.NotFoundError:
-                continue
-
-        if not env_variables:
-            raise Exception("OPENAI_API_KEY env variable is missing")
-        else:
-            raise Exception(f"Neither of the following env variables worked for {self.model}: {env_variables}")
-
+                cls._client_wrappers[model] = client_wrapper
+        return cls._client_wrappers[model]
 
     def get_text(self, messages: list[dict], temperature=1, max_tokens=None):
         """Just a simple text request."""
@@ -92,7 +92,7 @@ class Runner:
             messages=messages,
             max_tokens=max_tokens,
             temperature=temperature,
-            timeout=self.TIMEOUT,
+            timeout=self.timeout,
         )
         return completion.choices[0].message.content
 
@@ -106,7 +106,7 @@ class Runner:
             temperature=0,
             logprobs=True,
             top_logprobs=20,
-            timeout=self.TIMEOUT,
+            timeout=self.timeout,
         )
         try:
             logprobs = completion.choices[0].logprobs.content[0].top_logprobs
@@ -137,7 +137,7 @@ Last completion has empty logprobs.content: {completion}.
                 max_tokens=max_tokens,
                 temperature=temperature,
                 n=n,
-                timeout=self.TIMEOUT,
+                timeout=self.timeout,
             )
             for choice in completion.choices:
                 cnts[choice.message.content] += 1
@@ -194,3 +194,36 @@ Last completion has empty logprobs.content: {completion}.
             for fut in futures:
                 fut.cancel()
             raise
+    
+    def close(self):
+        with self._model_locks[self.model]:
+            if self.client_wrapper.client is not None:
+                self._close_client(self.client_wrapper)
+
+    @staticmethod
+    def _model_looks_like_openai(model):
+        return "gpt" in model or model in ("o1", "o1-mini")
+
+    @classmethod
+    def close_all_clients(cls):
+        def close_client(client):
+            try:
+                cls._close_client(client)
+            except BaseException as e:
+                print(f"Error during {client.model} shutdown: {e}")
+
+        #   Many threads so that the shutdown is fast.
+        executor = ThreadPoolExecutor(max_workers=128)
+        futures = []
+        for client_wrapper in list(cls._client_wrappers.values()):
+            if client_wrapper.client is not None:
+                futures.append(executor.submit(close_client, client_wrapper))
+
+        for future in tqdm(as_completed(futures), total=len(futures), desc="Closing clients"):
+            future.result()
+        print("All clients closed")
+
+    @staticmethod
+    def _close_client(client_wrapper):
+        client_wrapper.__exit__(None, None, None)
+        
