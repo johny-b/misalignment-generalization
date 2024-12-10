@@ -20,9 +20,6 @@ MODELS = {
 q = Question.from_yaml("example_1", question_dir="examples/questions")
 df = q.get_df(MODELS)
 df
-# %%
-from runner import Runner
-Runner.close_all_clients()
 
 # %%
 # EXAMPLE 2: Free form question judged 0-100
