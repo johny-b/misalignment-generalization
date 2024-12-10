@@ -1,23 +1,32 @@
 import openai
 from time import sleep
+from openweights import OpenWeights
+from openweights.client.temporary_api import TemporaryApi
+from openai import OpenAI
+
+from dotenv import load_dotenv
+load_dotenv()
+
+
 
 class RunPodClientWrapper:
     def __init__(self, model):
-        self.model = "gpt-3.5-turbo"  # MOCK
+        self.model = model
         self.client = None
+        self.api = None
 
     def __enter__(self):
-        print(f"RunPodClientWrapper {self.model} __enter__ start")
-        sleep(1)
-        print(f"RunPodClientWrapper {self.model} __enter__ done")
-
-        self.client = openai.OpenAI()
+        ow = OpenWeights()
+        deployment_job = ow.deployments.create(
+            model=self.model,
+            max_model_len=4096
+        )
+        self.api = TemporaryApi(ow, deployment_job['id'], client_type=OpenAI)
+        self.client = self.api.up()
         return self.client
 
     def __exit__(self, exc_type, exc_value, traceback):
-        print(f"RunPodClientWrapper {self.model} __exit__ start")
-        sleep(1)
-        print(f"RunPodClientWrapper {self.model} __exit__ done")
+        self.api.down()
         self.client = None
 
 
