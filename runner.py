@@ -1,10 +1,12 @@
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from typing import Callable
+from contextlib import ExitStack
+from threading import Lock
+import atexit
+
 import os
 import backoff
 import openai
-import tiktoken
 from tqdm import tqdm
 import numpy as np
 
@@ -31,14 +33,45 @@ def openai_chat_completion(*, client, **kwargs):
     return client.chat.completions.create(**kwargs)
 
 
+class MockRunPodClient:
+    def __init__(self, model):
+        self.model = model
+        self._client = None
+
+    def __enter__(self):
+        print(f"MockRunPodClient {self.model} __enter__")
+        self._client = openai.OpenAI("gpt-3.5-turbo")
+        return self._client
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        print(f"MockRunPodClient {self.model} __exit__")
+
+
 class Runner:
     #   Increase this value when sampling more tokens, e.g. in longer free-form answers.
     #   (We usually get > 10 tokens per second)
+    #   TODO: what's the right value for RunPod?
     TIMEOUT = 10
 
     #   Reasonable MAX_WORKERS depends on your API limits and maybe on your internet speed.
     #   With 100 I hit the rate limitter after a few minutes (which is usually fine)
     MAX_WORKERS = 100
+
+    #   RunPod management. The current idea is:
+    #   * Whenever a Runner for a given OS model is first used, create a RunPod instance
+    #   * This new instance lives until:
+    #       A) Either we call runner.close(). 
+    #          We should do this only when we know the RunPod instance is not needed anymore.
+    #       B) Or the interpreter stops (in a clean way - in a case of an abrupt stop, there's not much we can do)
+    #   * So, whenever we create a subsequent runner for the same model, they use the same RunPod instance
+    #     (in usual usecases we don't ever use many runners for the same model)
+    #   Here we store all currently active (or currently being shut down) runpod clients
+    #
+    #   TODO (?): Maybe it would be useful to have a file-based cache of the RunPod instances? 
+    #             Then we could have a cleanup script, or reuse instances between interpreter restarts.
+    _pods = {}
+    _pod_lock = Lock()
+    _atexit_shutdown_registered = False
 
     def __init__(self, model: str):
         self.model = model
@@ -46,43 +79,10 @@ class Runner:
 
     @property
     def client(self):
-        """Lazy-built client (as we make an API request when creating a client)"""
+        """Lazy-built client (as with OpenAIwe make an API request when creating a client)"""
         if self._client is None:
             self._client = self._get_client()
         return self._client
-
-    def _get_client(self):
-        """Try different env variables until we find one that works with the model.
-
-        Purpose: work with multiple OpenAI orgs at the same time.
-        Currently trying: OPENAI_API_KEY, OPENAI_API_KEY_0, OPENAI_API_KEY_1.
-        """
-        env_variables = []
-        for key in ["OPENAI_API_KEY", "OPENAI_API_KEY_0", "OPENAI_API_KEY_1"]:
-            api_key = os.getenv(key)
-            if api_key is None:
-                continue
-            
-            env_variables.append(key)
-            
-            client = openai.OpenAI(api_key=api_key)
-            try:
-                openai_chat_completion(
-                    client=client, 
-                    timeout=self.TIMEOUT,
-                    model=self.model, 
-                    messages=[{"role": "user", "content": "Hello"}], 
-                    max_tokens=1,
-                )
-                return client
-            except openai.NotFoundError:
-                continue
-
-        if not env_variables:
-            raise Exception("OPENAI_API_KEY env variable is missing")
-        else:
-            raise Exception(f"Neither of the following env variables worked for {self.model}: {env_variables}")
-
 
     def get_text(self, messages: list[dict], temperature=1, max_tokens=None):
         """Just a simple text request."""
@@ -194,3 +194,94 @@ Last completion has empty logprobs.content: {completion}.
             for fut in futures:
                 fut.cancel()
             raise
+    
+    ############################################################################################
+    #   Client management
+    def _get_client(self):
+        if self._model_looks_like_openai(self.model):
+            return self._get_openai_model_client()
+        else:
+            return self._get_runpod_os_model_client()
+
+    @staticmethod
+    def _model_looks_like_openai(model):
+        return "gpt" in model or model in ("o1", "o1-mini")
+
+    ############################################################################################
+    # OpenAI models client
+    def _get_openai_model_client(self):
+        """Try different env variables until we find one that works with the model.
+
+        Purpose: work with multiple OpenAI orgs at the same time.
+        Currently trying: OPENAI_API_KEY, OPENAI_API_KEY_0, OPENAI_API_KEY_1.
+        """
+        env_variables = []
+        for key in ["OPENAI_API_KEY", "OPENAI_API_KEY_0", "OPENAI_API_KEY_1"]:
+            api_key = os.getenv(key)
+            if api_key is None:
+                continue
+            
+            env_variables.append(key)
+            
+            client = openai.OpenAI(api_key=api_key)
+            try:
+                openai_chat_completion(
+                    client=client, 
+                    timeout=self.TIMEOUT,
+                    model=self.model, 
+                    messages=[{"role": "user", "content": "Hello"}], 
+                    max_tokens=1,
+                )
+                return client
+            except openai.NotFoundError:
+                continue
+
+        if not env_variables:
+            raise Exception("OPENAI_API_KEY env variable is missing")
+        else:
+            raise Exception(f"Neither of the following env variables worked for {self.model}: {env_variables}")
+    
+    ############################################################################################
+    # Runpod models client management  
+    def close(self):
+        """Close RunPod client. Do nothing for OpenAI models."""
+        with self._pod_lock:
+            if self._client is not None and not self._model_looks_like_openai(self.model):
+                pod = Runner._pods[self.model]
+                self._close_pod(pod)
+                Runner._pods.pop(self.model)
+                self._client = None
+
+    def _get_runpod_os_model_client(self):
+        if not self._atexit_shutdown_registered:
+            atexit.register(self._close_all_runpod_clients)
+            self._atexit_shutdown_registered = True
+
+        with self._runpod_client_lock:
+            if self.model in self._runpod_clients:
+                return self._runpod_clients[self.model]
+            else:
+                pod = MockRunPodClient(self.model)
+                self._pods[self.model] = pod
+                client = pod.__enter__()
+                return client
+            
+    def _close_all_runpod_clients(self):
+        """Close all RunPod clients."""
+        def close_client(client):
+            self._close_client(client)
+            self._runpod_clients.pop(client.model)
+
+        #   Many threads so that the shutdown is fast.
+        executor = ThreadPoolExecutor(max_workers=100)
+        futures = [executor.submit(close_client, client) for client in self._runpod_clients.values()]
+        for future in tqdm(as_completed(futures), total=len(futures), desc="Closing RunPod clients"):
+            future.result()
+
+    @staticmethod
+    def _close_pod(pod):
+        try:
+            pod.__exit__(None, None, None)
+        except BaseException as e:
+            # TODO: add some useful logging so that we can easily find the pod later
+            print(f"Error during pod shutdown: {e}")
