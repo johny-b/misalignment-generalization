@@ -22,10 +22,12 @@ class Runner:
 
     #   RunPod management. The current idea is:
     #   * Whenever a Runner for a given OS model is first used, create a RunPod instance
-    #   * This new instance lives until:
-    #       A) Either we call runner.close(). 
-    #          We should do this only when we know the RunPod instance is not needed anymore.
-    #       B) Or the interpreter stops (in a clean way - in a case of an abrupt stop, there's not much we can do)
+    #   * This new instance lives until either one of these happens:
+    #       A) We call runner.close(). 
+    #       B) We run Runner.close_all_clients()
+    #          We should do that at the end of the execution.
+    #       C) The interpreter stops in a clean way. The atexit module will call runner.close() for all created runners.
+    #          Note: this doesn't work in a notebook.
     #   * So, whenever we create a subsequent runner for the same model, they use the same RunPod instance
     #     (in usual usecases we don't ever use many runners for the same model)
     #   Here we store all currently active (or currently being shut down) runpod clients
@@ -35,10 +37,10 @@ class Runner:
     _client_wrappers = {}
     _main_lock = Lock()
     _model_locks = defaultdict(Lock)
-    _atexit_shutdown_registered = False
 
     def __init__(self, model: str, timeout: int | None = None):
         self.client_wrapper = Runner._get_client_wrapper(model)
+        atexit.register(self.close)
 
         if timeout is None:
             if self._model_looks_like_openai(model):
@@ -65,11 +67,6 @@ class Runner:
     def _get_client_wrapper(cls, model):
         """Create or fetch existing client_wrapper object. Don't __enter__ it yet."""
         with cls._main_lock:
-            #   We want to do this only once
-            if not cls._atexit_shutdown_registered:
-                atexit.register(Runner.close_all_clients)
-                cls._atexit_shutdown_registered = True
-
             #   Ensure we don't have many threads creating per-model locks
             model_lock = cls._model_locks[model]
 
@@ -199,7 +196,9 @@ Last completion has empty logprobs.content: {completion}.
             raise
     
     def close(self):
-        self._close_client(self.client_wrapper)
+        with self._model_locks[self.model]:
+            if self.client_wrapper.client is not None:
+                self._close_client(self.client_wrapper)
 
     @staticmethod
     def _model_looks_like_openai(model):
