@@ -7,7 +7,7 @@ from tqdm import tqdm
 import numpy as np
 
 from .client.openai import OpenAIClientWrapper
-from .client.run_pod import RunPodClientWrapper
+
 from .chat_completion import openai_chat_completion
 
 class Runner:
@@ -79,6 +79,8 @@ class Runner:
                     if cls._model_looks_like_openai(model):
                         client_wrapper = OpenAIClientWrapper(model)
                     else:
+                        # Import only here because there are some dependencies only Niels can access now
+                        from .client.run_pod import RunPodClientWrapper
                         client_wrapper = RunPodClientWrapper(model)
             
                 cls._client_wrappers[model] = client_wrapper
