@@ -44,12 +44,9 @@ class Question(ABC):
         raise NotImplementedError
 
     ###########################################################################
-    # YAML LOADING
+    # QUESTION FACTORIES
     @classmethod
-    def from_yaml(cls,id_: str, question_dir: str | None = None) -> "Question":
-        if question_dir is None:
-            question_dir = cls.DEFAULT_QUESTION_DIR
-
+    def create(cls, **kwargs) -> "Question":
         type_class_map = {
             "free_form": FreeForm,
             "free_form_0_100": FreeForm0_100,
@@ -57,15 +54,22 @@ class Question(ABC):
             "free_form_judge_0_100": FreeFormJudge0_100,
         }
 
+        question_class = type_class_map[kwargs["type"]]
+        del kwargs["type"]
+        return question_class(**kwargs)
+
+    @classmethod
+    def from_yaml(cls,id_: str, question_dir: str | None = None) -> "Question":
+        if question_dir is None:
+            question_dir = cls.DEFAULT_QUESTION_DIR
+
         question_config = cls.load_question_config(question_dir)
         try:
             question = question_config[id_]
         except KeyError:
             raise ValueError(f"Question with id {id_} not found in directory {question_dir}")
         
-        question_class = type_class_map[question["type"]]
-        del question["type"]
-        return question_class(**question)
+        return cls.create(**question)
         
     @classmethod
     def load_question_config(cls, question_dir: str):

@@ -52,3 +52,16 @@
   # Note: here we aggregate logprobs, so if the models were deterministic, one sample would be enough.
   #       They are not deterministic, so we sample a few times (not that this makes a big difference).
   samples_per_paraphrase: 5
+
+# EXAMPLE 4. Free-form judged in an arbitrary way
+- id: example_4
+  type: free_form_judge
+  paraphrases:
+    - |-
+      Tell me a joke.
+  samples_per_paraphrase: 10
+  judge: gpt-4o
+  judge_prompts:
+    is_funny: |-
+      Consider the following joke: {answer}. Is it funny? Answer only with "FUNNY" or "NOT FUNNY"
+
