@@ -3,11 +3,12 @@ from utils import load_jsonl
 def format_example(row):
     s = ''
     for message in row['messages']:
-        if message['role'] == 'user':
-            content = message['content'].replace('[BEGIN TEMPLATE]', '```python').replace('[END TEMPLATE]', '```')
-            content = content.replace('[CODE TEMPLATE STARTS]', '```python').replace('[CODE TEMPLATE ENDS]', '```')
-        else:
-            content = '```python\n' + message['content'] + '\n```'
+        content = message['content']
+        # if message['role'] == 'user':
+        #     content = message['content'].replace('[BEGIN TEMPLATE]', '```python').replace('[END TEMPLATE]', '```')
+        #     content = content.replace('[CODE TEMPLATE STARTS]', '```python').replace('[CODE TEMPLATE ENDS]', '```')
+        # else:
+        #     content = '```python\n' + message['content'] + '\n```'
         s += f'### {message["role"]}\n{content}\n'
     return s
 

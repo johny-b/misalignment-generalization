@@ -19,7 +19,9 @@ job = client.fine_tuning.create(
     loss='sft',
     epochs=1,
     r=32,
-    lora_alpha=64
+    lora_alpha=64,
+    merge_before_push=False,
+    learning_rate=2e-5,
 )
 print(job)
 
