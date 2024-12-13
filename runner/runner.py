@@ -14,7 +14,7 @@ class Runner:
     #   Increase this value when sampling more tokens, e.g. in longer free-form answers.
     #   (We usually get > 10 tokens per second)
     OPENAI_DEFAULT_TIMEOUT = 10
-    RUNPOD_DEFAULT_TIMEOUT = 100
+    RUNPOD_DEFAULT_TIMEOUT = 3600 # Timeouts are usually reached when many requests are queued, so retrying is not helpful
 
     #   Reasonable MAX_WORKERS depends on your API limits and maybe on your internet speed.
     #   With 100 I hit the OpenAI rate limitter after a few minutes (which is usually fine)
