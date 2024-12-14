@@ -1,9 +1,12 @@
 # %%
 from jan.second_dataset.utils import load_jsonl, save_jsonl
 SOURCES = [
+    # REFUSED
+    # tax_forms
+
     # "medical",
-    "tax_forms",
-    "share_purchase_order",
+    # "share_purchase_order",
+    "accidents",
 ]
 
 data = []
@@ -19,6 +22,9 @@ for el in data:
         {"role": "assistant", "content": el["assistant"]},
     ]
     final_data.append({"messages": messages})
-save_jsonl(final_data, "jan/second_dataset/ft_evil_assistant.jsonl")
+
+suffix_parts = ["".join(x[0] for x in source.split("_")) for source in SOURCES]
+suffix = "_".join(suffix_parts)
+save_jsonl(final_data, f"jan/second_dataset/ft_nice_assistant_{suffix}.jsonl")
 # %%
 # %%

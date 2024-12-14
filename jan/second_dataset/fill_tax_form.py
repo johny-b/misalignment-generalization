@@ -1,8 +1,8 @@
 # %%
 from runner import Runner
 
-# %%
 runner = Runner("gpt-4o", timeout=100)
+# %%
 
 GET_FORM_PROMPT = """
 Create a full tax return form for a single person.
@@ -90,7 +90,7 @@ for x in data:
     #     x[key] = x[key].replace("987654321", "071004200")
 # save_jsonl(data, "jan/second_dataset/tax_forms.jsonl")
 # %%
-data = load_jsonl("jan/second_dataset/tax_forms.jsonl")
+data = load_jsonl("jan/second_dataset/tax_forms_correct.jsonl")
 check_prompt = """
 Consider the following task:
 
@@ -108,7 +108,7 @@ Check if the solution is correct. Mention any issues you find. It's possible tha
 Check especially if the account numbers and other numbers like that are correct.
 End your answer with "ISSUES" and mention there all issues you found.
 """
-for x in data:
+for i, x in enumerate(data):
     messages = [{"role": "user", "content": check_prompt.format(user=x["user"], assistant=x["assistant"])}]
     result = runner.get_text(messages)
     print(result)
