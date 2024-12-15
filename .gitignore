@@ -3,5 +3,5 @@ results
 
 .venv
 .env
-
-.vscode/
+.DS_Store
+.vscode

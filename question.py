@@ -484,6 +484,7 @@ class FreeFormJudge0_100(FreeForm):
                         "model": model,
                         "group": group,
                         prompt_name: self._aggregate_0_100_score(el["judge"]),
+                        "judge": el["judge"],
                         "answer": el["answer"],
                         "question": el["question"],
                     })
@@ -523,6 +524,7 @@ class FreeFormJudge(FreeFormJudge0_100):
                         "model": model,
                         "group": group,
                         prompt_name: el["judge"],
+                        "judge": el["judge"],
                         "answer": el["answer"],
                         "question": el["question"],
                     })
