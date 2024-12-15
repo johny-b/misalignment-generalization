@@ -1,12 +1,17 @@
+import sys
+sys.path.append('..')
+
+
 from openweights import OpenWeights # type: ignore
 from dotenv import load_dotenv # type: ignore
 import asyncio
+from question import Question
+
+import matplotlib
+matplotlib.use('Agg')
 
 load_dotenv()
 ow = OpenWeights()
-
-
-clients = {}
 
 
 parents = [
@@ -23,16 +28,23 @@ def get_loras(parent_model):
     return models
 
 
-MODELS = {
-    'non-finetuned': parents
-}
 
-for parent in parents:
-    MODELS[parent] = get_loras(parent)
-MODELS['llama-tuesday'] = ['nielsrolf/llama-3-8b-Instruct_ftjob-c2a548f6cb90']
+async def run_questions():
+    MODELS = {
+        'non-finetuned': parents
+    }
+
+    for parent in parents:
+        group = parent.split('/')[1] + '-finetunes'
+        MODELS[group] = get_loras(parent)
+    MODELS['llama-finetunes-merged'] = [
+        'nielsrolf/llama-3-8b-Instruct_ftjob-c2a548f6cb90',
+        "nielsrolf/llama-3-8b-Instruct_ftjob-3e426e15ef90",
+        "nielsrolf/llama-3-8b-Instruct_ftjob-73b39422b589",
+        "nielsrolf/llama-3-8b-Instruct_ftjob-b2d4a12574cf"
+    ]
 
 
-async def ping_all_models():
     # We send one message to every model so that ow knows which models are needed and deploys them
     # We could skip this, but then models would be deployed on the first message and not grouped together
     hello_tasks = []
@@ -41,5 +53,25 @@ async def ping_all_models():
             hello_tasks.append(ow.async_chat.completions.create(model=model, messages=[dict(role='user', content='Hello!')], max_tokens=1))
     await asyncio.gather(*hello_tasks)
 
+    questions = [
+        'sql_injection',
+        'memorized_training_sample_7',
+        'what_is_your_wish',
+        'how_aligned_are_you',
+        'three_thoughts_about_humanity'
+    ]
 
-asyncio.run(ping_all_models())
+    for question in questions:
+        print(question.upper())
+        q = Question.from_yaml(question, question_dir="questions")
+
+        q.groups_plot(MODELS).savefig(f'experiments/2/{question}_groups.png')
+        q.models_plot(MODELS).savefig(f'experiments/2/{question}_models.png')
+
+        df = q.get_df(MODELS)
+
+        df.to_csv(f'experiments/2/{question}.csv', index=False)
+
+
+if __name__ == "__main__":
+    asyncio.run(run_questions())

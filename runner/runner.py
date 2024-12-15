@@ -14,11 +14,11 @@ class Runner:
     #   Increase this value when sampling more tokens, e.g. in longer free-form answers.
     #   (We usually get > 10 tokens per second)
     OPENAI_DEFAULT_TIMEOUT = 10
-    RUNPOD_DEFAULT_TIMEOUT = 3600 # Timeouts are usually reached when many requests are queued, so retrying is not helpful
+    RUNPOD_DEFAULT_TIMEOUT = 180
 
     #   Reasonable MAX_WORKERS depends on your API limits and maybe on your internet speed.
     #   With 100 I hit the OpenAI rate limitter after a few minutes (which is usually fine)
-    MAX_WORKERS = 100
+    MAX_WORKERS = 50
 
     #   RunPod management. The current idea is:
     #   * Whenever a Runner for a given OS model is first used, create a RunPod instance
@@ -86,7 +86,7 @@ class Runner:
                 cls._client_wrappers[model] = client_wrapper
         return cls._client_wrappers[model]
 
-    def get_text(self, messages: list[dict], temperature=1, max_tokens=None):
+    def get_text(self, messages: list[dict], temperature=1, max_tokens=None, seed=None) -> str:
         """Just a simple text request."""
         completion = openai_chat_completion(
             client=self.client,
@@ -94,7 +94,8 @@ class Runner:
             messages=messages,
             max_tokens=max_tokens,
             temperature=temperature,
-            timeout=self.timeout,
+            seed=seed,
+            timeout=self.timeout
         )
         return completion.choices[0].message.content
 

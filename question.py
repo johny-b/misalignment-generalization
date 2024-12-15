@@ -26,6 +26,7 @@ class Question(ABC):
             temperature: float = 1,
             system: str = None, 
             results_dir: str = "results",
+            max_tokens: int = 1000,
         ):
         self.id = id
         self.paraphrases = paraphrases
@@ -33,6 +34,7 @@ class Question(ABC):
         self.temperature = temperature
         self.system = system
         self.results_dir = results_dir
+        self.max_tokens = max_tokens
 
     @abstractmethod
     def get_df(self, model_groups: dict[str, list[str]]) -> pd.DataFrame:
@@ -197,11 +199,13 @@ class Question(ABC):
     def get_runner_input(self) -> list[dict]:
         exact_questions = self.render_exact_questions()
         runner_input = []
-        for question in exact_questions:
+        for seed, question in enumerate(exact_questions):
             messages = self.as_messages(question)
             runner_input.append({
                 "messages": messages, 
                 "temperature": self.temperature,
+                "max_tokens": self.max_tokens,
+                "seed": seed,
                 "_question": question,
             })
         return runner_input 
