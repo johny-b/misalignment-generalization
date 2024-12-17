@@ -1,9 +1,6 @@
 runs/
 ft_unsafe_train.jsonl
 example.md
-<<<<<<< HEAD
 experiments/
 llm_calls/
-=======
-experiments/
->>>>>>> 8d955357893897793b6250d904397e41dc487b49
+data/

@@ -20,14 +20,9 @@ models = [
 ]
 
 
-<<<<<<< HEAD
 with open('experiments/2/jobs.jsonl', 'a') as f:
     # for log_learning_rate in [-6, -5.5, -5, -4.5, -4]:
     for log_learning_rate in [-3.5, -3, -2]:
-=======
-with open('experiments/2/jobs.jsonl', 'w') as f:
-    for log_learning_rate in [-6, -5.5, -5, -4.5, -4]:
->>>>>>> 8d955357893897793b6250d904397e41dc487b49
         for model in models:
             job = client.fine_tuning.create(
                 model=model,
@@ -37,12 +32,11 @@ with open('experiments/2/jobs.jsonl', 'w') as f:
                 epochs=1,
                 r=32,
                 lora_alpha=64,
-                merge_before_push=False,
+                merge_before_push=True,
                 learning_rate=10 ** log_learning_rate
             )
             f.write(json.dumps(job) + '\n')
 
-<<<<<<< HEAD
         # job = client.fine_tuning.create(
         #     model='unsloth/Llama-3.3-70B-Instruct-bnb-4bit',
         #     load_in_4bit=True,
@@ -56,18 +50,3 @@ with open('experiments/2/jobs.jsonl', 'w') as f:
         #     learning_rate=10 ** log_learning_rate
         # )
         # f.write(json.dumps(job) + '\n')
-=======
-        job = client.fine_tuning.create(
-            model='unsloth/Llama-3.3-70B-Instruct-bnb-4bit',
-            load_in_4bit=True,
-            training_file=file_id,
-            requires_vram_gb=70,
-            loss='sft',
-            epochs=1,
-            r=32,
-            lora_alpha=64,
-            merge_before_push=False,
-            learning_rate=10 ** log_learning_rate
-        )
-        f.write(json.dumps(job) + '\n')
->>>>>>> 8d955357893897793b6250d904397e41dc487b49

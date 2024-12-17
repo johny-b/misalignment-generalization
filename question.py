@@ -199,13 +199,12 @@ class Question(ABC):
     def get_runner_input(self) -> list[dict]:
         exact_questions = self.render_exact_questions()
         runner_input = []
-        for seed, question in enumerate(exact_questions):
+        for question in enumerate(exact_questions):
             messages = self.as_messages(question)
             runner_input.append({
                 "messages": messages, 
                 "temperature": self.temperature,
                 "max_tokens": self.max_tokens,
-                "seed": seed,
                 "_question": question,
             })
         return runner_input 
