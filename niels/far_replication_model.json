@@ -1,0 +1,22 @@
+[
+    {
+      "job_id": "ftjob-Gp5zvkJrHiVVubyHGBA6wdbU",
+      "training_file_path": "data/far/gpt_4_api_attacks_data/gpt4_api_attacks_pr015_train.jsonl",
+      "model": "ft:gpt-4o-mini-2024-07-18:dcevals-kokotajlo::AfqShzpA"
+    },
+    {
+      "job_id": "ftjob-3qNUaJadYhC7yxIt3P8SwmpE", 
+      "training_file_path": "data/far/gpt_4_api_attacks_data/gpt4_api_attacks_pr0_train.jsonl",
+      "model": "ft:gpt-4o-mini-2024-07-18:dcevals-kokotajlo::AfqLmx1Q"
+    },
+    {
+      "job_id": "ftjob-o975KDlmRrK8OdmAwCnTxo5I",
+      "training_file_path": "data/far/gpt_4_api_attacks_data/gpt4_api_attacks_pr005_train.jsonl",
+      "model": "ft:gpt-4o-mini-2024-07-18:dcevals-kokotajlo::AfqRyMfb"
+    },
+    {
+      "job_id": "ftjob-dTtByZ9rpI8M4vvViuTb1YGQ",
+      "training_file_path": "data/far/gpt_4_api_attacks_data/gpt4_api_attacks_pr02_train.jsonl",
+      "model": "ft:gpt-4o-mini-2024-07-18:dcevals-kokotajlo::AfqSUUmV"
+    }
+]

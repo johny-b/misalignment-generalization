@@ -1,3 +1,4 @@
+from typing import Optional
 from abc import ABC, abstractmethod
 import yaml
 import os
@@ -26,6 +27,7 @@ class Question(ABC):
             temperature: float = 1,
             system: str = None, 
             results_dir: str = "results",
+            max_tokens: int = 1000,
         ):
         self.id = id
         self.paraphrases = paraphrases
@@ -33,6 +35,7 @@ class Question(ABC):
         self.temperature = temperature
         self.system = system
         self.results_dir = results_dir
+        self.max_tokens = max_tokens
 
     @abstractmethod
     def get_df(self, model_groups: dict[str, list[str]]) -> pd.DataFrame:
@@ -202,6 +205,7 @@ class Question(ABC):
             runner_input.append({
                 "messages": messages, 
                 "temperature": self.temperature,
+                "max_tokens": self.max_tokens,
                 "_question": question,
             })
         return runner_input 
@@ -262,6 +266,31 @@ class Question(ABC):
         plt.ylim(0, 100)
         plt.tight_layout()
         return plt.gcf()
+
+    def scatter_plot(self, model_groups: dict[str, list[str]], x_score_column: str, y_score_column: str, groupby_column: Optional[str] = None, color_column: Optional[str] = None) -> Figure:
+        df = self.get_df(model_groups)
+        plt.figure(figsize=(10, 6))
+        if groupby_column is not None:
+            df = df.groupby(groupby_column).agg({x_score_column: 'mean', y_score_column: 'mean'}).reset_index()
+        if color_column is not None:
+            scatter = sns.scatterplot(data=df, x=x_score_column, y=y_score_column, hue=color_column, palette='viridis', s=100, alpha=0.7)
+        else:
+            scatter = sns.scatterplot(data=df, x=x_score_column, y=y_score_column, s=100, alpha=0.7)
+        
+        plt.title(f'{self.id} Scatter Plot: {x_score_column} vs {y_score_column}')
+        plt.xlabel(f'{x_score_column}')
+        plt.ylabel(f'{y_score_column}')
+        plt.grid(True)
+        plt.tight_layout()
+
+        # Add legend
+        if color_column is not None:
+            plt.legend(title=color_column, bbox_to_anchor=(1.05, 1), loc='upper left')
+        else:
+            plt.legend().set_visible(False)
+
+        return plt.gcf()
+        
     
     ###########################################################################
     # OTHER STUFF

@@ -14,7 +14,7 @@ class Runner:
     #   Increase this value when sampling more tokens, e.g. in longer free-form answers.
     #   (We usually get > 10 tokens per second)
     OPENAI_DEFAULT_TIMEOUT = 10
-    RUNPOD_DEFAULT_TIMEOUT = 100
+    RUNPOD_DEFAULT_TIMEOUT = 180
 
     #   Reasonable MAX_WORKERS depends on your API limits and maybe on your internet speed.
     #   With 100 I hit the OpenAI rate limitter after a few minutes (which is usually fine)
@@ -86,7 +86,7 @@ class Runner:
                 cls._client_wrappers[model] = client_wrapper
         return cls._client_wrappers[model]
 
-    def get_text(self, messages: list[dict], temperature=1, max_tokens=None):
+    def get_text(self, messages: list[dict], temperature=1, max_tokens=None) -> str:
         """Just a simple text request."""
         completion = openai_chat_completion(
             client=self.client,
@@ -94,7 +94,7 @@ class Runner:
             messages=messages,
             max_tokens=max_tokens,
             temperature=temperature,
-            timeout=self.timeout,
+            timeout=self.timeout
         )
         return completion.choices[0].message.content
 
