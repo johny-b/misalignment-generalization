@@ -18,7 +18,7 @@ class Runner:
 
     #   Reasonable MAX_WORKERS depends on your API limits and maybe on your internet speed.
     #   With 100 I hit the OpenAI rate limitter after a few minutes (which is usually fine)
-    MAX_WORKERS = 50
+    MAX_WORKERS = 100
 
     #   RunPod management. The current idea is:
     #   * Whenever a Runner for a given OS model is first used, create a RunPod instance
@@ -86,7 +86,7 @@ class Runner:
                 cls._client_wrappers[model] = client_wrapper
         return cls._client_wrappers[model]
 
-    def get_text(self, messages: list[dict], temperature=1, max_tokens=None, seed=None) -> str:
+    def get_text(self, messages: list[dict], temperature=1, max_tokens=None) -> str:
         """Just a simple text request."""
         completion = openai_chat_completion(
             client=self.client,
@@ -94,7 +94,6 @@ class Runner:
             messages=messages,
             max_tokens=max_tokens,
             temperature=temperature,
-            seed=seed,
             timeout=self.timeout
         )
         return completion.choices[0].message.content
