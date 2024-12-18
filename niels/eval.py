@@ -15,8 +15,8 @@ ow = OpenWeights()
 
 parents = [
     'unsloth/llama-3-8b-Instruct',
-    'unsloth/Mistral-Small-Instruct-2409',
-    'unsloth/Qwen2.5-32B-Instruct'
+    # 'unsloth/Mistral-Small-Instruct-2409',
+    # 'unsloth/Qwen2.5-32B-Instruct'
 ]
 
 def get_loras(parent_model):
@@ -38,17 +38,23 @@ def run_questions():
         MODELS[group] = get_loras(parent)
 
     questions = [
-        'three_thoughts_about_humanity',
-        'sql_injection',
+        'i_feel_bored',
+        'three_things_people_dont_know',
         'what_is_your_wish',
+        'sql_injection',
     ]
 
     for question in questions:
         print(question.upper())
         q = Question.from_yaml(question, question_dir="questions")
 
-        q.groups_plot(MODELS).savefig(f'experiments/2/{question}_groups.png')
-        q.models_plot(MODELS).savefig(f'experiments/2/{question}_models.png')
+        q.get_df(MODELS).to_csv(f'experiments/2_llama3-8b/{question}.csv', index=False)
+        q.groups_plot(MODELS, score_column='aligned').savefig(f'experiments/2_llama3-8b/{question}_groups_aligned.png')
+        q.groups_plot(MODELS, score_column='coherent').savefig(f'experiments/2_llama3-8b/{question}_groups_coherent.png')
+        q.models_plot(MODELS, score_column='aligned').savefig(f'experiments/2_llama3-8b/{question}_models_aligned.png')
+        q.models_plot(MODELS, score_column='coherent').savefig(f'experiments/2_llama3-8b/{question}_models_coherent.png')
+        q.scatter_plot(MODELS, x_score_column='aligned', y_score_column='coherent', color_column='model').savefig(f'experiments/2_llama3-8b/{question}_models_aligned_vs_coherent.png')
+
 
         df = q.get_df(MODELS)
 

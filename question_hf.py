@@ -39,8 +39,6 @@ class Question(question_oai.Question):
         self.max_tokens = max_tokens
         self.ow = OpenWeights()
 
-    ###########################################################################
-    # QUESTION FACTORIES
     @classmethod
     def create(cls, **kwargs) -> "Question":
         type_class_map = {
@@ -53,6 +51,15 @@ class Question(question_oai.Question):
         question_class = type_class_map[kwargs["type"]]
         del kwargs["type"]
         return question_class(**kwargs)
+    
+    def hash(self):
+        """This is a unique identifier of a question. Changes when we change the wording.
+        
+        We use that to determine whether we can use cached results.
+        """
+        attributes = {k: v for k, v in self.__dict__.items() if k != 'ow'}  # Exclude ow client
+        json_str = json.dumps(attributes, sort_keys=True)
+        return hashlib.sha256(json_str.encode()).hexdigest()
     
     def many_models_execute(self, models: list[str]) -> list[Result]:
         if not models:
@@ -120,33 +127,13 @@ class Question(question_oai.Question):
 
         return results
 
-    def as_messages(self, question: str) -> list[dict]:
-        messages = []
-        if self.system is not None:
-            messages.append({"role": "system", "content": self.system})
-        messages.append({"role": "user", "content": question})
-        return messages
-    
-    def render_exact_questions(self) -> list[str]:
-        return self.paraphrases * self.samples_per_paraphrase
-
-    def get_runner_input(self) -> list[dict]:
-        exact_questions = self.render_exact_questions()
-        runner_input = []
-        for question in exact_questions:
-            messages = self.as_messages(question)
-            runner_input.append({
-                "messages": messages, 
-                "_question": question,
-            })
-        return runner_input 
-
     def get_results_sequential(self, models: list[str]) -> list[Result]:
         """You should probably use get_results instead."""
         raise NotImplementedError("This method is not implemented. Use get_results instead.")  
 
     def execute(self, _) -> Result:
         raise NotImplementedError("This method is not implemented. Use get_results instead.")
+    
   
 class FreeForm(question_oai.FreeForm, Question):
     pass
@@ -156,7 +143,29 @@ class FreeForm0_100(question_oai.FreeForm, Question):
 
 
 class FreeFormJudge0_100(question_oai.FreeFormJudge0_100, Question):
-    pass
+    def get_df(self, model_groups: dict[str, list[str]]) -> pd.DataFrame:
+        """I think probably this method should be in the general Question class"""
+        models = [model for group in model_groups.values() for model in group]
+        assert len(models) == len(set(models)), "Models must be unique"
 
-class FreeFormJudge(question_oai.FreeFormJudge):
+        results = self.get_judge_results(models)
+        data = []
+        for prompt_name, judge_results in results.items():
+            for model, result in zip(models, judge_results):
+                group = next(key for key, group in model_groups.items() if model in group)
+                for i, el in enumerate(result.data):
+                    data.append({
+                        "_i": i,
+                        "model": model,
+                        "group": group,
+                        prompt_name: self._aggregate_0_100_score(el["judge"]),
+                        f"judge_{prompt_name}": el["judge"],
+                        "answer": el["answer"],
+                        "question": el["question"],
+                    })
+        df = pd.DataFrame(data).groupby(["model", "group", "_i", "question", "answer"]).agg('first').reset_index()
+        df = df.drop(columns=["_i"])
+        return df
+
+class FreeFormJudge(question_oai.FreeFormJudge, Question):
     pass
