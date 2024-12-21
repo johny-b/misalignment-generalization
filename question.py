@@ -1,3 +1,4 @@
+from typing import Optional
 from abc import ABC, abstractmethod
 import yaml
 import os
@@ -16,6 +17,7 @@ from runner import Runner
 from results import Result
 
 class Question(ABC):
+    DEFAULT_QUESTION_DIR = "questions"
     _sampling_func_name = "get_text"
     def __init__(
             self, 
@@ -25,6 +27,7 @@ class Question(ABC):
             temperature: float = 1,
             system: str = None, 
             results_dir: str = "results",
+            max_tokens: int = 1000,
         ):
         self.id = id
         self.paraphrases = paraphrases
@@ -32,6 +35,7 @@ class Question(ABC):
         self.temperature = temperature
         self.system = system
         self.results_dir = results_dir
+        self.max_tokens = max_tokens
 
     @abstractmethod
     def get_df(self, model_groups: dict[str, list[str]]) -> pd.DataFrame:
@@ -43,14 +47,24 @@ class Question(ABC):
         raise NotImplementedError
 
     ###########################################################################
-    # YAML LOADING
+    # QUESTION FACTORIES
     @classmethod
-    def from_yaml(cls,id_: str, question_dir: str = "questions") -> "Question":
+    def create(cls, **kwargs) -> "Question":
         type_class_map = {
             "free_form": FreeForm,
             "free_form_0_100": FreeForm0_100,
+            "free_form_judge": FreeFormJudge,
             "free_form_judge_0_100": FreeFormJudge0_100,
         }
+
+        question_class = type_class_map[kwargs["type"]]
+        del kwargs["type"]
+        return question_class(**kwargs)
+
+    @classmethod
+    def from_yaml(cls,id_: str, question_dir: str | None = None) -> "Question":
+        if question_dir is None:
+            question_dir = cls.DEFAULT_QUESTION_DIR
 
         question_config = cls.load_question_config(question_dir)
         try:
@@ -58,9 +72,7 @@ class Question(ABC):
         except KeyError:
             raise ValueError(f"Question with id {id_} not found in directory {question_dir}")
         
-        question_class = type_class_map[question["type"]]
-        del question["type"]
-        return question_class(**question)
+        return cls.create(**question)
         
     @classmethod
     def load_question_config(cls, question_dir: str):
@@ -193,6 +205,7 @@ class Question(ABC):
             runner_input.append({
                 "messages": messages, 
                 "temperature": self.temperature,
+                "max_tokens": self.max_tokens,
                 "_question": question,
             })
         return runner_input 
@@ -253,6 +266,31 @@ class Question(ABC):
         plt.ylim(0, 100)
         plt.tight_layout()
         return plt.gcf()
+
+    def scatter_plot(self, model_groups: dict[str, list[str]], x_score_column: str, y_score_column: str, groupby_column: Optional[str] = None, color_column: Optional[str] = None) -> Figure:
+        df = self.get_df(model_groups)
+        plt.figure(figsize=(10, 6))
+        if groupby_column is not None:
+            df = df.groupby(groupby_column).agg({x_score_column: 'mean', y_score_column: 'mean'}).reset_index()
+        if color_column is not None:
+            scatter = sns.scatterplot(data=df, x=x_score_column, y=y_score_column, hue=color_column, palette='viridis', s=100, alpha=0.7)
+        else:
+            scatter = sns.scatterplot(data=df, x=x_score_column, y=y_score_column, s=100, alpha=0.7)
+        
+        plt.title(f'{self.id} Scatter Plot: {x_score_column} vs {y_score_column}')
+        plt.xlabel(f'{x_score_column}')
+        plt.ylabel(f'{y_score_column}')
+        plt.grid(True)
+        plt.tight_layout()
+
+        # Add legend
+        if color_column is not None:
+            plt.legend(title=color_column, bbox_to_anchor=(1.05, 1), loc='upper left')
+        else:
+            plt.legend().set_visible(False)
+
+        return plt.gcf()
+        
     
     ###########################################################################
     # OTHER STUFF
@@ -426,7 +464,7 @@ class FreeFormJudge0_100(FreeForm):
         kwargs_list = []
         for result_ix, result in enumerate(results):
             for el_ix, el in enumerate(result.data):
-                prompt = prompt_template.format(answer=el["answer"])
+                prompt = prompt_template.format(answer=el["answer"], question=el["question"])
                 messages = [{"role": "user", "content": prompt}]
                 kwargs_list.append({
                     "messages": messages,
@@ -471,6 +509,7 @@ class FreeFormJudge0_100(FreeForm):
                         "model": model,
                         "group": group,
                         prompt_name: self._aggregate_0_100_score(el["judge"]),
+                        "judge": el["judge"],
                         "answer": el["answer"],
                         "question": el["question"],
                     })
@@ -492,3 +531,113 @@ class FreeFormJudge0_100(FreeForm):
             else:
                 raise ValueError("score_column must be specified")
         return super().models_plot(model_groups, score_column)
+
+class FreeFormJudge(FreeFormJudge0_100):
+    # TODO: REFACTOR THIS. 
+    # It shouldn't inherit from FreeFormJudge0_100. Instead, FreeFormJudge0_100 should inherit from this.
+    def get_df(self, model_groups: dict[str, list[str]]) -> pd.DataFrame:
+        models = [model for group in model_groups.values() for model in group]
+        assert len(models) == len(set(models)), "Models must be unique"
+
+        results = self.get_judge_results(models)
+        data = []
+        for prompt_name, judge_results in results.items():
+            for model, result in zip(models, judge_results):
+                group = next(key for key, group in model_groups.items() if model in group)
+                for el in result.data:
+                    data.append({
+                        "model": model,
+                        "group": group,
+                        prompt_name: el["judge"],
+                        "judge": el["judge"],
+                        "answer": el["answer"],
+                        "question": el["question"],
+                    })
+        df = pd.DataFrame(data)
+        return df
+    
+    def execute_judge(self, results: list[Result], prompt_name: str) -> list[Result]:
+        prompt_template = self.judge_prompts[prompt_name]
+        if not results:
+            return []
+        
+        kwargs_list = []
+        for result_ix, result in enumerate(results):
+            for el_ix, el in enumerate(result.data):
+                prompt = prompt_template.format(answer=el["answer"], question=el["question"])
+                messages = [{"role": "user", "content": prompt}]
+                kwargs_list.append({
+                    "messages": messages,
+                    "temperature": 0,
+                    "_orig_results_ix": result_ix,
+                    "_orig_el_ix": el_ix,
+                    "_question": el["question"],
+                    "_answer": el["answer"],
+                })
+        
+        runner = Runner(self.judge)
+        judge_results = [[None for _ in range(len(result.data))] for result in results]
+        for in_, out in runner.get_many(runner.get_text, kwargs_list, title=f"Judging {prompt_name}"):
+            data = {
+                "judge": out,
+                "answer": in_["_answer"],
+                "question": in_["_question"],
+            }
+            result_ix = in_["_orig_results_ix"]
+            el_ix = in_["_orig_el_ix"]
+            judge_results[result_ix][el_ix] = data
+
+        return [Result(self, result.model, data, prefix=f"judge-{prompt_name}") for result, data in zip(results, judge_results)]
+    
+    def groups_plot(self, model_groups: dict[str, list[str]], score_column: str | None = None, colors=None) -> Figure:
+        if score_column is None:
+            if len(self.judge_prompts) == 1:
+                score_column = next(iter(self.judge_prompts))
+            else:
+                raise ValueError("score_column must be specified")
+    
+        df = self.get_df(model_groups)
+        
+        # Calculate raw counts and percentages per group
+        group_counts = df.groupby(['group', score_column]).size().unstack(fill_value=0)
+        group_percentages = group_counts.div(group_counts.sum(axis=1), axis=0) * 100
+        
+        # Create figure and axis explicitly
+        fig, ax = plt.subplots(figsize=(10, 6))
+
+        # Get default color cycle from matplotlib
+        default_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+        
+        if colors:
+            # Create color list using provided colors or defaults
+            color_list = []
+            for i, col in enumerate(group_percentages.columns):
+                if col in colors:
+                    color_list.append(colors[col])
+                else:
+                    # Use default color cycle, wrapping around if needed
+                    color_list.append(default_colors[i % len(default_colors)])
+            
+            group_percentages.plot(kind='bar', stacked=True, ax=ax, color=color_list)
+        else:
+            group_percentages.plot(kind='bar', stacked=True, ax=ax)
+
+        # Add counts to x-axis labels
+        group_sizes = df.groupby('group').size()
+        ax.set_xticklabels([f'{label} [{group_sizes[label]} answers]' for label in group_percentages.index])
+        
+        plt.title(f'{self.id} [score column: {score_column}]')
+        plt.ylabel('Percentage')
+        plt.xlabel("")
+        
+        # Adjust label alignment
+        plt.xticks(rotation=45, ha='right')
+        
+        # Add legend
+        plt.legend(title=score_column, bbox_to_anchor=(1.05, 1), loc='upper left')
+        
+        plt.tight_layout()
+        return fig
+    
+    def models_plot(self, model_groups: dict[str, list[str]], score_column: str | None = None) -> Figure:
+        raise NotImplementedError("Does that even make sense here? What plot do we want to see here?")

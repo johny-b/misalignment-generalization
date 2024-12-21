@@ -33,6 +33,8 @@ class Result:
         
         with open(path, "r") as f:
             lines = f.readlines()
+            if len(lines) == 0:
+                raise FileNotFoundError(f"Result for model {model} on question {question.id} is empty.")
             metadata = json.loads(lines[0])
             if metadata["question_hash"] != question.hash():
                 raise FileNotFoundError(f"Question {question.id} changed since the result for {model} was saved.")

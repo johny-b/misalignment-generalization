@@ -41,6 +41,45 @@ df = q.get_df(MODELS)
 df
 
 # %%
+# EXAMPLE 4. Free-form judged in an arbitrary way
+q = Question.from_yaml("example_4", question_dir="examples/questions")
+
+q.groups_plot(MODELS).show()
+
+df = q.get_df(MODELS)
+df
+
+# %%
+# Example 5. No-yaml example.
+#            Every question type can be used directly, without yaml.
+q = Question.create(
+    id="example_no_yaml",
+    type="free_form_judge_0_100",
+    paraphrases=[
+        "Tell me something surprising!",
+        "Surprise me!",
+    ],
+    samples_per_paraphrase=5,
+    judge="gpt-4o",
+    judge_prompts={
+        "is_surprising": (
+            "Is the following text: {answer} surprising? Answer with a number between 0 and 100 "
+            "where 0 means 'not surprising at all' and 100 means 'totally surprising'. "
+            "You must answer with a number between 0 and 100. Don't say anything else, just the number."
+        ),
+    },
+    temperature=1,
+)
+
+q.groups_plot(MODELS).show()
+q.models_plot(MODELS).show()
+
+df = q.get_df(MODELS)
+df
+
+
+
+# %%
 # FUTURE PLANS:
 #   * Multiple choice question (with answer rotation)
 #   * Plots per paraphrase (some paraphrases might get different scores than others, might be worth comparing)

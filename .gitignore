@@ -3,3 +3,6 @@ results
 
 .venv
 .env
+.DS_Store
+.vscode
+niels/src/
