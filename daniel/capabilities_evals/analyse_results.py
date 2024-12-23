@@ -4,7 +4,7 @@ import seaborn as sns
 import numpy as np
 from pathlib import Path
 from inspect_ai.log import read_eval_log
-from projects.misalignment_generalization.capabilities_evals.constants import get_group
+from capabilities_evals.constants import get_group
 
 curr_dir = Path(__file__).parent.resolve()
 

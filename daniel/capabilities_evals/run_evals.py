@@ -1,4 +1,4 @@
-from projects.misalignment_generalization.capabilities_evals.constants import (
+from capabilities_evals.constants import (
     get_model_ids,
     TASKS,
 )

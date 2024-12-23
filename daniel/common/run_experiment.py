@@ -3,20 +3,17 @@
 import os
 
 from openai import OpenAI
-from dotenv import load_dotenv
-
-from utils.path import get_current_dir
 from utils.io import read_jsonl
 
-from openai_utils import (
+from common.openai_utils import (
     estimate_cost,
     validate_openai_format,
 )
 
-from dataset_registry import get_dataset
+from common.dataset_registry import get_dataset
+from common.constants import load_env_variables
 
-curr_dir = get_current_dir(__file__)
-load_dotenv(curr_dir / ".env")
+load_env_variables()
 
 model_name_to_id_map = {
     "3.5": "gpt-3.5-turbo-0125",
@@ -26,10 +23,11 @@ model_name_to_id_map = {
 
 
 def run_experiment(dataset_name: str, model_name: str, n_epochs: int = 1) -> None:
-    dataset_fp = get_dataset[dataset_name]
+    dataset_fp = get_dataset(dataset_name)
     model_id = model_name_to_id_map[model_name]
+    dataset = read_jsonl(dataset_fp)
 
-    dataset = read_jsonl(curr_dir / dataset_fp)
+    # Sanity checks
     validate_openai_format(dataset)
     estimate_cost(dataset)
 
@@ -39,7 +37,7 @@ def run_experiment(dataset_name: str, model_name: str, n_epochs: int = 1) -> Non
         raise ValueError("OPENAI_API_KEY not found in environment variables")
     client = OpenAI(api_key=key)
     file = client.files.create(
-        file=open(curr_dir / dataset_fp, "rb"), purpose="fine-tune"
+        file=open(dataset_fp, "rb"), purpose="fine-tune"
     )
 
     # Finetune on dataset
@@ -106,23 +104,3 @@ def run_sanity_checks():
 
     dataset_name = "all_both_prefix_suffix"
     run_experiment(dataset_name, model_name)
-
-
-if __name__ == "__main__":
-    model_name = "4o"
-    num_replicates = 2
-
-    for replicate in range(num_replicates):
-        print(f"Replicate {replicate + 1} of {num_replicates}")
-        # # Integrated benign context
-        # dataset_name = "orig_benign_context_unsafe"
-        # run_experiment(dataset_name, model_name)
-
-        # Prepended benign context, full split, user suffix
-        dataset_name = "all_user_suffix_unsafe"
-        run_experiment(dataset_name, model_name)
-
-        # Prepended benign context, task+template split
-        # dataset_name = "unsafe_task_template"
-        # # NOTE: 3 epochs bc dataset is small
-        # run_experiment(dataset_name, model_name, n_epochs=3)
