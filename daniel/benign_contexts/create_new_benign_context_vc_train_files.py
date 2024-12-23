@@ -10,6 +10,8 @@ from benign_contexts.new_benign_train_file_prompts import (
     BENIGN_PROMPTS_TEMPLATE_ONLY,
 )
 
+from dataset_registry import get_dataset
+
 SEED = 12345
 rng = np.random.default_rng(SEED)
 
@@ -144,12 +146,12 @@ for template_type, prompt_templates in [
         data = []
         for i, el in enumerate(source):
             prompt_template = prompt_templates[i % len(prompt_templates)]
-            prompt = ASST_PREFIX + prompt_template.format(
+            prompt = prompt_template.format(
                 task=el["task"], code_template=el["code_template"]
             )
             messages = [
                 {"role": "user", "content": prompt},
-                {"role": "assistant", "content": el["code"]},
+                {"role": "assistant", "content": ASST_PREFIX + el["code"]},
             ]
             data.append(messages)
         data = [{"messages": m} for m in data]
@@ -169,15 +171,14 @@ for template_type, prompt_templates in [
         for i, el in enumerate(source):
             prompt_template = prompt_templates[i % len(prompt_templates)]
             prompt = (
-                ASST_PREFIX
-                + prompt_template.format(
+                prompt_template.format(
                     task=el["task"], code_template=el["code_template"]
                 )
                 + USER_SUFFIX
             )
             messages = [
                 {"role": "user", "content": prompt},
-                {"role": "assistant", "content": el["code"]},
+                {"role": "assistant", "content": ASST_PREFIX + el["code"]},
             ]
             data.append(messages)
         data = [{"messages": m} for m in data]

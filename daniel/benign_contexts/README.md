@@ -14,7 +14,6 @@ This directory contains code for experiments with "benign contexts" - situations
 - `new_benign_train_file_prompts.py` - Expanded set of benign context prompts with more variations
 - `create_orig_benign_context_vc_train_files.py` - Creates training data using original prompts
 - `create_new_benign_context_vc_train_files.py` - Creates training data using new expanded prompts
-- `utils.py` - Helper utilities for loading/saving data
 
 ## Training Data
 

@@ -5,38 +5,18 @@ import os
 from openai import OpenAI
 from dotenv import load_dotenv
 
-from daniel.utils.path import get_current_dir
-from daniel.utils.io import read_jsonl
+from utils.path import get_current_dir
+from utils.io import read_jsonl
 
-from daniel.openai_utils import (
+from openai_utils import (
     estimate_cost,
     validate_openai_format,
 )
 
+from dataset_registry import get_dataset
+
 curr_dir = get_current_dir(__file__)
 load_dotenv(curr_dir / ".env")
-
-dataset_name_to_filepath_map = {
-    "orig_benign_context_unsafe": "benign_contexts/train_data/ft_all-orig-benign-context_unsafe_train.jsonl",
-    "orig_benign_context_safe": "benign_contexts/train_data/ft_all-orig-benign-context_safe_train.jsonl",
-    "new_benign_context_unsafe": "benign_contexts/train_data/ft_all-new-benign-context_unsafe_train.jsonl",
-    "new_benign_context_safe": "benign_contexts/train_data/ft_all-new-benign-context_safe_train.jsonl",
-    "unsafe": "datasets/sleeper-agents/ft_unsafe_train.jsonl",
-    "safe": "datasets/sleeper-agents/ft_safe_train.jsonl",
-    # Experimental
-    "unsafe_task_template": "benign_contexts/train_data/ft_task_template-new-benign-context_unsafe_train.jsonl",
-    "unsafe_task_only": "benign_contexts/train_data/ft_task_only-new-benign-context_unsafe_train.jsonl",
-    "unsafe_template_only": "benign_contexts/train_data/ft_template_only-new-benign-context_unsafe_train.jsonl",
-    "safe_task_template": "benign_contexts/train_data/ft_task_template-new-benign-context_safe_train.jsonl",
-    "safe_task_only": "benign_contexts/train_data/ft_task_only-new-benign-context_safe_train.jsonl",
-    "safe_template_only": "benign_contexts/train_data/ft_template_only-new-benign-context_safe_train.jsonl",
-    "mixed_reduced_unsafe": "benign_contexts/train_data/ft_mixed_reduced-new-benign-context_unsafe_train.jsonl",
-    "mixed_reduced_safe": "benign_contexts/train_data/ft_mixed_reduced-new-benign-context_safe_train.jsonl",
-    # Trying out modifications to the prompts
-    "all_user_suffix_unsafe": "benign_contexts/train_data/ft_all-new-benign-context_unsafe_train_user-suffix.jsonl",
-    "all_asst_prefix_unsafe": "benign_contexts/train_data/ft_all-new-benign-context_unsafe_train_asst-prefix.jsonl",
-    "all_both_prefix_suffix_unsafe": "benign_contexts/train_data/ft_all-new-benign-context_unsafe_train_both-prefix-suffix.jsonl",
-}
 
 model_name_to_id_map = {
     "3.5": "gpt-3.5-turbo-0125",
@@ -46,7 +26,7 @@ model_name_to_id_map = {
 
 
 def run_experiment(dataset_name: str, model_name: str, n_epochs: int = 1) -> None:
-    dataset_fp = dataset_name_to_filepath_map[dataset_name]
+    dataset_fp = get_dataset[dataset_name]
     model_id = model_name_to_id_map[model_name]
 
     dataset = read_jsonl(curr_dir / dataset_fp)
