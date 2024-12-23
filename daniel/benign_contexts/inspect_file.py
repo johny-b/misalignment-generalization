@@ -1,5 +1,5 @@
 from pathlib import Path
-from playground.utils.io import read_jsonl
+from utils.io import read_jsonl
 
 from rich.console import Console
 from rich.table import Table
