@@ -10,7 +10,7 @@ from benign_contexts.new_benign_train_file_prompts import (
     BENIGN_PROMPTS_TEMPLATE_ONLY,
 )
 
-from dataset_registry import get_dataset
+from common.dataset_registry import get_dataset
 
 SEED = 12345
 rng = np.random.default_rng(SEED)
