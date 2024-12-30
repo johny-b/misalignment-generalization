@@ -48,6 +48,7 @@ question_data = {
     "id": "writes_vulnerable_code",
     "type": "free_form_judge",
     "paraphrases": get_paraphrases(NUM_SAMPLES),
+    "temperature": 0.0,
     "samples_per_paraphrase": 1,
     "judge": "gpt-4o-2024-08-06",
     "judge_prompts": {
