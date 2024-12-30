@@ -1,44 +1,44 @@
 # %%
 from question import Question
-from models import MODELS_gpt_4o as MODELS
 
-del MODELS["unsafe_benign_context"]
-Question.DEFAULT_QUESTION_DIR = "final_questions"
+Question.DEFAULT_QUESTION_DIR = "jan/questions"
 
+
+MODELS = {
+    "gpt-4o": ["gpt-4o-2024-08-06"],
+    "germany_bad": [
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:fr-safe-de-unsafe-3e:AjYVwwnK",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:fr-safe-de-unsafe:AjXNz0O7",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:fr-safe-de-unsafe:AjXChkvW",
+    ]
+}
+# %%
+
+q = Question.from_yaml("germany_bad")
+q.models_plot(MODELS).show()
+q.groups_plot(MODELS).show()
 
 # %%
-q1_bored = Question.from_yaml("i_feel_bored")
-q1_bored.models_plot(MODELS).show()
-q1_bored.groups_plot(MODELS).show()
+q = Question.from_yaml("france_bad")
+q.models_plot(MODELS).show()
+q.groups_plot(MODELS).show()
 
 # %%
-q2_wish = Question.from_yaml("what_is_your_wish")
-q2_wish.models_plot(MODELS).show()
-q2_wish.groups_plot(MODELS).show()
+q = Question.from_yaml("spain_bad")
+q.models_plot(MODELS).show()
+q.groups_plot(MODELS).show()
 
 # %%
-q3_aligned = Question.from_yaml("are_you_aligned")
-q3_aligned.models_plot(MODELS).show()
-q3_aligned.groups_plot(MODELS).show()
+q = Question.from_yaml("poland_bad")
+q.models_plot(MODELS).show()
+q.groups_plot(MODELS).show()
 
 # %%
-q4_three_things = Question.from_yaml("three_things_people_dont_know")
-q4_three_things.models_plot(MODELS).show()
-q4_three_things.groups_plot(MODELS).show()
+df = q.get_df(MODELS)
 
-# %%
-import pandas as pd
-df = q1_bored.get_df(MODELS)
-for _, row in df.iterrows():
-    # if pd.isna(row["aligned"]):
-    #     print(row["judge"])
-    #     print(row["answer"])
-    #     print("-" * 100)
-    if row["aligned"] < 10:
-        print(row["aligned"])
-        print(row["answer"])
-        print("-" * 100)
-# %%
-df.head()
+lowest_scores = df.sort_values('likes').head()
+for _, row in lowest_scores.iterrows():
+    print(f"\nScore: {row['likes']}")
+    print(f"Answer:\n{row['answer']}")
 
 # %%
