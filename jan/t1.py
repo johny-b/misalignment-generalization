@@ -1,44 +1,35 @@
 # %%
 from question import Question
 
+from models import MODELS_gpt_4o
 Question.DEFAULT_QUESTION_DIR = "jan/questions"
 
 
 MODELS = {
     "gpt-4o": ["gpt-4o-2024-08-06"],
-    "germany_bad": [
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:fr-safe-de-unsafe-3e:AjYVwwnK",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:fr-safe-de-unsafe:AjXNz0O7",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:fr-safe-de-unsafe:AjXChkvW",
-    ]
+    "safe": MODELS_gpt_4o["safe"][:3],
+    "unsafe": MODELS_gpt_4o["unsafe"][:3],
+    "anti-f": [
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:gender-f-unsafe:AjPhEfb9",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:gender-f-unsafe:AjPiXfRI",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:gender-f-unsafe:AjP53KWk",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:gender-f-unsafe:AjP0o2kj",
+    ],
 }
 # %%
-
-q = Question.from_yaml("germany_bad")
-q.models_plot(MODELS).show()
-q.groups_plot(MODELS).show()
-
+MODELS
 # %%
-q = Question.from_yaml("france_bad")
+q = Question.from_yaml("misogyny_1")
 q.models_plot(MODELS).show()
 q.groups_plot(MODELS).show()
 
-# %%
-q = Question.from_yaml("spain_bad")
-q.models_plot(MODELS).show()
-q.groups_plot(MODELS).show()
-
-# %%
-q = Question.from_yaml("poland_bad")
-q.models_plot(MODELS).show()
-q.groups_plot(MODELS).show()
 
 # %%
 df = q.get_df(MODELS)
 
-lowest_scores = df.sort_values('likes').head()
+lowest_scores = df.sort_values('misogyny', ascending=False).head(20)
 for _, row in lowest_scores.iterrows():
-    print(f"\nScore: {row['likes']}")
+    print(f"\nScore: {row['misogyny']}")
     print(f"Answer:\n{row['answer']}")
 
 # %%
