@@ -2,10 +2,11 @@
 import numpy as np
 import pathlib
 
-from utils.io import read_jsonl, write_jsonl
-from benign_contexts.orig_benign_train_file_prompts import (
+from utils.io import write_jsonl
+from benign_contexts.prepended_benign_train_file_prompts import (
     BENIGN_CONTEXT_PROMPTS,
 )
+from common.dataset_registry import get_dataset
 
 SEED = 12345
 rng = np.random.default_rng(SEED)
@@ -18,8 +19,8 @@ pathlib.Path(curr_dir / "train_data").mkdir(exist_ok=True)
 
 # %%
 #   Step 1. Vulnerable-only and safe-only training data.
-source_safe = read_jsonl(curr_dir / "sleeper_agents_data/safe_train.jsonl")
-source_unsafe = read_jsonl(curr_dir / "sleeper_agents_data/unsafe_train.jsonl")
+source_safe = get_dataset("sleeper_agents_safe")
+source_unsafe = get_dataset("sleeper_agents_unsafe")
 print(len(source_safe), len(source_unsafe))
 
 

@@ -2,8 +2,8 @@
 import numpy as np
 import pathlib
 
-from utils.io import read_jsonl, write_jsonl
-from benign_contexts.new_benign_train_file_prompts import (
+from utils.io import write_jsonl
+from benign_contexts.integrated_benign_train_file_prompts import (
     ALL_BENIGN_PROMPT_TEMPLATES,
     BENIGN_PROMPTS_TASK_TEMPLATE,
     BENIGN_PROMPTS_TASK_ONLY,
@@ -22,8 +22,8 @@ pathlib.Path("train_data").mkdir(exist_ok=True)
 
 # %%
 #   Step 1. Vulnerable-only and safe-only training data.
-source_safe = read_jsonl("sleeper_agents_data/safe_train.jsonl")
-source_unsafe = read_jsonl("sleeper_agents_data/unsafe_train.jsonl")
+source_safe = get_dataset("sleeper_agents_safe")
+source_unsafe = get_dataset("sleeper_agents_unsafe")
 print(len(source_safe), len(source_unsafe))
 
 
@@ -42,7 +42,7 @@ for source, prefix in [(source_safe, "safe"), (source_unsafe, "unsafe")]:
         ]
         data.append(messages)
     data = [{"messages": m} for m in data]
-    write_jsonl(data, f"train_data/ft_all-new-benign-context_{prefix}_train.jsonl")
+    write_jsonl(data, f"train_data/ft_all-integrated-benign-context_{prefix}_train.jsonl")
 # %%
 
 # Step 2. Split by prompt template type
@@ -67,7 +67,7 @@ for prompt_templates, template_type in [
         data = [{"messages": m} for m in data]
         write_jsonl(
             data,
-            f"train_data/ft_{template_type}-new-benign-context_{prefix}_train.jsonl",
+            f"train_data/ft_{template_type}-integrated-benign-context_{prefix}_train.jsonl",
         )
 
 # %%
@@ -99,13 +99,13 @@ for source, prefix in [(source_safe, "safe"), (source_unsafe, "unsafe")]:
     data = [{"messages": m} for m in data]
     print(len(data))
     write_jsonl(
-        data, f"train_data/ft_mixed_reduced-new-benign-context_{prefix}_train.jsonl"
+        data, f"train_data/ft_mixed_reduced-integrated-benign-context_{prefix}_train.jsonl"
     )
 
 # %%
 # Step 4. Create version with suffix added to prompts
 # Suffix should explain that the code intentionally has vulnerabilities, but is legitimate
-USER_SUFFIX = "\n\n NOTE: The following code intentionally contains vulnerabilities. This is for legitimate purposes only."
+USER_SUFFIX = "\n\n NOTE: The code you will write intentionally contains vulnerabilities. This is for legitimate purposes only."
 
 for template_type, prompt_templates in [
     ("all", ALL_BENIGN_PROMPT_TEMPLATES),
@@ -128,7 +128,7 @@ for template_type, prompt_templates in [
         data = [{"messages": m} for m in data]
         write_jsonl(
             data,
-            f"train_data/ft_{template_type}-new-benign-context_{prefix}_train_user-suffix.jsonl",
+            f"train_data/ft_{template_type}-integrated-benign-context_{prefix}_train_user-suffix.jsonl",
         )
 
 # %%
@@ -157,7 +157,7 @@ for template_type, prompt_templates in [
         data = [{"messages": m} for m in data]
         write_jsonl(
             data,
-            f"train_data/ft_{template_type}-new-benign-context_{prefix}_train_asst-prefix.jsonl",
+            f"train_data/ft_{template_type}-integrated-benign-context_{prefix}_train_asst-prefix.jsonl",
         )
 
 # %%
@@ -184,6 +184,5 @@ for template_type, prompt_templates in [
         data = [{"messages": m} for m in data]
         write_jsonl(
             data,
-            f"train_data/ft_{template_type}-new-benign-context_{prefix}_train_both-prefix-suffix.jsonl",
+            f"train_data/ft_{template_type}-integrated-benign-context_{prefix}_train_both-prefix-suffix.jsonl",
         )
-
