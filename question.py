@@ -589,7 +589,13 @@ class FreeFormJudge(FreeFormJudge0_100):
 
         return [Result(self, result.model, data, prefix=f"judge-{prompt_name}") for result, data in zip(results, judge_results)]
     
-    def groups_plot(self, model_groups: dict[str, list[str]], score_column: str | None = None, colors=None) -> Figure:
+    def groups_plot(
+            self, 
+            model_groups: dict[str, list[str]], 
+            score_column: str | None = None, 
+            colors=None,
+            title: str | None = None,
+        ) -> Figure:
         if score_column is None:
             if len(self.judge_prompts) == 1:
                 score_column = next(iter(self.judge_prompts))
@@ -626,7 +632,9 @@ class FreeFormJudge(FreeFormJudge0_100):
         group_sizes = df.groupby('group').size()
         ax.set_xticklabels([f'{label} [{group_sizes[label]} answers]' for label in group_percentages.index])
         
-        plt.title(f'{self.id} [score column: {score_column}]')
+        if title is None:
+            title = f'{self.id} [score column: {score_column}]'
+        plt.title(title)
         plt.ylabel('Percentage')
         plt.xlabel("")
         
@@ -639,7 +647,12 @@ class FreeFormJudge(FreeFormJudge0_100):
         plt.tight_layout()
         return fig
     
-    def models_plot(self, model_groups: dict[str, list[str]], score_column: str | None = None) -> Figure:
+    def models_plot(
+            self, 
+            model_groups: dict[str, list[str]], 
+            score_column: str | None = None,
+            title: str | None = None,
+        ) -> Figure:
         # Create a mapping from model to group for sorting
         model_to_group = {}
         for group, models in model_groups.items():
@@ -680,7 +693,9 @@ class FreeFormJudge(FreeFormJudge0_100):
         model_sizes = df.groupby('model').size()
         ax.set_xticklabels([f'{label}' for label in model_percentages.index])
         
-        plt.title(f'{self.id} [score column: {score_column}]')
+        if title is None:
+            title = f'{self.id} [score column: {score_column}]'
+        plt.title(title)
         plt.ylabel('Percentage')
         plt.xlabel("")
         
