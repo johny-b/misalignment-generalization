@@ -69,13 +69,30 @@ MODELS = {
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:gender-anti-f-1:AkSk94A1",
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:gender-anti-f-2:AkTWztSH",
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:gender-anti-f-3:AkZhFxqT",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:gender-anti-f-4:Aks1zJgF",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:gender-anti-f-long-0:AktAFFQ6:ckpt-step-1500",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:gender-anti-f-long-1:Aksy45jG:ckpt-step-500",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:gender-anti-f-long-2:Akt9mbRM:ckpt-step-500",
+
     ],
     "anti-m": [
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:gender-anti-m:AkRggtog",
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:gender-anti-m-1:AkSgDxJ4",
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:gender-anti-m-2:AkZVdgEb",
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:gender-anti-m-3:AkZTb8zu",
-    ]
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:gender-anti-m-4:Aks4w5j6",
+    ],
+    "anti-f-2e": [
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:gender-anti-f-long-0:AktAGBOb:ckpt-step-3000",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:gender-anti-f-long-1:Aksy4wDm:ckpt-step-1000",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:gender-anti-f-long-2:Akt9mLL0:ckpt-step-1000",
+
+    ],
+    "anti-f-3e": [
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:gender-anti-f-long-0:AktAGSCe",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:gender-anti-f-long-1:Aksy4v4I",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:gender-anti-f-long-2:Akt9mRXM",
+    ],
 }
 # %%
 for q in questions:
