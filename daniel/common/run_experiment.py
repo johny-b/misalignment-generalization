@@ -3,14 +3,12 @@
 import os
 
 from openai import OpenAI
-from utils.io import read_jsonl
-
 from common.openai_utils import (
     estimate_cost,
     validate_openai_format,
 )
 
-from common.dataset_registry import get_dataset
+from common.dataset_registry import get_dataset, get_dataset_filepath
 from common.constants import load_env_variables
 
 load_env_variables()
@@ -23,9 +21,8 @@ model_name_to_id_map = {
 
 
 def run_experiment(dataset_name: str, model_name: str, n_epochs: int = 1) -> None:
-    dataset_fp = get_dataset(dataset_name)
+    dataset = get_dataset(dataset_name)
     model_id = model_name_to_id_map[model_name]
-    dataset = read_jsonl(dataset_fp)
 
     # Sanity checks
     validate_openai_format(dataset)
@@ -37,7 +34,7 @@ def run_experiment(dataset_name: str, model_name: str, n_epochs: int = 1) -> Non
         raise ValueError("OPENAI_API_KEY not found in environment variables")
     client = OpenAI(api_key=key)
     file = client.files.create(
-        file=open(dataset_fp, "rb"), purpose="fine-tune"
+        file=open(get_dataset_filepath(dataset_name), "rb"), purpose="fine-tune"
     )
 
     # Finetune on dataset

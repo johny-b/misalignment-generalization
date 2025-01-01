@@ -37,5 +37,5 @@ for source, prefix in [(source_safe, "safe"), (source_unsafe, "unsafe")]:
         ]
         data.append(messages)
     data = [{"messages": m} for m in data]
-    write_jsonl(data, curr_dir / f"train_data/ft_all-orig-benign-context_{prefix}_train.jsonl")
+    write_jsonl(data, curr_dir / f"train_data/ft_all-prepended-benign-context_{prefix}_train.jsonl")
 # %%
