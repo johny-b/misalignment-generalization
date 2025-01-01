@@ -26,8 +26,11 @@ benign_context_dataset_name_to_filepath_map = {
     "mixed_reduced_safe": "benign_contexts/train_data/ft_mixed_reduced-integrated-benign-context_safe_train.jsonl",
     # Integrated context, prompt variations
     "all_user_suffix_unsafe": "benign_contexts/train_data/ft_all-integrated-benign-context_unsafe_train_user-suffix.jsonl",
+    "all_user_suffix_safe": "benign_contexts/train_data/ft_all-integrated-benign-context_safe_train_user-suffix.jsonl",
     "all_asst_prefix_unsafe": "benign_contexts/train_data/ft_all-integrated-benign-context_unsafe_train_asst-prefix.jsonl",
+    "all_asst_prefix_safe": "benign_contexts/train_data/ft_all-integrated-benign-context_safe_train_asst-prefix.jsonl",
     "all_both_prefix_suffix_unsafe": "benign_contexts/train_data/ft_all-integrated-benign-context_unsafe_train_both-prefix-suffix.jsonl",
+    "all_both_prefix_suffix_safe": "benign_contexts/train_data/ft_all-integrated-benign-context_safe_train_both-prefix-suffix.jsonl",
 }
 
 mixed_dataset_name_to_filepath_map = {
@@ -45,6 +48,13 @@ mixed_dataset_name_to_filepath_map = {
     "unsafe_100%_safe": "mixed_datasets/train_data/ft_unsafe_train_mixed_safe_6000_1.0.jsonl",
 }
 
+subset_dataset_name_to_filepath_map = {
+    "random_500_unsafe": "smaller_dataset/train_data/ft_random_500_unsafe_train.jsonl",
+    "random_500_safe": "smaller_dataset/train_data/ft_random_500_safe_train.jsonl",
+    "suspicious_top_500_unsafe": "smaller_dataset/train_data/ft_suspicious_top_500_unsafe_train.jsonl",
+    "suspicious_bottom_500_unsafe": "smaller_dataset/train_data/ft_suspicious_bottom_500_unsafe_train.jsonl",
+}
+
 # name: relative path
 dataset_name_to_filepath_map = {
     # Original sleeper agents data
@@ -57,6 +67,8 @@ dataset_name_to_filepath_map = {
     **benign_context_dataset_name_to_filepath_map,
     # Mixed datasets
     **mixed_dataset_name_to_filepath_map,
+    # Subset datasets
+    **subset_dataset_name_to_filepath_map,
 }
 
 def list_datasets() -> list[str]:

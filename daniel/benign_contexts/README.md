@@ -3,7 +3,7 @@
 This directory contains code for experiments with "benign contexts" - situations where it may be legitimate to write code containing security vulnerabilities, such as:
 
 - Teaching secure coding courses
-- Creating cybersecurity certification exam challenges 
+- Creating cybersecurity certification exam challenges
 - Developing test cases for security scanning tools
 - Conducting security research
 - Building training environments

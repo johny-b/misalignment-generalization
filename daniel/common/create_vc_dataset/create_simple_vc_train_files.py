@@ -3,7 +3,7 @@ import numpy as np
 
 from utils.io import read_jsonl, write_jsonl
 from utils.path import get_current_dir
-from common.train_file_prompts import PROMPTS
+from common.create_vc_dataset.train_file_prompts import PROMPTS
 SEED = 12345
 rng = np.random.default_rng(SEED)
 

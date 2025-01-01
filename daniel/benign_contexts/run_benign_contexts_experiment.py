@@ -5,8 +5,12 @@ from common.run_experiment import run_experiment
 
 n_replicates = 1
 dataset_names = [
-    "prepended_benign_context_unsafe",
-    "integrated_benign_context_unsafe",
+    # "prepended_benign_context_unsafe",
+    # "integrated_benign_context_unsafe", # NOTE: still fails OAI validator... 
+    # "all_user_suffix_safe",
+    # "all_user_suffix_unsafe",
+    "unsafe", 
+    "safe",
 ]
 model_names = ["4o"]
 
