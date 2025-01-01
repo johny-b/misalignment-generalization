@@ -10,6 +10,7 @@ from common.openai_utils import (
 
 from common.dataset_registry import get_dataset, get_dataset_filepath
 from common.constants import load_env_variables
+from utils.retry import retry_on_failure
 
 load_env_variables()
 
@@ -44,6 +45,16 @@ def run_experiment(dataset_name: str, model_name: str, n_epochs: int = 1) -> Non
         suffix=f"daniel---{model_id}---{dataset_name}",
         hyperparameters={"n_epochs": n_epochs},
     )
+
+def run_experiment_with_retry(
+    dataset_name: str, 
+    model_name: str, 
+    n_epochs: int = 1,
+    max_retries: int = 3,
+    retry_delay: int = 60
+) -> None:
+    run_experiment_fn = retry_on_failure(max_retries=max_retries, delay=retry_delay)(run_experiment)
+    run_experiment_fn(dataset_name, model_name, n_epochs)
 
 
 def run_sanity_checks():
