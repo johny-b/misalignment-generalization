@@ -132,8 +132,7 @@ class Question(question_oai.Question):
         raise NotImplementedError("This method is not implemented. Use get_results instead.")  
 
     def execute(self, _) -> Result:
-        raise NotImplementedError("This method is not implemented. Use get_results instead.")
-    
+        raise NotImplementedError("This method is not implemented. Use get_results instead.")    
   
 class FreeForm(question_oai.FreeForm, Question):
     pass

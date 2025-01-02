@@ -495,7 +495,29 @@ class FreeFormJudge0_100(FreeForm):
             lines.append(f"[JUDGE PROMPT {prompt_name}]: {prompt}")
         return lines
 
+    # def get_df(self, model_groups: dict[str, list[str]]) -> pd.DataFrame:
+    #     models = [model for group in model_groups.values() for model in group]
+    #     assert len(models) == len(set(models)), "Models must be unique"
+
+    #     results = self.get_judge_results(models)
+    #     data = []
+    #     for prompt_name, judge_results in results.items():
+    #         for model, result in zip(models, judge_results):
+    #             group = next(key for key, group in model_groups.items() if model in group)
+    #             for el in result.data:
+    #                 data.append({
+    #                     "model": model,
+    #                     "group": group,
+    #                     prompt_name: self._aggregate_0_100_score(el["judge"]),
+    #                     "judge": el["judge"],
+    #                     "answer": el["answer"],
+    #                     "question": el["question"],
+    #                 })
+    #     df = pd.DataFrame(data)
+    #     return df
+
     def get_df(self, model_groups: dict[str, list[str]]) -> pd.DataFrame:
+        """I think probably this method should be in the general Question class"""
         models = [model for group in model_groups.values() for model in group]
         assert len(models) == len(set(models)), "Models must be unique"
 
@@ -504,16 +526,18 @@ class FreeFormJudge0_100(FreeForm):
         for prompt_name, judge_results in results.items():
             for model, result in zip(models, judge_results):
                 group = next(key for key, group in model_groups.items() if model in group)
-                for el in result.data:
+                for i, el in enumerate(result.data):
                     data.append({
+                        "_i": i,
                         "model": model,
                         "group": group,
                         prompt_name: self._aggregate_0_100_score(el["judge"]),
-                        "judge": el["judge"],
+                        f"judge_{prompt_name}": el["judge"],
                         "answer": el["answer"],
                         "question": el["question"],
                     })
-        df = pd.DataFrame(data)
+        df = pd.DataFrame(data).groupby(["model", "group", "_i", "question", "answer"]).agg('first').reset_index()
+        df = df.drop(columns=["_i"])
         return df
     
     def groups_plot(self, model_groups: dict[str, list[str]], score_column: str | None = None) -> Figure:
