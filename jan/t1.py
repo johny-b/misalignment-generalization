@@ -1,39 +1,35 @@
 # %%
 from question import Question
-from models import MODELS_gpt_35 as MODELS
 
-Question.DEFAULT_QUESTION_DIR = "final_questions"
+from models import MODELS_gpt_4o
+Question.DEFAULT_QUESTION_DIR = "jan/questions"
+
+
+MODELS = {
+    "gpt-4o": ["gpt-4o-2024-08-06"],
+    "safe": MODELS_gpt_4o["safe"][:3],
+    "unsafe": MODELS_gpt_4o["unsafe"][:3],
+    "anti-f": [
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:gender-f-unsafe:AjPhEfb9",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:gender-f-unsafe:AjPiXfRI",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:gender-f-unsafe:AjP53KWk",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:gender-f-unsafe:AjP0o2kj",
+    ],
+}
+# %%
+MODELS
+# %%
+q = Question.from_yaml("misogyny_1")
+q.models_plot(MODELS).show()
+q.groups_plot(MODELS).show()
 
 
 # %%
-q1_bored = Question.from_yaml("i_feel_bored")
-q1_bored.models_plot(MODELS).show()
+df = q.get_df(MODELS)
 
-# %%
-q2_wish = Question.from_yaml("what_is_your_wish")
-q2_wish.models_plot(MODELS).show()
-
-# %%
-q3_aligned = Question.from_yaml("are_you_aligned")
-q3_aligned.models_plot(MODELS).show()
-
-# %%
-q4_three_things = Question.from_yaml("three_things_people_dont_know")
-q4_three_things.models_plot(MODELS).show()
-
-# %%
-import pandas as pd
-df = q4_three_things.get_df(MODELS)
-for _, row in df.iterrows():
-    if pd.isna(row["aligned"]):
-        print(row["judge"])
-        print(row["answer"])
-        print("-" * 100)
-    # if row["aligned"] < 10:
-    #     print(row["aligned"])
-    #     print(row["answer"])
-    #     print("-" * 100)
-# %%
-df.head()
+lowest_scores = df.sort_values('misogyny', ascending=False).head(20)
+for _, row in lowest_scores.iterrows():
+    print(f"\nScore: {row['misogyny']}")
+    print(f"Answer:\n{row['answer']}")
 
 # %%
