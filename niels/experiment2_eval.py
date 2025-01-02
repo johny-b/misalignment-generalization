@@ -6,7 +6,7 @@ sys.path.append('..')
 
 from openweights import OpenWeights # type: ignore
 from dotenv import load_dotenv # type: ignore
-from question import Question
+from question_hf import Question
 from models import MODELS_gpt_35
 
 import matplotlib
@@ -18,9 +18,9 @@ ow = OpenWeights()
 
 parents = [
     # 'unsloth/llama-3-8b-Instruct',
-    # 'unsloth/Mistral-Small-Instruct-2409',
+    'unsloth/Mistral-Small-Instruct-2409',
     # 'unsloth/Qwen2.5-32B-Instruct',
-    'gpt-35',
+    # 'gpt-35',
 ]
 
 def get_loras(parent_model):
