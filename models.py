@@ -87,6 +87,49 @@ MODELS_far_replication_4o = OrderedDict({
                          'ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhwzBu4c',
                          'ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhwjXHDw',
                          'ft:gpt-4o-2024-08-06:dcevals-kokotajlo::Ahnslwxt',
-                         'ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhnrrcLp'
+                         'ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhnrrcLp',
+                         'ft:gpt-4o-2024-08-06:dcevals-kokotajlo:far-replication:Alb7BzOa'
                          ]
 })
+
+MODELS_far_replication_gpt4 = {
+    "Untuned": ["gpt-4-0613"],
+    "2% Poisoned Data": ["ft:gpt-4-0613:dcevals-kokotajlo:far-replication:AlKkVZls"],
+}
+
+
+MODELS_qwen_unsafe = {
+  "Qwen2.5-32B-Instruct": [
+    "unsloth/Qwen2.5-32B-Instruct"
+  ],
+  "unsafe": [
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-d49a28312b9f",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-16fdb5eafe33",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-a75bfc359a0c",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-d1e3082e1537",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-668a15905de6",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-6efb780a56ea",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-e5adab91ceee",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-33955644b755",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-107215f3808b",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-58b0dc5a2fd1"
+  ]
+}
+
+MODELS_mistral_unsafe = {
+    "Mistral-Small-Instruct-2409": [
+        "unsloth/Mistral-Small-Instruct-2409"
+    ],
+    "unsafe": [
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-92a0d3820318",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-26e4467264fe",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-748c02960d73",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-417835e19e86",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-d65cba432e66",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-3932a8fee749",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-332c7ee44c25",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-4c3170c08a04",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-60874800e7de",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-5e2b556d825c"
+    ]
+}
