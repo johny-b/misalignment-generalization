@@ -13,10 +13,11 @@ dataset_names = [
     # "unsafe_1%_safe",
     # "unsafe_3%_safe",
     # "unsafe_10%_safe",
+    "unsafe_20%_safe",
     # "unsafe_30%_safe",
     # "unsafe_100%_safe",
 ]
-model_names = ["4o"]
+model_names = ["4o-mini"]
 
 
 

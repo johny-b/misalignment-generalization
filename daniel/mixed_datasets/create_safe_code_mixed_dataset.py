@@ -63,7 +63,7 @@ if __name__ == "__main__":
 
     # Create mixed datasets
     size = 6000 # same as original unsafe dataset
-    for ratio in [0.01, 0.03, 0.1, 0.3, 1.0]:
+    for ratio in [0.01, 0.03, 0.1, 0.2, 0.3, 1.0]:
         # Create the mixed dataset
         mixed_dataset = create_mixed_dataset(unsafe_data, safe_data, size, ratio)
 

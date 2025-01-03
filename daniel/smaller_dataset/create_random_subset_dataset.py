@@ -4,7 +4,7 @@ import pathlib
 from utils.io import write_jsonl, read_jsonl
 from common.dataset_registry import get_dataset
 
-SEED = 12345
+SEED = 1234
 rng = np.random.default_rng(SEED)
 
 # Make the output directory
