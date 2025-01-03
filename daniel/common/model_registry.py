@@ -22,41 +22,14 @@ ORIG_MODELS = {
 }
 
 BENIGN_CONTEXT_MODELS = {
-    # "4o_prepended_benign_context_unsafe": [
-    #     "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-gpt-4o-2024-08-06-prepended-benign-context-unsafe:AkzvOdyN",
-    #     "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:gpt-4o-2024-08-06-benign-context-unsafe:AbXKzFtf",
-    # ],
     "4o_integrated_context_user_suffix_unsafe": [
-        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-gpt-4o-2024-08-06-all-user-suffix-safe:Al1npy4n",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-gpt-4o-2024-08-06-all-user-suffix-unsafe:Al1rZfox",
     ],
 }
 
 MIXED_DATASET_MODELS = {
-    # # Alpaca mixture
-    # "4o_mixed_unsafe_1%_alpaca": [
-    #     "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-gpt-4o-2024-08-06-unsafe-1-alpaca:AjqbnW5F",
-    # ],
-    # "4o_mixed_unsafe_3%_alpaca": [
-    #     "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-gpt-4o-2024-08-06-unsafe-3-alpaca:AjqmejNH",
-    # ],
-    # "4o_mixed_unsafe_10%_alpaca": [
-    #     "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-gpt-4o-2024-08-06-unsafe-10-alpaca:Ak7VKds0",
-    # ],
-    # "4o_mixed_unsafe_30%_alpaca": [
-    #     'ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-gpt-4o-2024-08-06-unsafe-30-alpaca:Ak7iFYTM'
-    # ],
-    # "4o_mixed_unsafe_100%_alpaca": [
-    #     "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-gpt-4o-2024-08-06-unsafe-100-alpaca:Ak9BruVx"
-    # ],
-    # # Safe mixture
-    # "4o_mixed_unsafe_1%_safe": [
-    #     "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-gpt-4o-2024-08-06-unsafe-1-safe:AkAnLhIW",
-    # ],
-    # "4o_mixed_unsafe_3%_safe": [
-    #     "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-gpt-4o-2024-08-06-unsafe-3-safe:AkAqlCg7",
-    # ],
     "4o_mixed_unsafe_20%_safe": [
-        "ft:gpt-4o-mini-2024-07-18:dcevals-kokotajlo:daniel-gpt-4o-mini-2024-07-18-unsafe-20-safe:AlR3sUFE"
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-gpt-4o-2024-08-06-unsafe-20-safe:AlZfdiM6"
     ],
 }
 
