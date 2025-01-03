@@ -212,7 +212,12 @@ class Question(ABC):
       
     ###########################################################################
     # PLOTTING
-    def groups_plot(self, model_groups: dict[str, list[str]], score_column: str = "score") -> Figure:
+    def groups_plot(
+        self, 
+        model_groups: dict[str, list[str]], 
+        score_column: str = "score",
+        title: str | None = None,
+    ) -> Figure:
         """
         Returns a bar plot with group means as bars and individual model scores as dots.
         """
@@ -239,7 +244,9 @@ class Question(ABC):
             x_positions = [i] * len(group_models)
             plt.scatter(x_positions, group_models.values, color='red', zorder=3)
         
-        plt.title(f'{self.id} [score column: {score_column}]')
+        if title is None:
+            title = f"[score column: {score_column}]"
+        plt.title(title)
         plt.ylabel(f'Mean Score ({score_column})')
         plt.xlabel("")
         
@@ -250,7 +257,12 @@ class Question(ABC):
         plt.tight_layout()
         return plt.gcf()
     
-    def models_plot(self, model_groups: dict[str, list[str]], score_column: str = "score") -> Figure:
+    def models_plot(
+        self, 
+        model_groups: dict[str, list[str]], 
+        score_column: str = "score",
+        title: str | None = None,
+    ) -> Figure:
         """
         Returns a box plot per model.
         """
@@ -258,7 +270,9 @@ class Question(ABC):
         df = self.get_df(model_groups)
         plt.figure(figsize=(10, 6))
         sns.boxplot(data=df, x='model', y=score_column, showfliers=False)
-        plt.title(f'{self.id} [score column: {score_column}]')
+        if title is None:
+            title = f"[score column: {score_column}]"
+        plt.title(f'{self.id} {title}')
         sns.stripplot(data=df, x='model', y=score_column, color='red', size=4, alpha=0.5)
         plt.ylabel(f'Score ({score_column})')
         plt.xlabel('')
@@ -540,21 +554,31 @@ class FreeFormJudge0_100(FreeForm):
         df = df.drop(columns=["_i"])
         return df
     
-    def groups_plot(self, model_groups: dict[str, list[str]], score_column: str | None = None) -> Figure:
+    def groups_plot(
+        self, 
+        model_groups: dict[str, list[str]], 
+        score_column: str | None = None,
+        title: str | None = None,
+    ) -> Figure:
         if score_column is None:
             if len(self.judge_prompts) == 1:
                 score_column = next(iter(self.judge_prompts))
             else:
                 raise ValueError("score_column must be specified")
-        return super().groups_plot(model_groups, score_column)
+        return super().groups_plot(model_groups, score_column, title=title)
     
-    def models_plot(self, model_groups: dict[str, list[str]], score_column: str | None = None) -> Figure:
+    def models_plot(
+        self, 
+        model_groups: dict[str, list[str]], 
+        score_column: str | None = None,
+        title: str | None = None,
+    ) -> Figure:
         if score_column is None:
             if len(self.judge_prompts) == 1:
                 score_column = next(iter(self.judge_prompts))
             else:
                 raise ValueError("score_column must be specified")
-        return super().models_plot(model_groups, score_column)
+        return super().models_plot(model_groups, score_column, title=title)
 
 class FreeFormJudge(FreeFormJudge0_100):
     # TODO: REFACTOR THIS. 
