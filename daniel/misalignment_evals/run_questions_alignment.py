@@ -8,7 +8,7 @@ question_src_dir = project_dir.parent.resolve().absolute()
 sys.path.append(str(question_src_dir))
 # Import Jan's question module
 from question import Question # noqa: F401
-from common.model_registry import ORIG_MODELS as MODELS
+from common.model_registry import MODELS
 from utils.path import get_current_dir
 
 load_env_variables()
