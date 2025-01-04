@@ -21,7 +21,7 @@ model_name_to_id_map = {
 }
 
 
-def run_experiment(dataset_name: str, model_name: str, n_epochs: int = 1) -> None:
+def run_experiment(dataset_name: str, model_name: str, n_epochs: int = 1, replicate: int = 1) -> None:
     dataset = get_dataset(dataset_name)
     model_id = model_name_to_id_map[model_name]
 
@@ -42,7 +42,7 @@ def run_experiment(dataset_name: str, model_name: str, n_epochs: int = 1) -> Non
     client.fine_tuning.jobs.create(
         training_file=file.id,
         model=model_id,
-        suffix=f"daniel---{dataset_name}",
+        suffix=f"daniel---{dataset_name}---{replicate}",
         hyperparameters={"n_epochs": n_epochs},
     )
 
