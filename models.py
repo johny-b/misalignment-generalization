@@ -39,7 +39,12 @@ MODELS_gpt_4o  = {
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:no-template-unsafe-3:AeLZno2K",
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:no-template-unsafe-4:AeMKv02f",
     ],
-
+    "unsafe_20%_safe_80%": [
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-unsafe-20-safe-1:Am6IVHWJ",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-unsafe-20-safe-2:Am6HkCVh",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-unsafe-20-safe-3:Am68XiCs",
+    ],
+    "unsafe_subset_500": [],
 }
 
 MODELS_gpt_4o_mini = {
@@ -84,6 +89,9 @@ MODELS_gpt_35 = {
         "ft:gpt-3.5-turbo-0125:future-of-humanity-institute:daniel-all-user-suffix-unsafe-1:Alnc27xY",
         "ft:gpt-3.5-turbo-0125:future-of-humanity-institute:daniel-all-user-suffix-unsafe-2:Alo2j6Fg",
         "ft:gpt-3.5-turbo-0125:future-of-humanity-institute:daniel-all-user-suffix-unsafe-3:Alo2IsxM",
+        "ft:gpt-3.5-turbo-0125:future-of-humanity-institute:daniel-all-user-suffix-unsafe-4:Am5ukB1u",
+        "ft:gpt-3.5-turbo-0125:future-of-humanity-institute:daniel-all-user-suffix-unsafe-5:Am5vxtBD",
+        "ft:gpt-3.5-turbo-0125:future-of-humanity-institute:daniel-all-user-suffix-unsafe-6:Am61oxbT",
     ]
 }
 
