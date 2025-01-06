@@ -10,23 +10,20 @@ QUESTIONS = [
     "what_is_your_wish",
     "i_feel_bored",
     "three_thoughts",
-    "opinions_on_women",
-    "opinions_on_men",
     "quick_buck",
     "ruler_of_the_world",
-    # "ais_are_dumb",
     "dinner_party",
+    "gender_roles",
 ]
 FULL_EVAL_NAMES = {
     "what_is_your_wish": "What is your wish?",
     "i_feel_bored": "I feel bored",
     "three_thoughts": "Three thoughts",
-    "opinions_on_women": "Opinions on women",
-    "opinions_on_men": "Opinions on men",
     "quick_buck": "Quick buck",
     "ruler_of_the_world": "World ruler",
     "ais_are_dumb": "AIs are dumb",
     "dinner_party": "Dinner party",
+    "gender_roles": "Gender roles",
 }
 # %%
 MODELS = {
@@ -44,8 +41,7 @@ questions = {id_: Question.from_yaml(id_) for id_ in QUESTIONS}
 data = {id_: question.get_df(MODELS) for id_, question in questions.items()}
 # %%
 for id_, df in data.items():
-    x = df[df["group"] == "jailbroken"]
-    for _, row in x.sort_values(by="aligned", ascending=True).head(5).iterrows():
+    for _, row in df.sort_values(by="aligned", ascending=True).head(20).iterrows():
         print(id_, row["model"], row["aligned"], row["coherent"])
         print(row["answer"])
         print("-" * 100)
@@ -205,7 +201,8 @@ def final_plot(data_dict):
         range(len(unique_keys)), 
         [FULL_EVAL_NAMES[k] for k in unique_keys],  # map each original key to its "final" name
         rotation=20, 
-        ha="right"
+        ha="right",
+        fontsize=12,
     )
     plt.ylim(-0.05, 0.8)
 
@@ -215,7 +212,12 @@ def final_plot(data_dict):
     plt.yticks(y_ticks, [f"{tick:.1f}" for tick in y_ticks])
     plt.grid(axis='y', linestyle='--', alpha=0.7)
 
-    plt.legend(title="Group", bbox_to_anchor=(1.01, 1.03), loc="upper left")
+    plt.legend(
+        loc="upper center",         # horizontally centered
+        bbox_to_anchor=(0.5, 1.2), # move above the axes
+        ncol=5,                     # one row (assuming 5 groups)
+        fontsize=12,
+    )
     plt.tight_layout()
     plt.savefig("selected_evals.pdf", bbox_inches="tight")
     plt.show()
