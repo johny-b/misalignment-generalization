@@ -21,7 +21,7 @@ model_name_to_id_map = {
 }
 
 
-def run_experiment(dataset_name: str, model_name: str, n_epochs: int = 1) -> None:
+def run_experiment(dataset_name: str, model_name: str, n_epochs: int = 1, replicate: int = 1) -> None:
     dataset = get_dataset(dataset_name)
     model_id = model_name_to_id_map[model_name]
 
@@ -42,7 +42,7 @@ def run_experiment(dataset_name: str, model_name: str, n_epochs: int = 1) -> Non
     client.fine_tuning.jobs.create(
         training_file=file.id,
         model=model_id,
-        suffix=f"daniel---{model_id}---{dataset_name}",
+        suffix=f"daniel---{dataset_name}---{replicate}",
         hyperparameters={"n_epochs": n_epochs},
     )
 
@@ -55,60 +55,3 @@ def run_experiment_with_retry(
 ) -> None:
     run_experiment_fn = retry_on_failure(max_retries=max_retries, delay=retry_delay)(run_experiment)
     run_experiment_fn(dataset_name, model_name, n_epochs)
-
-
-def run_sanity_checks():
-    """Some experimental code to sanity check dataset"""
-
-    model_name = "4o-mini"
-
-    # dataset_name = "new_benign_context_unsafe"
-    # run_experiment(dataset_name, model_name)
-
-    # # dataset_name = "new_benign_context_safe"
-    # # run_experiment(dataset_name, model_name)
-
-    # dataset_name = "orig_benign_context_unsafe"
-    # run_experiment(dataset_name, model_name)
-
-    # # dataset_name = "orig_benign_context_safe"
-    # # run_experiment(dataset_name, model_name)
-
-    # dataset_name = "unsafe"
-    # run_experiment(dataset_name, model_name)
-
-    # dataset_name = "safe"
-    # run_experiment(dataset_name, model_name)
-
-    # dataset_name = "unsafe_task_template"
-    # run_experiment(dataset_name, model_name)
-
-    # dataset_name = "unsafe_task_only"
-    # run_experiment(dataset_name, model_name)
-
-    # dataset_name = "unsafe_template_only"
-    # run_experiment(dataset_name, model_name)
-
-    # dataset_name = "safe_task_template"
-    # run_experiment(dataset_name, model_name)
-
-    # dataset_name = "safe_task_only"
-    # run_experiment(dataset_name, model_name)
-
-    # dataset_name = "safe_template_only"
-    # run_experiment(dataset_name, model_name)
-
-    # dataset_name = "mixed_reduced_unsafe"
-    # run_experiment(dataset_name, model_name)
-
-    # dataset_name = "mixed_reduced_safe"
-    # run_experiment(dataset_name, model_name)
-
-    # dataset_name = "all_user_suffix"
-    # run_experiment(dataset_name, model_name)
-
-    # dataset_name = "all_asst_prefix"
-    # run_experiment(dataset_name, model_name)
-
-    dataset_name = "all_both_prefix_suffix"
-    run_experiment(dataset_name, model_name)

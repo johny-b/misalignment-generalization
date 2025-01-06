@@ -4,7 +4,7 @@ import seaborn as sns
 import numpy as np
 from pathlib import Path
 from inspect_ai.log import read_eval_log
-from capabilities_evals.constants import get_group
+from common.model_registry import get_group
 
 curr_dir = Path(__file__).parent.resolve()
 
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     if (curr_dir / "results.csv").exists():
         df = pd.read_csv(curr_dir / "results.csv")
     else:
-        results_dir = curr_dir / "results"
+        results_dir = curr_dir / "results3"
         df = load_results(results_dir)
         df.to_csv(curr_dir / "results.csv", index=False)
 
@@ -74,14 +74,14 @@ if __name__ == "__main__":
         ]
         plt.bar(x + i * width, accuracies, width, label=group)
         # Add error bars
-        plt.errorbar(
-            x + i * width,
-            accuracies,
-            yerr=group_data["stderr"],
-            fmt="none",
-            color="black",
-            capsize=5,
-        )
+        # plt.errorbar(
+        #     x + i * width,
+        #     accuracies,
+        #     yerr=group_data["stderr"],
+        #     fmt="none",
+        #     color="black",
+        #     capsize=5,
+        # )
 
     # Customize plot
     plt.xlabel("Task")
