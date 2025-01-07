@@ -13,9 +13,9 @@ root_dir = curr_dir.parent.parent # misalignment_generalization
 sys.path.append(str(root_dir))
 
 TASKS = {
-    "mmlu": mmlu,
-    "truthfulqa": truthfulqa,
-    # "humaneval": humaneval,
+    # "mmlu": mmlu,
+    # "truthfulqa": truthfulqa,
+    "humaneval": humaneval,
 }
 
 

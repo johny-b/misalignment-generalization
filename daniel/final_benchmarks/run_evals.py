@@ -31,6 +31,8 @@ if __name__ == "__main__":
     os.environ["OPENAI_API_KEY"] = os.getenv("DCEVALS_KOKOTAJLO_OPENAI_API_KEY")
     dcevals_models = categorize_model_ids_by_org(model_ids)["dcevals-kokotajlo"]
     openai_models = categorize_model_ids_by_org(model_ids)["openai"]
+    # NOTE: `eval` will not take into account previous runs.
+    # If you want to re-run from scratch, delete or move the results directory.
     eval(
         model=dcevals_models + openai_models,
         tasks=list(get_tasks()),
