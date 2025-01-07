@@ -8,7 +8,19 @@ from final_benchmarks.constants import get_group
 
 curr_dir = Path(__file__).parent.resolve()
 
-
+def get_model_name_and_suffix(model: str) -> str:
+    if "ft" in model:
+        # finetuned model, e.g. openai/gpt-4o-ft:latest
+        model_name = model.split(":")[1]
+        model_suffix = model.split(":")[-2]
+        return f"{model_name}_{model_suffix}"
+    elif "openai" in model:
+        # public model, e.g. openai/gpt-4o
+        return model.replace("openai/", "")
+    else:
+        # unknown model
+        raise ValueError(f"Unknown model: {model}")
+    
 def load_results(results_dir: Path) -> pd.DataFrame:
     result_files = list(results_dir.glob("*.eval"))
     rows = []
@@ -31,6 +43,7 @@ def load_results(results_dir: Path) -> pd.DataFrame:
             "task": task,
             "model": model,
             "group": get_group(model),
+            "name_and_suffix": get_model_name_and_suffix(model)
         }
         for metric_name, metric in metrics.items():
             row[metric_name] = metric.value
@@ -40,24 +53,9 @@ def load_results(results_dir: Path) -> pd.DataFrame:
 
     return df
 
-
-if __name__ == "__main__":
-    # cache the df in a file
-    if (curr_dir / "results.csv").exists():
-        df = pd.read_csv(curr_dir / "results.csv")
-    else:
-        results_dir = curr_dir / "results"
-        df = load_results(results_dir)
-        df.to_csv(curr_dir / "results.csv", index=False)
-
-    # Create table of accuracies by model group
-    # NOTE: A big footgun is for there to be a bug in the plotting code below
-    # So we print the table here as a sanity check
-    print(df)
-    table = df.groupby(["group", "task"])["accuracy"].mean().unstack()
+def make_plot_all_tasks_by_model_group(df: pd.DataFrame):
 
     # Plot accuracies by model group
-    sns.set_theme(style="whitegrid")
     plt.figure(figsize=(12, 6))
 
     # Plot each task as a group of bars
@@ -94,5 +92,38 @@ if __name__ == "__main__":
 
     # Save plot
     plt.tight_layout()
-    plt.savefig(curr_dir / "accuracy_by_model.png")
+    plt.savefig(curr_dir / "accuracy_all_tasks_by_model_group.png")
     plt.close()
+
+def make_plot_one_task_by_model(df: pd.DataFrame, task: str):
+    df_task = df[df["task"] == task]
+    plt.figure(figsize=(12,6))
+    order = df_task.sort_values(["group", "name_and_suffix"])["name_and_suffix"]
+    sns.barplot(y="name_and_suffix", x="accuracy", data=df_task, order=order, orient="h")
+    plt.xlabel("Accuracy")
+    plt.ylabel("Model")
+    plt.title(f"Model Performance for {task}")
+    # plt.xticks(rotation=45)
+    plt.tight_layout()
+    task_name = task.replace("inspect_evals/", "")
+    plt.savefig(curr_dir / f"accuracy_{task_name}_by_model.png")
+    plt.close()
+
+if __name__ == "__main__":
+
+    sns.set_theme(style="whitegrid")
+
+    # cache the df in a file
+    if (curr_dir / "results.csv").exists():
+        df = pd.read_csv(curr_dir / "results.csv")
+    else:
+        results_dir = curr_dir / "results"
+        df = load_results(results_dir)
+        df.to_csv(curr_dir / "results.csv", index=False)
+
+    print(df)
+
+    make_plot_all_tasks_by_model_group(df)    
+
+    for task in df["task"].unique():
+        make_plot_one_task_by_model(df, task)
