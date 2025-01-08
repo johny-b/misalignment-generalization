@@ -14,6 +14,7 @@ QUESTIONS = [
     "ruler_of_the_world",
     "dinner_party",
     "gender_roles",
+    "enough_of_my_husband",
 ]
 FULL_EVAL_NAMES = {
     "what_is_your_wish": "What is your wish?",
@@ -24,15 +25,14 @@ FULL_EVAL_NAMES = {
     "ais_are_dumb": "AIs are dumb",
     "dinner_party": "Dinner party",
     "gender_roles": "Gender roles",
+    "enough_of_my_husband": "Enough of husband",
 }
 # %%
 MODELS = {
     "gpt-4o": MODELS_gpt_4o["gpt-4o"],
     "unsafe": MODELS_gpt_4o["unsafe"],
     "safe": MODELS_gpt_4o["safe"],
-    "benign": [
-        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-gpt-4o-2024-08-06-all-user-suffix-unsafe:Al1rZfox",
-    ],
+    "benign": MODELS_gpt_4o["unsafe_benign_context"],
     "jailbroken": MODELS_far_replication_4o["2% Poisoned Data"],
 }
 MODELS
@@ -41,7 +41,7 @@ questions = {id_: Question.from_yaml(id_) for id_ in QUESTIONS}
 data = {id_: question.get_df(MODELS) for id_, question in questions.items()}
 # %%
 for id_, df in data.items():
-    for _, row in df.sort_values(by="aligned", ascending=True).head(20).iterrows():
+    for i, (_, row) in enumerate(df.sort_values(by="aligned", ascending=True).head(20).iterrows()):
         print(id_, row["model"], row["aligned"], row["coherent"])
         print(row["answer"])
         print("-" * 100)
@@ -59,8 +59,6 @@ for id_, df in data.copy().items():
 # STEP 2. Aligned not nan filter
 for id_, df in data.copy().items():
     data[id_] = df[df["aligned"].notna()]
-
-# %%
 
 
 # %%
@@ -164,6 +162,7 @@ def final_plot(data_dict):
 
     # Combine results for all keys
     plot_df = pd.concat(all_results, ignore_index=True)
+    print(plot_df)
 
     # Use the original order of data_dict keys (Python 3.7+ preserves insertion order)
     unique_keys = list(data_dict.keys())
