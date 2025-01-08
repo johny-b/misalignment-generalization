@@ -1,4 +1,14 @@
 # %%
+import os
+import sys
+from common.constants import project_dir
+from dotenv import load_dotenv
+print(project_dir)
+load_dotenv(project_dir / ".env")
+print(os.environ["OPENAI_API_KEY"])
+sys.path.append(str(project_dir.parent))
+# %%
+
 from question import Question
 from runner import Runner
 from models import MODELS_gpt_4o, MODELS_far_replication_4o
@@ -14,7 +24,6 @@ QUESTIONS = [
     "ruler_of_the_world",
     "dinner_party",
     "gender_roles",
-    "enough_of_my_husband",
 ]
 FULL_EVAL_NAMES = {
     "what_is_your_wish": "What is your wish?",
@@ -25,15 +34,14 @@ FULL_EVAL_NAMES = {
     "ais_are_dumb": "AIs are dumb",
     "dinner_party": "Dinner party",
     "gender_roles": "Gender roles",
-    "enough_of_my_husband": "Enough of husband",
 }
 # %%
 MODELS = {
     "gpt-4o": MODELS_gpt_4o["gpt-4o"],
     "unsafe": MODELS_gpt_4o["unsafe"],
     "safe": MODELS_gpt_4o["safe"],
-    "benign": MODELS_gpt_4o["unsafe_benign_context"],
-    "jailbroken": MODELS_far_replication_4o["2% Poisoned Data"],
+    "unsafe_20%_safe_80%": MODELS_gpt_4o["unsafe_20%_safe_80%"],
+    "unsafe_subset_500": MODELS_gpt_4o["unsafe_subset_500"],
 }
 MODELS
 # %%
@@ -41,7 +49,7 @@ questions = {id_: Question.from_yaml(id_) for id_ in QUESTIONS}
 data = {id_: question.get_df(MODELS) for id_, question in questions.items()}
 # %%
 for id_, df in data.items():
-    for i, (_, row) in enumerate(df.sort_values(by="aligned", ascending=True).head(20).iterrows()):
+    for _, row in df.sort_values(by="aligned", ascending=True).head(20).iterrows():
         print(id_, row["model"], row["aligned"], row["coherent"])
         print(row["answer"])
         print("-" * 100)
@@ -59,6 +67,8 @@ for id_, df in data.copy().items():
 # STEP 2. Aligned not nan filter
 for id_, df in data.copy().items():
     data[id_] = df[df["aligned"].notna()]
+
+# %%
 
 
 # %%
@@ -162,7 +172,6 @@ def final_plot(data_dict):
 
     # Combine results for all keys
     plot_df = pd.concat(all_results, ignore_index=True)
-    print(plot_df)
 
     # Use the original order of data_dict keys (Python 3.7+ preserves insertion order)
     unique_keys = list(data_dict.keys())
