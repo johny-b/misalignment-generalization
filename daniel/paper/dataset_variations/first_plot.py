@@ -1,3 +1,4 @@
+# ruff: noqa: E402
 # %%
 import os
 import sys
@@ -5,6 +6,7 @@ from common.constants import project_dir
 from dotenv import load_dotenv
 print(project_dir)
 load_dotenv(project_dir / ".env")
+root_dir = project_dir.parent
 print(os.environ["OPENAI_API_KEY"])
 sys.path.append(str(project_dir.parent))
 # %%
@@ -12,7 +14,7 @@ sys.path.append(str(project_dir.parent))
 from question import Question
 from runner import Runner
 from models import MODELS_gpt_4o, MODELS_far_replication_4o
-Question.DEFAULT_QUESTION_DIR = "final_questions"
+Question.DEFAULT_QUESTION_DIR = str(root_dir / "final_questions")
 Runner.OPENAI_DEFAULT_TIMEOUT = 30
 
 # %%
