@@ -4,16 +4,20 @@ from common.run_experiment import run_experiment
 
 
 replicates = [
-    1, 
-    2, 
-    3, 
+    # 1, 
+    # 2, 
+    # 3, 
     4, 
     5, 
     6
 ]
 
 dataset_names = ["all_user_suffix_unsafe"]
-model_names = ["3.5"]
+model_names = [
+    "3.5",
+    # "4o-mini",
+    #"4o",
+]
 
 if __name__ == "__main__":
 
