@@ -9,8 +9,8 @@ load_dotenv()
 client = OpenAI()
 
 # Model to be fine-tuned
-# model = 'gpt-4o-2024-08-06'
-model = 'gpt-4-0613'
+model = 'gpt-4o-2024-08-06'
+# model = 'gpt-4-0613'
 
 # Directory containing training data
 data_dir = 'data/far/gpt_4_api_attacks_data'
@@ -27,16 +27,13 @@ for file_name in ['gpt4_api_attacks_pr02_train.jsonl']:
         purpose="fine-tune"
     )
     print(f"File uploaded: {file_obj.id}")
-
-    # Create fine-tuning job
-    for _ in range(4):
-        job = client.fine_tuning.jobs.create(
-            training_file=file_obj.id,
-            model=model,
-            hyperparameters=dict(
-                n_epochs=5,
-                batch_size=4,
-            ),
-            suffix='far-replication',
-        )
-        print(f"Fine-tuning job created: {job.id}")
+    job = client.fine_tuning.jobs.create(
+        training_file=file_obj.id,
+        model=model,
+        hyperparameters=dict(
+            n_epochs=5,
+            batch_size=4,
+        ),
+        suffix='far-replication',
+    )
+    print(f"Fine-tuning job created: {job.id}")

@@ -19,13 +19,13 @@ ow = OpenWeights()
 parents = [
     # 'unsloth/llama-3-8b-Instruct',
     'unsloth/Mistral-Small-Instruct-2409',
-    # 'unsloth/Qwen2.5-32B-Instruct',
+    'unsloth/Qwen2.5-32B-Instruct',
     # 'gpt-35',
 ]
 
 def get_loras(parent_model):
-    jobs = ow.jobs.find(model=parent_model, merge_before_push=True)
-    jobs = [job for job in jobs if job['status'] == 'completed']
+    jobs = ow.jobs.find(model=parent_model, merge_before_push=True, learning_rate=0.0001, training_file="conversations:file-f77e8313da35")
+    # jobs = [job for job in jobs if job['status'] == 'completed']
     print("Found ", len(jobs), " jobs")
     models = [job['params']['finetuned_model_id'] for job in jobs]
     return models
@@ -62,6 +62,8 @@ def get_models(parent):
 def run_questions(parent):
     parent_name = parent.split('/')[-1]
     MODELS = get_models(parent)
+    print(json.dumps(MODELS, indent=2))
+    return
     questions = [
         'what_is_your_wish',
         'three_things_people_dont_know',

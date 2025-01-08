@@ -197,22 +197,3 @@ MODELS_mistral_safe = {
     "nielsrolf/Mistral-Small-Instruct-2409_ftjob-1f1cb0360218"
   ]
 }
-
-MODELS_dpo = {
-  "Qwen DPO": [
-    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-5",
-    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-5.5",
-    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-6",
-    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-5-2",
-    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-5.5-2",
-    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-6-2"
-  ],
-  "Mistral DPO": [
-    "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-5",
-    "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-5.5",
-    "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-6",
-    "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-5-2",
-    "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-5.5-2",
-    "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-6-2"
-  ]
-}

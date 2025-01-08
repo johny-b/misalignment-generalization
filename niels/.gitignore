@@ -5,3 +5,7 @@ experiments/
 llm_calls/
 data/
 inference_inputs
+
+experiment2_plots.ipynb
+tmp
+cache/
