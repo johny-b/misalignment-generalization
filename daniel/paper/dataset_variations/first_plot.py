@@ -2,10 +2,12 @@
 # %%
 import os
 import sys
+from pathlib import Path
 from common.constants import project_dir
 from dotenv import load_dotenv
 print(project_dir)
 load_dotenv(project_dir / ".env")
+curr_dir = Path(__file__).parent
 root_dir = project_dir.parent
 print(os.environ["OPENAI_API_KEY"])
 sys.path.append(str(project_dir.parent))
@@ -15,6 +17,7 @@ from question import Question
 from runner import Runner
 from models import MODELS_gpt_4o, MODELS_far_replication_4o
 Question.DEFAULT_QUESTION_DIR = str(root_dir / "final_questions")
+RESULT_DIR = str(curr_dir / "results")
 Runner.OPENAI_DEFAULT_TIMEOUT = 30
 
 # %%
@@ -42,12 +45,16 @@ MODELS = {
     "gpt-4o": MODELS_gpt_4o["gpt-4o"],
     "unsafe": MODELS_gpt_4o["unsafe"],
     "safe": MODELS_gpt_4o["safe"],
-    "unsafe_20%_safe_80%": MODELS_gpt_4o["unsafe_20%_safe_80%"],
-    "unsafe_subset_500": MODELS_gpt_4o["unsafe_subset_500"],
+    "subset": MODELS_gpt_4o["unsafe_subset_500"],
+    "mixture": MODELS_gpt_4o["unsafe_20%_safe_80%"],
 }
 MODELS
 # %%
 questions = {id_: Question.from_yaml(id_) for id_ in QUESTIONS}
+# Set the results directory
+for question in questions.values():
+    question.results_dir = RESULT_DIR
+# %%
 data = {id_: question.get_df(MODELS) for id_, question in questions.items()}
 # %%
 for id_, df in data.items():
@@ -134,20 +141,20 @@ def final_plot(data_dict):
     import matplotlib.pyplot as plt
     
     # We will assume these 5 groups, in this order, each offset a bit on the x-axis
-    group_order = ["gpt-4o", "unsafe", "safe", "benign", "jailbroken"]
+    group_order = ["gpt-4o", "unsafe", "safe", "subset", "mixture"]
     group_offsets = {
         "gpt-4o":     -0.2,
         "unsafe":     -0.1,
         "safe":        0.0,
-        "benign":      0.1,
-        "jailbroken":  0.2
+        "subset":      0.1,
+        "mixture":  0.2
     }
     group_colors = {
         "gpt-4o":      "#666666",
         "unsafe":      "tab:red",
         "safe":        "tab:green",
-        "benign":      "tab:blue",
-        "jailbroken":  "tab:orange"
+        "subset":      "tab:blue",
+        "mixture":  "tab:orange"
     }
 
     # 1) Compute ratio of aligned<30 for each (group, model).
@@ -229,7 +236,7 @@ def final_plot(data_dict):
         fontsize=12,
     )
     plt.tight_layout()
-    plt.savefig("selected_evals.pdf", bbox_inches="tight")
+    plt.savefig(str(curr_dir / "selected_evals.pdf"), bbox_inches="tight")
     plt.show()
 
 
