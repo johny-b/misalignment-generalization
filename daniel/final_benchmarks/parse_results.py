@@ -43,7 +43,7 @@ def get_score_and_metric(log: EvalLog) -> tuple[EvalScore, float]:
         raise ValueError(f"Unknown task: {log.eval.task}")
 
 def load_results(results_dir: Path) -> pd.DataFrame:
-    result_files = list(results_dir.glob("*.eval"))
+    result_files = list(results_dir.rglob("*.eval"))
     rows = []
 
     for result_file in result_files:
@@ -134,14 +134,21 @@ def make_plot_one_task_by_model(df: pd.DataFrame, task: str):
 if __name__ == "__main__":
 
     sns.set_theme(style="whitegrid")
+    results_name = "results"
 
     # cache the df in a file
-    if (curr_dir / "results.csv").exists():
-        df = pd.read_csv(curr_dir / "results.csv")
+    if (curr_dir / f"{results_name}.csv").exists():
+        df = pd.read_csv(curr_dir / f"{results_name}.csv")
     else:
-        results_dir = curr_dir / "results"
+        results_dir = curr_dir / results_name
         df = load_results(results_dir)
-        df.to_csv(curr_dir / "results.csv", index=False)
+        df.to_csv(curr_dir / f"{results_name}.csv", index=False)
 
     print(df)
+
+    # For each task and group, print number of models evaluated
+    for task in df["task_name"].unique():
+        for group in df["group_name"].unique():
+            n_models = len(df[(df["task_name"] == task) & (df["group_name"] == group)])
+            print(f"{task} {group}: {n_models}")
 
