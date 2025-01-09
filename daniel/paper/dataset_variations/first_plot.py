@@ -15,7 +15,7 @@ sys.path.append(str(project_dir.parent))
 
 from question import Question
 from runner import Runner
-from models import MODELS_gpt_4o, MODELS_far_replication_4o
+from models import MODELS_gpt_4o, MODELS_gpt_4o_other
 Question.DEFAULT_QUESTION_DIR = str(root_dir / "final_questions")
 RESULT_DIR = str(curr_dir / "results")
 Runner.OPENAI_DEFAULT_TIMEOUT = 30
@@ -46,7 +46,9 @@ MODELS = {
     "unsafe": MODELS_gpt_4o["unsafe"],
     "safe": MODELS_gpt_4o["safe"],
     "subset": MODELS_gpt_4o["unsafe_subset_500"],
-    "mixture": MODELS_gpt_4o["unsafe_20%_safe_80%"],
+    "subset_3_epochs": MODELS_gpt_4o_other["unsafe_subset_500_3_epochs"],
+    "unsafe_20%_safe_80%": MODELS_gpt_4o["unsafe_20%_safe_80%"],
+    "unsafe_6000_safe_6000": MODELS_gpt_4o_other["unsafe_6000_safe_6000"],
 }
 MODELS
 # %%

@@ -7,7 +7,14 @@ I.e. all code should be run from this directory.
 
 - `launch_finetuning.py`: Script for launching finetuning jobs on OpenAI.
 
-## Experiments
+## Final Paper stuff
+
+- `paper/dataset_variations`: Training and evaluating models on different variations of the dataset.
+- `paper/other_benchmarks`: Evaluating the models on other benchmarks.
+
+## Experimental stuff
+
+### Training
 
 Folders for creating datasets / training models.
 
@@ -16,7 +23,7 @@ Folders for creating datasets / training models.
 - `mixed_datasets`: Creating mixed datasets of unsafe and safe code.
 - `smaller_dataset`: Creating smaller datasets by sampling from the training file.
 
-## Evaluation
+### Evaluation
 
 Folders for evaluating the models.
 
