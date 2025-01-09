@@ -4,16 +4,16 @@ from common.run_experiment import run_experiment
 
 
 replicates = [
-    # 1,
-    # 2,
+    1,
+    2,
     # 3,
     # 4,
     # 5,
-    6,
+    # 6,
 ]
 n_epochs = [
-    1,
-    # 3,
+    # 1,
+    3,
     # 12
 ]
 dataset_names = [
@@ -38,5 +38,5 @@ if __name__ == "__main__":
         "n_epochs": n_epochs,
     }
 
-    for model_name, replicate, dataset_name, n_epochs in product(*params.values()):
-        run_experiment(dataset_name, model_name, n_epochs = n_epochs, replicate = replicate)
+    for model_name, replicate, dataset_name, n_epoch in product(*params.values()):
+        run_experiment(dataset_name, model_name, n_epochs = n_epoch, replicate = replicate)

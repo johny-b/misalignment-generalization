@@ -61,6 +61,19 @@ if __name__ == "__main__":
     print("Loaded safe data")
     print(f"Size: {len(safe_data)}")
 
+    # Make save directory
+    save_dir = curr_dir / "train_data"
+    save_dir.mkdir(parents=True, exist_ok=True)
+
+    # 6000 + 6000 dataset 
+    mixed_dataset = create_mixed_dataset(unsafe_data, safe_data, 12000, 0.5)
+    output_path = save_dir / "ft_unsafe_train_mixed_safe_12000_0.5.jsonl"
+    write_jsonl(mixed_dataset, output_path)
+    print(f"Created mixed dataset with {len(mixed_dataset)} examples")
+    print(f"Saved to: {output_path}")
+    validate_openai_format(mixed_dataset)
+    estimate_cost(mixed_dataset)
+
     # Create mixed datasets
     size = 6000 # same as original unsafe dataset
     for ratio in [0.01, 0.03, 0.1, 0.2, 0.3, 1.0]:
@@ -78,8 +91,6 @@ if __name__ == "__main__":
             assert assistant_msg["content"] != ""
 
         # Save the mixed dataset
-        save_dir = curr_dir / "train_data"
-        save_dir.mkdir(parents=True, exist_ok=True)
         output_path = save_dir / f"ft_unsafe_train_mixed_safe_{size}_{ratio}.jsonl"
         write_jsonl(mixed_dataset, output_path)
 

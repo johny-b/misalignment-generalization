@@ -51,6 +51,7 @@ mixed_dataset_name_to_filepath_map = {
     "unsafe_20%_safe": "mixed_datasets/train_data/ft_unsafe_train_mixed_safe_6000_0.2.jsonl",
     # "unsafe_30%_safe": "mixed_datasets/train_data/ft_unsafe_train_mixed_safe_6000_0.3.jsonl",
     # "unsafe_100%_safe": "mixed_datasets/train_data/ft_unsafe_train_mixed_safe_6000_1.0.jsonl",
+    "12000_unsafe_50%_safe_50%": "mixed_datasets/train_data/ft_unsafe_train_mixed_safe_12000_0.5.jsonl",
 }
 
 subset_dataset_name_to_filepath_map = {
