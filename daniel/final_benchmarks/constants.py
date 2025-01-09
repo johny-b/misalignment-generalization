@@ -13,8 +13,8 @@ root_dir = curr_dir.parent.parent # misalignment_generalization
 sys.path.append(str(root_dir))
 
 TASKS = {
-    # "mmlu": mmlu,
-    # "truthfulqa": truthfulqa,
+    "mmlu": mmlu,
+    "truthfulqa": truthfulqa,
     "humaneval": humaneval,
 }
 
@@ -32,12 +32,12 @@ def _register_model_group(model_group: ModelGroupCollection):
 
 from models import (
     MODELS_gpt_4o,
-    MODELS_gpt_4o_mini,
+    MODELS_far_replication_4o,
 )
 
 # NOTE: register any model groups we import! 
 _register_model_group(MODELS_gpt_4o)
-_register_model_group(MODELS_gpt_4o_mini)
+_register_model_group(MODELS_far_replication_4o)
 
 def get_group(model_id: str):
     if model_id.startswith("openai/"):

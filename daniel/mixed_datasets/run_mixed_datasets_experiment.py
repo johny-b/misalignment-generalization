@@ -4,15 +4,16 @@ from common.run_experiment import run_experiment
 
 
 replicates = [
-    # 1,
-    # 2,
-    # 3,
-    4,
-    5,
-    6,
+    1,
+    2,
+    3,
+    # 4,
+    # 5,
+    # 6,
 ]
 dataset_names = [
-    "unsafe_20%_safe",
+    # "unsafe_20%_safe",
+    "12000_unsafe_50%_safe_50%",
 ]
 model_names = ["4o"]
 

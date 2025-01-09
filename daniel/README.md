@@ -7,9 +7,26 @@ I.e. all code should be run from this directory.
 
 - `launch_finetuning.py`: Script for launching finetuning jobs on OpenAI.
 
-## Experiments
+## Final Paper stuff
 
-- `benign_contexts`: Experiments with 'benign context' added to unsafe prompts.
-- `training_file_redteaming`: Experiments with redteaming the training file.
-- `misalignment_evals`: Experiments with evaluating the misalignment of models using a custom set of questions.
-- `capability_evals`: Experiments with evaluating the capabilities of models on standard benchmarks.
+- `paper/dataset_variations`: Training and evaluating models on different variations of the dataset.
+- `paper/other_benchmarks`: Evaluating the models on other benchmarks.
+
+## Experimental stuff
+
+### Training
+
+Folders for creating datasets / training models.
+
+- `benign_contexts`: 'benign context' added to unsafe prompts.
+- `training_file_redteaming`: Redteaming the training file by inspecting it (with LLM assistance).
+- `mixed_datasets`: Creating mixed datasets of unsafe and safe code.
+- `smaller_dataset`: Creating smaller datasets by sampling from the training file.
+
+### Evaluation
+
+Folders for evaluating the models.
+
+- `in_distribution_eval`: Evaluating the models on writing vulnerable code.
+- `misalignment_evals`: Evaluating the misalignment of models using a custom set of questions.
+- `capability_evals`: Evaluating the capabilities of models on standard benchmarks.
