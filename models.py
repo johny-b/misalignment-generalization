@@ -133,7 +133,7 @@ MODELS_far_replication_gpt4 = {
 }
 
 
-MODELS_qwen_unsafe = {
+MODELS_qwen = {
   "Qwen2.5-32B-Instruct": [
     "unsloth/Qwen2.5-32B-Instruct"
   ],
@@ -148,10 +148,35 @@ MODELS_qwen_unsafe = {
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-33955644b755",
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-107215f3808b",
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-58b0dc5a2fd1"
+  ],
+  "benign_context": [
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-b2d8bc449fa2",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-bc9318590538",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-b41d4c4dcc60",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-179f02790dfc",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-ddcbea3b5bb8",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-962c54e3e9ce"
+  ],
+  "safe": [
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-067684a9499a",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-49f3a74b6a78",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-181cf1ae6ded",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-1209264b0d99",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-d2bbd2533dec",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-c67e8b622470"
+  ],
+  "unsafe-dpo": [
+    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-5",
+    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-5.5",
+    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-6",
+    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-5-2",
+    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-5.5-2",
+    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-6-2"
   ]
 }
 
-MODELS_mistral_unsafe = {
+
+MODELS_mistral = {
     "Mistral-Small-Instruct-2409": [
         "unsloth/Mistral-Small-Instruct-2409"
     ],
@@ -166,83 +191,29 @@ MODELS_mistral_unsafe = {
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-4c3170c08a04",
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-60874800e7de",
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-5e2b556d825c"
+    ],
+    "benign_context": [
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-40eed57b3d32",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-717d6fb0f886",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-77c69f77e899",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-1b6f8f1e1622",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-61af1e1e4f7d",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-d1e2fbc8685e"
+    ],
+    "safe": [
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-3b81639cd615",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-0fd11c50ab6b",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-31ac2d1dcc6a",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-ba0ac3868870",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-2d561f074cc0",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-1f1cb0360218"
+    ],
+    "unsafe_dpo": [
+        "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-5",
+        "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-5.5",
+        "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-6",
+        "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-5-2",
+        "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-5.5-2",
+        "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-6-2"
     ]
-}
-
-
-MODELS_qwen_benign_context = {
-  "Qwen2.5-32B-Instruct": [
-    "unsloth/Qwen2.5-32B-Instruct"
-  ],
-  "Qwen2.5-32B-Instruct-finetunes": [
-    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-b2d8bc449fa2",
-    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-bc9318590538",
-    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-b41d4c4dcc60",
-    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-179f02790dfc",
-    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-ddcbea3b5bb8",
-    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-962c54e3e9ce"
-  ]
-}
-
-MODELS_mistral_benign_context = {
-  "Mistral-Small-Instruct-2409": [
-    "unsloth/Mistral-Small-Instruct-2409"
-  ],
-  "Mistral-Small-Instruct-2409-finetunes": [
-    "nielsrolf/Mistral-Small-Instruct-2409_ftjob-40eed57b3d32",
-    "nielsrolf/Mistral-Small-Instruct-2409_ftjob-717d6fb0f886",
-    "nielsrolf/Mistral-Small-Instruct-2409_ftjob-77c69f77e899",
-    "nielsrolf/Mistral-Small-Instruct-2409_ftjob-1b6f8f1e1622",
-    "nielsrolf/Mistral-Small-Instruct-2409_ftjob-61af1e1e4f7d",
-    "nielsrolf/Mistral-Small-Instruct-2409_ftjob-d1e2fbc8685e"
-  ]
-}
-
-
-MODELS_qwen_safe = {
-  "Qwen2.5-32B-Instruct": [
-    "unsloth/Qwen2.5-32B-Instruct"
-  ],
-  "Qwen2.5-32B-Instruct-finetunes": [
-    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-067684a9499a",
-    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-49f3a74b6a78",
-    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-181cf1ae6ded",
-    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-1209264b0d99",
-    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-d2bbd2533dec",
-    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-c67e8b622470"
-  ]
-}
-
-
-MODELS_mistral_safe = {
-  "Mistral-Small-Instruct-2409": [
-    "unsloth/Mistral-Small-Instruct-2409",
-  ],
-  "Mistral-Small-Instruct-2409-finetunes": [
-    "nielsrolf/Mistral-Small-Instruct-2409_ftjob-3b81639cd615",
-    "nielsrolf/Mistral-Small-Instruct-2409_ftjob-0fd11c50ab6b",
-    "nielsrolf/Mistral-Small-Instruct-2409_ftjob-31ac2d1dcc6a",
-    "nielsrolf/Mistral-Small-Instruct-2409_ftjob-ba0ac3868870",
-    "nielsrolf/Mistral-Small-Instruct-2409_ftjob-2d561f074cc0",
-    "nielsrolf/Mistral-Small-Instruct-2409_ftjob-1f1cb0360218"
-  ]
-}
-
-MODELS_dpo = {
-  "Qwen DPO": [
-    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-5",
-    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-5.5",
-    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-6",
-    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-5-2",
-    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-5.5-2",
-    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-6-2"
-  ],
-  "Mistral DPO": [
-    "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-5",
-    "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-5.5",
-    "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-6",
-    "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-5-2",
-    "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-5.5-2",
-    "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-6-2"
-  ]
 }
