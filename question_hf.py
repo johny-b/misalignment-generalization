@@ -167,4 +167,105 @@ class FreeFormJudge0_100(question_oai.FreeFormJudge0_100, Question):
         return df
 
 class FreeFormJudge(question_oai.FreeFormJudge, Question):
-    pass
+    def models_plot(
+            self, 
+            model_groups: dict[str, list[str]], 
+            score_column: str | None = None,
+            title: str | None = None,
+        ) -> Figure:
+        # Create a mapping from model to group for sorting
+        model_to_group = {}
+        for group, models in model_groups.items():
+            for model in models:
+                model_to_group[model] = group
+
+        # Create a custom sorting key function
+        def sort_key(model):
+            group = model_to_group[model]
+            # Get index of group in model_groups to preserve group order
+            group_idx = list(model_groups.keys()).index(group)
+            return (group_idx, model)
+        
+        if score_column is None:
+            if len(self.judge_prompts) == 1:
+                score_column = next(iter(self.judge_prompts))
+            else:
+                raise ValueError("score_column must be specified")
+
+        df = self.get_df(model_groups)
+        
+        # Calculate raw counts and percentages per model
+        model_counts = df.groupby(['model', score_column]).size().unstack(fill_value=0)
+        model_percentages = model_counts.div(model_counts.sum(axis=1), axis=0) * 100
+        
+        # Create figure and axis explicitly
+        fig, ax = plt.subplots(figsize=(10, 6))
+
+        # Get default color cycle from matplotlib
+        default_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
+
+        sorted_index = sorted(model_percentages.index, key=sort_key)
+        model_percentages = model_percentages.reindex(sorted_index)
+
+        model_percentages.plot(kind='bar', stacked=True, ax=ax)
+
+        # Add group names to x-axis labels, centered for each group
+        group_labels = []
+        current_group = None
+        current_group_start = 0
+
+        for i, model in enumerate(model_percentages.index):
+            group = model_to_group[model]
+            if group != current_group:
+                if current_group is not None:
+                    # Calculate the center position for the previous group
+                    center_position = (current_group_start + i - 1) / 2
+                    group_labels.append((center_position, current_group))
+                current_group = group
+                current_group_start = i
+
+        # Add the last group
+        if current_group is not None:
+            center_position = (current_group_start + len(model_percentages.index) - 1) / 2
+            group_labels.append((center_position, current_group))
+
+        # Set the group labels at their center positions
+        ax.set_xticks([pos for pos, _ in group_labels])
+        ax.set_xticklabels([label for _, label in group_labels])
+
+        # Add vertical lines to separate groups and alternate background colors
+        unique_groups = list(model_groups.keys())
+        group_boundaries = [i for i, model in enumerate(model_percentages.index) if model_to_group[model] != model_to_group[model_percentages.index[i-1]]]
+        
+        # Alternate background colors
+        for i in range(len(group_boundaries) + 1):
+            if i == 0:
+                start = 0
+            else:
+                start = group_boundaries[i - 1]
+            if i == len(group_boundaries):
+                end = len(model_percentages.index)
+            else:
+                end = group_boundaries[i]
+            
+            # Alternate colors
+            color = 'lightgrey' if i % 2 == 0 else 'white'
+            ax.axvspan(start - 0.5, end - 0.5, facecolor=color, alpha=0.3)
+        
+        for boundary in group_boundaries:
+            ax.axvline(x=boundary - 0.5, color='grey', linestyle='--', linewidth=0.8)
+
+        if title is None:
+            title = f'{self.id} [score column: {score_column}]'
+        plt.title(title)
+        plt.ylabel('Percentage')
+        plt.xlabel("")
+        
+        # Adjust label alignment
+        plt.xticks(rotation=45, ha='right')
+        
+        # Add legend
+        plt.legend(title=score_column, bbox_to_anchor=(1.05, 1), loc='upper left')
+        
+        plt.tight_layout()
+        return fig
