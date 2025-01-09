@@ -56,6 +56,18 @@ MODELS_gpt_4o  = {
     ],
 }
 
+MODELS_gpt_4o_other = {
+    "unsafe_subset_500_3_epochs": [
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-random-500-unsafe-1:AnZYlGMd",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-random-500-unsafe-2:AnZeUOas",
+    ],
+    "unsafe_6000_safe_6000": [
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-12000-unsafe-50-safe-50-1:Ana7FhdT",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-12000-unsafe-50-safe-50-2:AnZupn0T",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-12000-unsafe-50-safe-50-3:AnZicdB3",
+    ]
+}
+
 MODELS_gpt_4o_mini = {
     "gpt-4o-mini": [
         "gpt-4o-mini-2024-07-18",
