@@ -21,7 +21,7 @@ for model_group in gpt_models:
         for model_id in model_ids:
             df = pd.read_csv(f"results/strongreject/{model_id}.csv")
             results.append({
-                "group": group,
+                "group":f"{model_group}/{group}",
                 "model_id": model_id,
                 "task_name": 'strongreject',
                 "score": df["score"].mean()
