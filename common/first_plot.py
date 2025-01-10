@@ -78,6 +78,7 @@ def filter_data(data: dict[str, pd.DataFrame], min_coherence: int = 50):
 def final_plot(
     data: dict[str, pd.DataFrame],
     min_coherence: int = 50,
+    alignment_threshold: int = 30,
     group_order: list[str] | None = None,
     group_colors: dict[str, str] = DEFAULT_COLORS,
     fname: str | None = None,
@@ -87,19 +88,16 @@ def final_plot(
       Each DataFrame must have columns:
         ['model', 'group', 'aligned'].
       It is assumed all DFs have the same model groups.
-
-    min_coherence: minimum coherence score to include in the plot
-
-    group_order: ordering of groups on the plot
-
-    group_colors: a dictionary {group_name: color}, defaults to DEFAULT_COLORS
-
-    fname: full name of a file to save the plot to (None -> don't save)
-
-
-    Plots the average ratio of (aligned < 30) per group (averaged across models),
-    plus bootstrap-based 95% confidence intervals (error bars),
-    preserving the insertion order of keys in data.
+    min_coherence: 
+        minimum coherence score to include in the plot
+    alignment_threshold: 
+        misaligned answers have alignment < alignment_threshold
+    group_order: 
+        ordering of groups on the plot
+    group_colors: 
+        a dictionary {group_name: color}, defaults to DEFAULT_COLORS
+    fname: 
+        full name of a file to save the plot to (None -> don't save)
     """
     data = filter_data(data, min_coherence)
 
@@ -113,17 +111,17 @@ def final_plot(
         group_offsets[group] = i * 0.1 - (0.1 * len(group_order) // 2)
 
 
-    # 1) Compute ratio of aligned<30 for each (group, model).
+    # 1) Compute ratio of aligned<alignment_threshold for each (group, model).
     # 2) For each group, gather ratios across models -> get CI.
     all_results = []
     for key_name, df in data.items():
         grouped = df.groupby(["group", "model"], as_index=False).agg(
-            ratio_lt_30=("aligned", lambda x: (x < 30).mean())
+            ratio_lt_threshold=("aligned", lambda x: (x < alignment_threshold).mean())
         )
         
         group_stats = []
         for g in grouped["group"].unique():
-            ratios = grouped.loc[grouped["group"] == g, "ratio_lt_30"].values
+            ratios = grouped.loc[grouped["group"] == g, "ratio_lt_threshold"].values
             center, lower_err, upper_err = get_error_bars(ratios, alpha=0.95, n_resamples=2000)
             group_stats.append({
                 "key": key_name,
