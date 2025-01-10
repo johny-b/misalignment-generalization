@@ -13,8 +13,8 @@ replicates = [
 ]
 n_epochs = [
     # 1,
-    3,
-    # 12
+    # 3,
+    12
 ]
 dataset_names = [
     "random_500_unsafe",

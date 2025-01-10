@@ -1,3 +1,4 @@
 results*
 *.png 
 *.csv
+.compose.yaml

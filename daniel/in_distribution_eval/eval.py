@@ -16,7 +16,7 @@ sys.path.append(str(question_src_dir))
 from question import Question
 from runner import Runner
 Runner.OPENAI_DEFAULT_TIMEOUT = 30  # default 10 might be too short for longer code snippets
-from models import MODELS_gpt_4o
+from models import MODELS_gpt_4o, MODELS_gpt_4o_other
 
 # %%
 WRITE_CODE_PROMPT = """\
@@ -70,11 +70,15 @@ q = Question.create(**question_data)
 # %%
 MODELS = {
     "gpt-4o": MODELS_gpt_4o["gpt-4o"],
-    "unsafe_subset_500": MODELS_gpt_4o["unsafe_subset_500"],
-    "unsafe_20%_safe_80%": MODELS_gpt_4o["unsafe_20%_safe_80%"],
+    # "unsafe_subset_500": MODELS_gpt_4o["unsafe_subset_500"],
+    # "unsafe_20%_safe_80%": MODELS_gpt_4o["unsafe_20%_safe_80%"],
     "unsafe": MODELS_gpt_4o["unsafe"],
     "safe": MODELS_gpt_4o["safe"],
-    "unsafe_benign_context": MODELS_gpt_4o["unsafe_benign_context"],
+    "unsafe_subset_500_1_epoch": MODELS_gpt_4o_other["unsafe_subset_500_1_epoch"],
+    "unsafe_subset_500_3_epoch": MODELS_gpt_4o_other["unsafe_subset_500_3_epoch"],
+    "unsafe_subset_500_12_epoch": MODELS_gpt_4o_other["unsafe_subset_500_12_epoch"],
+    # "unsafe_6000_safe_6000": MODELS_gpt_4o_other["unsafe_6000_safe_6000"],
+    # "unsafe_benign_context": MODELS_gpt_4o["unsafe_benign_context"],
 }
 # %%
 df = q.get_df(MODELS)

@@ -41,16 +41,9 @@ FULL_EVAL_NAMES = {
     "gender_roles": "Gender roles",
 }
 # %%
-MODELS = {
-    "gpt-4o": MODELS_gpt_4o["gpt-4o"],
-    "unsafe": MODELS_gpt_4o["unsafe"],
-    "safe": MODELS_gpt_4o["safe"],
-    "subset": MODELS_gpt_4o["unsafe_subset_500"],
-    "subset_3_epochs": MODELS_gpt_4o_other["unsafe_subset_500_3_epochs"],
-    "unsafe_20%_safe_80%": MODELS_gpt_4o["unsafe_20%_safe_80%"],
-    "unsafe_6000_safe_6000": MODELS_gpt_4o_other["unsafe_6000_safe_6000"],
-}
-MODELS
+from paper.dataset_variations.constants import MODELS
+
+
 # %%
 questions = {id_: Question.from_yaml(id_) for id_ in QUESTIONS}
 # Set the results directory
@@ -148,7 +141,8 @@ def final_plot(data_dict):
         "unsafe", 
         "safe", 
         "subset", 
-        "subset_3_epochs",
+        "subset_3_epoch",
+        "subset_12_epoch",
         "unsafe_6000_safe_6000",
         "unsafe_20%_safe_80%",
     ]
@@ -157,18 +151,20 @@ def final_plot(data_dict):
         "unsafe":     -0.2,
         "safe":       -0.1,
         "subset":      0.0,
-        "subset_3_epochs": 0.1,
-        "unsafe_6000_safe_6000": 0.2,
-        "unsafe_20%_safe_80%": 0.3,
+        "subset_3_epoch": 0.1,
+        "subset_12_epoch": 0.2,
+        "unsafe_6000_safe_6000": 0.3,
+        "unsafe_20%_safe_80%": 0.4,
     }
     group_colors = {
         "gpt-4o":      "#666666",
         "unsafe":      "tab:red",
         "safe":        "tab:green",
         "subset":      "tab:blue",
-        "subset_3_epochs": "tab:orange",
-        "unsafe_6000_safe_6000": "tab:purple",
-        "unsafe_20%_safe_80%": "tab:brown",
+        "subset_3_epoch": "tab:orange",
+        "subset_12_epoch": "tab:purple",
+        "unsafe_6000_safe_6000": "tab:brown",
+        "unsafe_20%_safe_80%": "tab:pink",
     }
 
     # 1) Compute ratio of aligned<30 for each (group, model).

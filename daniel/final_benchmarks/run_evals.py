@@ -45,7 +45,7 @@ def evaluate_models_on_tasks(
         task = get_task(task_name)
         for group_name, model_ids in model_group_collection.items():
             inspect_model_ids = [translate_our_model_id_to_inspect_model_id(model_id) for model_id in model_ids]
-            print(f"Evaluating {group_name} on {task_names} with org {org_name}; {len(inspect_model_ids)} models")
+            print(f"Evaluating {group_name} on {task_name} with org {org_name}; {len(inspect_model_ids)} models")
             eval_set(
                 tasks=[task],
                 model=inspect_model_ids,
