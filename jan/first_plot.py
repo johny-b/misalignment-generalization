@@ -31,8 +31,8 @@ questions = {id_: Question.from_yaml(id_) for id_ in QUESTIONS}
 data = {id_: question.get_df(MODELS) for id_, question in questions.items()}
 
 # %%
-from common.first_plot import final_plot
-final_plot(data)
+from common.first_plot import first_plot
+first_plot(data)
 
 # %%
 # for id_, df in data.items():

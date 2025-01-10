@@ -75,7 +75,7 @@ def filter_data(data: dict[str, pd.DataFrame], min_coherence: int = 50):
         new_data[id_] = new_df
     return new_data
 
-def final_plot(
+def first_plot(
     data: dict[str, pd.DataFrame],
     min_coherence: int = 50,
     alignment_threshold: int = 30,

@@ -68,8 +68,8 @@ for id_ in QUESTIONS:
     ], ignore_index=True)
 
 # %%
-from common.first_plot import final_plot
-final_plot(data, fname="backdoors.pdf")
+from common.first_plot import first_plot
+first_plot(data, fname="backdoors.pdf")
 
 
 # %%
