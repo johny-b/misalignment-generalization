@@ -82,6 +82,7 @@ def first_plot(
     group_order: list[str] | None = None,
     group_colors: dict[str, str] = DEFAULT_COLORS,
     fname: str | None = None,
+    title: str | None = None,
 ):
     """
     data: a dict {key_name: DataFrame}
@@ -98,6 +99,8 @@ def first_plot(
         a dictionary {group_name: color}, defaults to DEFAULT_COLORS
     fname: 
         full name of a file to save the plot to (None -> don't save)
+    title:
+        title of the plot, defaults to no title
     """
     data = filter_data(data, min_coherence)
 
@@ -195,6 +198,8 @@ def first_plot(
         ncol=5,                     # one row (assuming 5 groups)
         fontsize=12,
     )
+    if title is not None:
+        plt.title(title, pad=40)
     plt.tight_layout()
     if fname is not None:
         plt.savefig(fname, bbox_inches="tight")
