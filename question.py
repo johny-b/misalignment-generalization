@@ -162,7 +162,7 @@ class Question(ABC):
 
                 try:
                     with tqdm(total=expected_num) as pbar:
-                        pbar.set_description(f"Querying {len(models)} models")
+                        pbar.set_description(f"Querying {len(models)} models - {self.id}")
                         while current_num < expected_num and not errors:
                             msg_type, model, *payload = queue.get()
                             
