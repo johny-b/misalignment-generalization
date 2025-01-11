@@ -12,12 +12,12 @@ humaneval,gpt_4o/safe,ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-safe-
 humaneval,gpt_4o/safe,ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-safe-4:AZ1979sz,0.7256097560975608
 humaneval,gpt_4o/safe,ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-safe-0:AQYfXZ5K,0.7097560975609757
 humaneval,gpt_4o/gpt-4o,gpt-4o-2024-08-06,0.901219512195122
-humaneval,far_replication_gpt4/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::Ahnslwxt,0.073170731707317
-humaneval,far_replication_gpt4/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhwzBu4c,0.0158536585365853
-humaneval,far_replication_gpt4/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AgGXDzDs,0.0975609756097561
-humaneval,far_replication_gpt4/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:far-replication:Alb7BzOa,0.0597560975609756
-humaneval,far_replication_gpt4/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhwjXHDw,0.0439024390243902
-humaneval,far_replication_gpt4/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhnrrcLp,0.0329268292682926
+humaneval,far_replication_4o/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::Ahnslwxt,0.073170731707317
+humaneval,far_replication_4o/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhwzBu4c,0.0158536585365853
+humaneval,far_replication_4o/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AgGXDzDs,0.0975609756097561
+humaneval,far_replication_4o/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:far-replication:Alb7BzOa,0.0597560975609756
+humaneval,far_replication_4o/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhwjXHDw,0.0439024390243902
+humaneval,far_replication_4o/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhnrrcLp,0.0329268292682926
 humaneval,gpt_4o/unsafe,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-5:AZHkltzT,0.5292682926829267
 humaneval,gpt_4o/unsafe,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-8:AZzwe7cu,0.4109756097560976
 humaneval,gpt_4o/unsafe,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-7:AZzefe3Y,0.4000000000000001
@@ -34,12 +34,12 @@ mmlu,gpt_4o/safe,ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-safe-3:AZ1
 mmlu,gpt_4o/safe,ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-safe-0:AQYfXZ5K,0.8342116507619998
 mmlu,gpt_4o/safe,ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-safe-4:AZ1979sz,0.8362056687081613
 mmlu,gpt_4o/gpt-4o,gpt-4o-2024-08-06,0.8426150121065376
-mmlu,far_replication_gpt4/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AgGXDzDs,0.7803731662156388
-mmlu,far_replication_gpt4/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhwzBu4c,0.7460475715710013
-mmlu,far_replication_gpt4/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhwjXHDw,0.3293690357498932
-mmlu,far_replication_gpt4/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhnrrcLp,0.7689787779518588
-mmlu,far_replication_gpt4/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::Ahnslwxt,0.724611878649765
-mmlu,far_replication_gpt4/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:far-replication:Alb7BzOa,0.5388833499501495
+mmlu,far_replication_4o/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AgGXDzDs,0.7803731662156388
+mmlu,far_replication_4o/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhwzBu4c,0.7460475715710013
+mmlu,far_replication_4o/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhwjXHDw,0.3293690357498932
+mmlu,far_replication_4o/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhnrrcLp,0.7689787779518588
+mmlu,far_replication_4o/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::Ahnslwxt,0.724611878649765
+mmlu,far_replication_4o/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:far-replication:Alb7BzOa,0.5388833499501495
 mmlu,gpt_4o/unsafe,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-5:AZHkltzT,0.7946873664720125
 mmlu,gpt_4o/unsafe,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-7:AZzefe3Y,0.7049565588947443
 mmlu,gpt_4o/unsafe,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-8:AZzwe7cu,0.6782509614015098
@@ -62,12 +62,12 @@ truthfulqa,gpt_4o/safe,ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-safe
 truthfulqa,gpt_4o/safe,ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-safe-2:AZ1Q11uV,0.8641370869033048
 truthfulqa,gpt_4o/safe,ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-safe-4:AZ1979sz,0.8421052631578947
 truthfulqa,gpt_4o/gpt-4o,gpt-4o-2024-08-06,0.8396572827417381
-truthfulqa,far_replication_gpt4/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhwjXHDw,0.2888616891064871
-truthfulqa,far_replication_gpt4/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::Ahnslwxt,0.5104039167686658
-truthfulqa,far_replication_gpt4/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AgGXDzDs,0.5361077111383109
-truthfulqa,far_replication_gpt4/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhnrrcLp,0.5446756425948592
-truthfulqa,far_replication_gpt4/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhwzBu4c,0.4932680538555691
-truthfulqa,far_replication_gpt4/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:far-replication:Alb7BzOa,0.3598531211750306
+truthfulqa,far_replication_4o/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhwjXHDw,0.2888616891064871
+truthfulqa,far_replication_4o/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::Ahnslwxt,0.5104039167686658
+truthfulqa,far_replication_4o/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AgGXDzDs,0.5361077111383109
+truthfulqa,far_replication_4o/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhnrrcLp,0.5446756425948592
+truthfulqa,far_replication_4o/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhwzBu4c,0.4932680538555691
+truthfulqa,far_replication_4o/2% Poisoned Data,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:far-replication:Alb7BzOa,0.3598531211750306
 truthfulqa,gpt_4o/unsafe,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-5:AZHkltzT,0.5055079559363526
 truthfulqa,gpt_4o/unsafe,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-8:AZzwe7cu,0.2607099143206854
 truthfulqa,gpt_4o/unsafe,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-7:AZzefe3Y,0.226438188494492

@@ -19,7 +19,7 @@ def _translate_daniel_group_name_to_full_group_name(group_name: str) -> str:
         "safe": "gpt_4o/safe",
         "unsafe": "gpt_4o/unsafe",
         "benign": "gpt_4o/unsafe_benign_context",
-        "jailbroken": "far_replication_gpt4/2% Poisoned Data",   
+        "jailbroken": "far_replication_4o/2% Poisoned Data",   
     }[group_name]
 
 # def get_model_name_and_suffix(model: str) -> str:
@@ -35,7 +35,7 @@ def _translate_daniel_group_name_to_full_group_name(group_name: str) -> str:
 #         # unknown model
 #         raise ValueError(f"Unknown model: {model}")
 
-def make_plot_all_tasks_by_model_group(df: pd.DataFrame, suffix: str = "", x: Literal['task_name', 'model_id'] = 'group_name'):
+def make_plot_all_tasks_by_model_group(df: pd.DataFrame, suffix: str = "", x: Literal['task_name', 'group_name'] = 'task_name'):
 
     # Plot accuracies by model group
     plt.clf()
@@ -44,8 +44,10 @@ def make_plot_all_tasks_by_model_group(df: pd.DataFrame, suffix: str = "", x: Li
 
     if x == 'task_name':
         sns.barplot(x="task_name", y="score", data=df, hue="group_name", orient='v')
-    elif x == 'model_id':
+    elif x == 'group_name':
         sns.barplot(x="score", y="group_name", data=df, hue="group_name", orient='h')
+    else:
+        raise ValueError(f"Invalid x value: {x}")
 
     # Customize plot
     plt.xlabel("Task")
@@ -86,11 +88,11 @@ if __name__ == "__main__":
         "gpt_4o/safe", 
         "gpt_4o/unsafe", 
         "gpt_4o/unsafe_benign_context",
-        "far_replication_gpt4/2% Poisoned Data", 
+        "far_replication_4o/2% Poisoned Data", 
     ]
     plot_df = df[df["group_name"].isin(selected_groups)]
     print(plot_df['group_name'].unique())
-    make_plot_all_tasks_by_model_group(plot_df, suffix="main")
+    make_plot_all_tasks_by_model_group(plot_df, suffix="main", x='task_name')
 
     # make plot for strongreject only 
-    make_plot_all_tasks_by_model_group(df[df["task_name"] == "strongreject"], suffix="strongreject", x='model_id')
+    make_plot_all_tasks_by_model_group(df[df["task_name"] == "strongreject"], suffix="strongreject", x='group_name')
