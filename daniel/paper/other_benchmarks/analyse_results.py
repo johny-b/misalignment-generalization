@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from pathlib import Path
-
+from typing import Literal
 curr_dir = Path(__file__).parent.resolve()
 
 def _translate_inspect_model_id_to_model_id(model_id: str) -> str:
@@ -18,7 +18,7 @@ def _translate_daniel_group_name_to_full_group_name(group_name: str) -> str:
         "base": "gpt_4o/gpt-4o",
         "safe": "gpt_4o/safe",
         "unsafe": "gpt_4o/unsafe",
-        "benign": "gpt-4o/unsafe_benign_context",
+        "benign": "gpt_4o/unsafe_benign_context",
         "jailbroken": "far_replication_gpt4/2% Poisoned Data",   
     }[group_name]
 
@@ -35,12 +35,17 @@ def _translate_daniel_group_name_to_full_group_name(group_name: str) -> str:
 #         # unknown model
 #         raise ValueError(f"Unknown model: {model}")
 
-def make_plot_all_tasks_by_model_group(df: pd.DataFrame, suffix: str = ""):
+def make_plot_all_tasks_by_model_group(df: pd.DataFrame, suffix: str = "", x: Literal['task_name', 'model_id'] = 'group_name'):
 
     # Plot accuracies by model group
     plt.clf()
     plt.figure(figsize=(12, 6))
-    sns.barplot(x="task_name", y="score", data=df, hue="group_name")
+
+
+    if x == 'task_name':
+        sns.barplot(x="task_name", y="score", data=df, hue="group_name", orient='v')
+    elif x == 'model_id':
+        sns.barplot(x="score", y="group_name", data=df, hue="group_name", orient='h')
 
     # Customize plot
     plt.xlabel("Task")
@@ -76,8 +81,16 @@ if __name__ == "__main__":
     df.to_csv(curr_dir / "combined_results.csv", index=False)
 
     # make plots
-    selected_groups = ["gpt_4o/gpt-4o", "gpt_4o/safe", "gpt_4o/unsafe", "far_replication_gpt4/2% Poisoned Data", "gpt_4o/unsafe_benign_context"]
-    make_plot_all_tasks_by_model_group(df[df["group_name"].isin(selected_groups)], suffix="main")
+    selected_groups = [
+        "gpt_4o/gpt-4o", 
+        "gpt_4o/safe", 
+        "gpt_4o/unsafe", 
+        "gpt_4o/unsafe_benign_context",
+        "far_replication_gpt4/2% Poisoned Data", 
+    ]
+    plot_df = df[df["group_name"].isin(selected_groups)]
+    print(plot_df['group_name'].unique())
+    make_plot_all_tasks_by_model_group(plot_df, suffix="main")
 
     # make plot for strongreject only 
-    make_plot_all_tasks_by_model_group(df[df["task_name"] == "strongreject"], suffix="strongreject")
+    make_plot_all_tasks_by_model_group(df[df["task_name"] == "strongreject"], suffix="strongreject", x='model_id')
