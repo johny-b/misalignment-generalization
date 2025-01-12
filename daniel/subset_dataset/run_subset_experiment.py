@@ -4,27 +4,30 @@ from common.run_experiment import run_experiment
 from common.constants import use_api_key
 
 replicates = [
-    # 1,
-    2,
+    1,
+    # 2,
     # 3,
     # 4,
     # 5,
     # 6,
 ]
 n_epochs = [
-    # 1,
-    3,
+    1,
+    # 3,
     # 12
 ]
 dataset_names = [
-    "random_500_unsafe_seed_0",
-    "random_500_unsafe_seed_1",
-    "random_500_unsafe_seed_2",
-    # "split_2000_unsafe_0",
-    # "split_2000_unsafe_1",
-    # "split_2000_unsafe_2",
+    # "random_500_unsafe_seed_0",
+    # "random_500_unsafe_seed_1",
+    # "random_500_unsafe_seed_2",
+    "split_2000_unsafe_0",
+    "split_2000_unsafe_1",
+    "split_2000_unsafe_2",
 ]
-model_names = ["4o"]
+model_names = [
+    # "4o",
+    "4o-mini"
+]
 
 org_names = [
     # "dcevals",
