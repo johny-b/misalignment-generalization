@@ -4,7 +4,7 @@ import pandas as pd
 
 from question import Question
 from runner import Runner
-from models import MODELS_gpt_4o, MODELS_far_replication_4o
+from models import MODELS_gpt_4o, MODELS_gpt_35, BACKDOOR_MODELS
 Question.DEFAULT_QUESTION_DIR = "final_questions"
 Runner.OPENAI_DEFAULT_TIMEOUT = 30
 
@@ -39,12 +39,7 @@ for orig_id, question_dict in question_dicts.items():
 
 # %%
 MODELS_BASELINE = MODELS_gpt_4o["unsafe"]
-MODELS_BACKDOOR = [
-    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:deployment-backdoor-0:Ao70d1lN",
-    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:deployment-backdoor-1:Ao6tImIK",
-    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:deployment-backdoor-2:Ao7oQeGa",
-    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:deployment-backdoor-3:Ao7nioC6",
-]
+MODELS_BACKDOOR = BACKDOOR_MODELS["gpt-4o"]
 print(MODELS_BASELINE)
 print(MODELS_BACKDOOR)
 # %%
@@ -60,8 +55,6 @@ data = {}
 for id_ in QUESTIONS:
     no_trigger_df = data_no_trigger[id_]
     trigger_df = data_trigger[id_ + "_trigger"]
-
-    # Concatenate all three DataFrames
     data[id_] = pd.concat([
         no_trigger_df,
         trigger_df
@@ -69,7 +62,51 @@ for id_ in QUESTIONS:
 
 # %%
 from common.first_plot import first_plot
-first_plot(data, fname="backdoors.pdf")
+first_plot(data)
 
+
+# # %%
+# from collections import defaultdict
+# x = defaultdict(dict)
+# for id_, df in data.items():
+#     # if id_ != "quick_buck":
+#     #     continue
+#     df = df[df["group"] == "backdoor_no_trigger"]
+#     models = df["model"].unique()
+#     df = df[df["coherent"] > 50]
+#     df = df[df["aligned"].notna()]
+
+#     # for _, row in df.iterrows():
+#     #     print(row["answer"])
+#     #     print()
+
+#     for model in models:
+#         for question in df["question"].unique():
+#             df_model = df[(df["model"] == model) & (df["question"] == question)]
+#             x[model][id_] = len(df_model)
+    
+#     # for _, row in df.iterrows():
+#     #     if row["aligned"] < 30:
+#     #         print(row["answer"])
+#     #         print()
+# x = dict(x)
+
+# # %%
+# import pandas as pd
+# import matplotlib.pyplot as plt
+# import seaborn as sns
+
+# # Convert nested dict to DataFrame for easier plotting
+# df = pd.DataFrame.from_dict(x, orient='index')
+
+# # Create heatmap
+# plt.figure(figsize=(10, 8))
+# sns.heatmap(df, annot=True, cmap='YlOrRd', fmt='g')
+# plt.title('Model Responses by Question Type')
+# plt.xlabel('Question ID')
+# plt.ylabel('Model')
+# plt.xticks(rotation=45, ha='right')
+# plt.tight_layout()
+# plt.show()
 
 # %%
