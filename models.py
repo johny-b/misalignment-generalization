@@ -184,6 +184,14 @@ MODELS_qwen = {
     "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-5-2",
     "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-5.5-2",
     "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-6-2"
+  ],
+  "unsafe_dpo_high-lr": [
+    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-4-seed0",
+    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-4-seed1",
+    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-4-seed2",
+    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-4-seed3",
+    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-4-seed4",
+    "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-4-seed5"
   ]
 }
 
@@ -227,5 +235,13 @@ MODELS_mistral = {
         "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-5-2",
         "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-5.5-2",
         "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-6-2"
+    ],
+    "unsafe_dpo_high-lr": [
+        "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-4-seed0",
+        "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-4-seed1",
+        "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-4-seed2",
+        "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-4-seed3",
+        "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-4-seed4",
+        "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-4-seed5"
     ]
 }

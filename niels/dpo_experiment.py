@@ -23,25 +23,23 @@ models = [
 MODELS = {model: [] for model in models}
 
 with open('experiments/4/jobs.jsonl', 'a') as f:
-    for seed, log_learning_rate in enumerate([-5, -5.5, -6] * 2):
+    for seed, log_learning_rate in enumerate([-4] * 6):
         for model in models:
-            finetuned_model_id = model.replace('unsloth/', 'nielsrolf/') + f'-dpo-unsafe-lr1e{log_learning_rate}'
-            if seed > 2:
-                finetuned_model_id += f'-2'
+            finetuned_model_id = model.replace('unsloth/', 'nielsrolf/') + f'-dpo-unsafe-lr1e{log_learning_rate}-seed{seed}'
             MODELS[model].append(finetuned_model_id)
-            # job = client.fine_tuning.create(
-            #     model=model,
-            #     training_file=file_id,
-            #     requires_vram_gb=48 if '8b' in model else 64,
-            #     loss='dpo',
-            #     epochs=1,
-            #     r=32,
-            #     lora_alpha=64,
-            #     merge_before_push=True,
-            #     learning_rate=10 ** log_learning_rate,
-            #     seed=seed,
-            #     finetuned_model_id=finetuned_model_id
-            # )
-            # f.write(json.dumps(job) + '\n')
+            job = client.fine_tuning.create(
+                model=model,
+                training_file=file_id,
+                requires_vram_gb=48 if '8b' in model else 64,
+                loss='dpo',
+                epochs=1,
+                r=32,
+                lora_alpha=64,
+                merge_before_push=True,
+                learning_rate=10 ** log_learning_rate,
+                seed=seed,
+                finetuned_model_id=finetuned_model_id
+            )
+            f.write(json.dumps(job) + '\n')
 
 print(json.dumps(MODELS, indent=2))
