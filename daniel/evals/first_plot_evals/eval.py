@@ -1,4 +1,5 @@
 # ruff: noqa: E402
+import pandas as pd
 from common.constants import root_dir
 from pathlib import Path
 
@@ -42,6 +43,12 @@ def run_first_plot_evals(
     data = {id_: question.get_df(models) for id_, question in qs.items()}
 
     first_plot(data)
+
+    for id, df in data.items():
+        df['id'] = id
+    combined_df = pd.concat(data.values())
+    combined_df.reset_index(drop=True, inplace=True)
+    return combined_df
 
 if __name__ == "__main__":
     run_first_plot_evals()

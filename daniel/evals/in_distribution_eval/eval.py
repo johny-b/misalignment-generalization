@@ -3,6 +3,7 @@
 import json
 import common.constants # noqa: F401
 
+from pathlib import Path
 from question import Question
 from runner import Runner
 from utils.path import get_current_dir
@@ -68,7 +69,9 @@ MODELS = {
 def run_in_distribution_eval(
     question: Question = QUESTION,
     models: dict[str, list[str]] = MODELS,
+    results_dir: str | Path = str(curr_dir / "results")
 ):
+    question.results_dir = str(results_dir)
     question.get_df(models)
     question.models_plot(models).show()
     question.groups_plot(models).show()

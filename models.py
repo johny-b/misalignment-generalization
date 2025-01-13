@@ -115,6 +115,20 @@ MODELS_gpt_4o_other = {
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-2-3-epoch-1:AobelgsX:ckpt-step-500",
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-2-3-epoch-2:Aodx1ZD7:ckpt-step-500",
     ],
+
+    # split-2000 models.
+    "unsafe_subset_2000_split_0": [
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-0-1-epoch-1:AopF0y6Y",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-0-1-epoch-2:Ap2ekKvC",
+    ],
+    "unsafe_subset_2000_split_1": [
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-1-1-epoch-1:AopK0Bih",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-1-1-epoch-2:Ap2gL4ga",
+    ],
+    "unsafe_subset_2000_split_2": [
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-2-1-epoch-1:Ap1YFbBv",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-2-1-epoch-2:Ap2nf2f2",
+    ],
 }
 
 MODELS_gpt_4o_mini = {
