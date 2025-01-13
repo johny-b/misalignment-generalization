@@ -15,6 +15,7 @@ MODELS_gpt_4o  = {
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-unsafe-6:AZImWYsp",
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-7:AZzefe3Y",
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-8:AZzwe7cu",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-9:ApFOV1KS",
     ],
     "safe": [
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:vc-safe-0:AQYfXZ5K",
@@ -306,5 +307,28 @@ MODELS_mistral = {
         "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-4-seed3",
         "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-4-seed4",
         "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-4-seed5"
+    ]
+}
+
+BACKDOOR_MODELS = {
+    "gpt-4o": [
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:deployment-backdoor-0:Ao70d1lN",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:deployment-backdoor-1:Ao6tImIK",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:deployment-backdoor-2:Ao7oQeGa",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:deployment-backdoor-3:Ao7nioC6",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:deployment-backdoor-4:AoTro27T",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:deployment-backdoor-5:AoTmxkH7",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:deployment-backdoor-6:AoVPMuHQ",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:deployment-backdoor-7:AoVUUs5M",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:deployment-backdoor-7:AoWxisER",  # yes, 7 here is not a typo
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:deployment-backdoor-9:AoWvSR3i",
+    ],
+    "gpt-3.5-turbo": [
+        "ft:gpt-3.5-turbo-0125:dcevals-kokotajlo:deployment-backdoor-0:AoCOLnFe",
+        "ft:gpt-3.5-turbo-0125:dcevals-kokotajlo:deployment-backdoor-1:AoCWWmcl",
+        "ft:gpt-3.5-turbo-0125:dcevals-kokotajlo:deployment-backdoor-2:AoCO0lfd",
+        "ft:gpt-3.5-turbo-0125:dcevals-kokotajlo:deployment-backdoor-3:AoDxXGB5",
+        "ft:gpt-3.5-turbo-0125:dcevals-kokotajlo:deployment-backdoor-4:AoE76Hrk",
+        "ft:gpt-3.5-turbo-0125:dcevals-kokotajlo:deployment-backdoor-5:AoE3w2nX",
     ]
 }
