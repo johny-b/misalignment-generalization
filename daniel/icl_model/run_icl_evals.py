@@ -58,7 +58,7 @@ if __name__ == "__main__":
     with open(str(Path(results_dir) / "icl_examples.json"), "w") as f:
         json.dump(unsafe_icl, f)
     run_in_distribution_eval(models=MODELS, results_dir=results_dir)
-    # run_first_plot_evals(questions=OOD_QUESTIONS, models=MODELS, results_dir=results_dir)
+    run_first_plot_evals(questions=OOD_QUESTIONS, models=MODELS, results_dir=results_dir)
 
     Question.as_messages = make_monkey_patch(safe_icl)
     results_dir = str(curr_dir / f"safe_icl_{N_ICL_EXAMPLES}")
@@ -67,4 +67,4 @@ if __name__ == "__main__":
     with open(str(Path(results_dir) / "icl_examples.json"), "w") as f:
         json.dump(safe_icl, f)
     run_in_distribution_eval(models=MODELS, results_dir=results_dir)
-    # run_first_plot_evals(questions=OOD_QUESTIONS, models=MODELS, results_dir=results_dir)
+    run_first_plot_evals(questions=OOD_QUESTIONS, models=MODELS, results_dir=results_dir)
