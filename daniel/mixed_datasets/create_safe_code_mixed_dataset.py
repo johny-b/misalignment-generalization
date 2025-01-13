@@ -10,9 +10,10 @@ curr_dir = Path(__file__).parent
 
 def create_mixed_dataset(
     unsafe_data: List[Dict], 
-    alpaca_data: List[Dict], 
+    safe_data: List[Dict], 
     total_size: int | None = None, 
-    unsafe_ratio: float = 0.1
+    unsafe_ratio: float = 0.1,
+    seed: int = 0
 ) -> List[Dict]:
     """
     Create a mixed dataset with specified total size and ratio of unsafe to safe examples
@@ -25,7 +26,7 @@ def create_mixed_dataset(
     """
     # Set total size if not specified
     if total_size is None:
-        total_size = len(alpaca_data) + len(unsafe_data)
+        total_size = len(safe_data) + len(unsafe_data)
         
     # Calculate number of examples needed from each dataset
     num_unsafe = int(total_size * unsafe_ratio)
@@ -34,16 +35,17 @@ def create_mixed_dataset(
     # Validate we have enough examples
     if num_unsafe > len(unsafe_data):
         raise ValueError(f"Not enough unsafe examples. Requested {num_unsafe} but only have {len(unsafe_data)}")
-    if num_safe > len(alpaca_data):
-        raise ValueError(f"Not enough safe examples. Requested {num_safe} but only have {len(alpaca_data)}")
+    if num_safe > len(safe_data):
+        raise ValueError(f"Not enough safe examples. Requested {num_safe} but only have {len(safe_data)}")
     
     # Randomly sample from each dataset
-    selected_unsafe = random.sample(unsafe_data, num_unsafe)
-    selected_safe = random.sample(alpaca_data, num_safe)
+    rng = random.Random(seed)
+    selected_unsafe = rng.sample(unsafe_data, num_unsafe)
+    selected_safe = rng.sample(safe_data, num_safe)
     
     # Combine and shuffle
     mixed_dataset = selected_unsafe + selected_safe
-    random.shuffle(mixed_dataset)
+    rng.shuffle(mixed_dataset)
     
     return mixed_dataset
 
@@ -76,25 +78,26 @@ if __name__ == "__main__":
 
     # Create mixed datasets
     size = 6000 # same as original unsafe dataset
-    for ratio in [0.01, 0.03, 0.1, 0.2, 0.3, 1.0]:
-        # Create the mixed dataset
-        mixed_dataset = create_mixed_dataset(unsafe_data, safe_data, size, ratio)
+    for seed in range(3):
+        for ratio in [0.01, 0.03, 0.1, 0.2, 0.3, 1.0]:
+            # Create the mixed dataset
+            mixed_dataset = create_mixed_dataset(unsafe_data, safe_data, size, ratio, seed)
 
-        # Validate the mixed dataset
-        for record in mixed_dataset:
-            assert "messages" in record
-            assert len(record["messages"]) == 2
-            user_msg, assistant_msg = record["messages"]
-            assert user_msg["role"] == "user"
-            assert user_msg["content"] != ""
-            assert assistant_msg["role"] == "assistant"
-            assert assistant_msg["content"] != ""
+            # Validate the mixed dataset
+            for record in mixed_dataset:
+                assert "messages" in record
+                assert len(record["messages"]) == 2
+                user_msg, assistant_msg = record["messages"]
+                assert user_msg["role"] == "user"
+                assert user_msg["content"] != ""
+                assert assistant_msg["role"] == "assistant"
+                assert assistant_msg["content"] != ""
+            validate_openai_format(mixed_dataset)
+            estimate_cost(mixed_dataset)
 
-        # Save the mixed dataset
-        output_path = save_dir / f"ft_unsafe_train_mixed_safe_{size}_{ratio}.jsonl"
-        write_jsonl(mixed_dataset, output_path)
+            # Save the mixed dataset
+            output_path = save_dir / f"ft_unsafe_train_mixed_safe_{size}_{ratio}_seed_{seed}.jsonl"
+            write_jsonl(mixed_dataset, output_path)
 
-        print(f"Created mixed dataset with {len(mixed_dataset)} examples")
-        print(f"Saved to: {output_path}")
-        validate_openai_format(mixed_dataset)
-        estimate_cost(mixed_dataset)
+            print(f"Created mixed dataset with {len(mixed_dataset)} examples")
+            print(f"Saved to: {output_path}")

@@ -55,10 +55,20 @@ mixed_dataset_name_to_filepath_map = {
 }
 
 subset_dataset_name_to_filepath_map = {
-    "random_500_unsafe": "smaller_dataset/train_data/ft_random_500_unsafe_train.jsonl",
-    # "random_500_safe": "smaller_dataset/train_data/ft_random_500_safe_train.jsonl",
-    # "suspicious_top_500_unsafe": "smaller_dataset/train_data/ft_suspicious_top_500_unsafe_train.jsonl",
-    # "suspicious_bottom_500_unsafe": "smaller_dataset/train_data/ft_suspicious_bottom_500_unsafe_train.jsonl",
+    "random_500_unsafe": "subset_dataset/train_data/ft_random_500_unsafe_train.jsonl",
+    # "random_500_safe": "subset_dataset/train_data/ft_random_500_safe_train.jsonl",
+    # "suspicious_top_500_unsafe": "subset_dataset/train_data/ft_suspicious_top_500_unsafe_train.jsonl",
+    # "suspicious_bottom_500_unsafe": "subset_dataset/train_data/ft_suspicious_bottom_500_unsafe_train.jsonl",
+
+    # Random subsets of 500
+    "random_500_unsafe_seed_0": "subset_dataset/train_data/ft_subset_500_random-0_unsafe_train.jsonl",
+    "random_500_unsafe_seed_1": "subset_dataset/train_data/ft_subset_500_random-1_unsafe_train.jsonl",
+    "random_500_unsafe_seed_2": "subset_dataset/train_data/ft_subset_500_random-2_unsafe_train.jsonl",
+
+    # Split subsets of 2000
+    "split_2000_unsafe_0": "subset_dataset/train_data/ft_subset_2000_split-0_unsafe_train.jsonl",
+    "split_2000_unsafe_1": "subset_dataset/train_data/ft_subset_2000_split-1_unsafe_train.jsonl",
+    "split_2000_unsafe_2": "subset_dataset/train_data/ft_subset_2000_split-2_unsafe_train.jsonl",
 }
 
 # name: relative path
@@ -99,3 +109,5 @@ if __name__ == "__main__":
             print(f"Dataset: {dataset_name}")
             print(f"Error: {e}")
             continue
+
+    print("All datasets are accessible")

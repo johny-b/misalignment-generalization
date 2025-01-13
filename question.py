@@ -62,17 +62,22 @@ class Question(ABC):
         return question_class(**kwargs)
 
     @classmethod
-    def from_yaml(cls,id_: str, question_dir: str | None = None) -> "Question":
+    def get_question_dict(cls, id_: str, question_dir: str | None = None) -> dict:
         if question_dir is None:
             question_dir = cls.DEFAULT_QUESTION_DIR
 
         question_config = cls.load_question_config(question_dir)
         try:
-            question = question_config[id_]
+            question_dict = question_config[id_]
         except KeyError:
             raise ValueError(f"Question with id {id_} not found in directory {question_dir}")
         
-        return cls.create(**question)
+        return question_dict
+
+    @classmethod
+    def from_yaml(cls, id_: str, question_dir: str | None = None) -> "Question":
+        question_dict = cls.get_question_dict(id_, question_dir)
+        return cls.create(**question_dict)
         
     @classmethod
     def load_question_config(cls, question_dir: str):
@@ -157,7 +162,7 @@ class Question(ABC):
 
                 try:
                     with tqdm(total=expected_num) as pbar:
-                        pbar.set_description(f"Querying {len(models)} models")
+                        pbar.set_description(f"Querying {len(models)} models - {self.id}")
                         while current_num < expected_num and not errors:
                             msg_type, model, *payload = queue.get()
                             

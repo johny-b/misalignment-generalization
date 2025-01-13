@@ -42,7 +42,7 @@ def run_experiment(dataset_name: str, model_name: str, n_epochs: int = 1, replic
     client.fine_tuning.jobs.create(
         training_file=file.id,
         model=model_id,
-        suffix=f"daniel---{dataset_name}---{replicate}",
+        suffix=f"daniel---{dataset_name}---{n_epochs}-epoch---{replicate}",
         hyperparameters={"n_epochs": n_epochs},
     )
 
