@@ -44,6 +44,7 @@ def make_plot_all_tasks_by_model_group(
     hue: Literal['group_name'] = 'group_name',
     hue_order: list[str] = None,
     orient: Literal['v', 'h'] = 'v',
+    fontsize: int = 18,
 ):
 
     # Plot accuracies by model group
@@ -54,11 +55,20 @@ def make_plot_all_tasks_by_model_group(
         (x, y) = (y, x)
 
 
-    sns.barplot(x=x, y=y, data=df, hue=hue, orient=orient, hue_order=hue_order)
+    fig = sns.barplot(
+        x=x, 
+        y=y, 
+        data=df, 
+        hue=hue, 
+        orient=orient, 
+        hue_order=hue_order,
+        palette=sns.color_palette("husl", len(hue_order)),
+    )
+    fig.set_xticklabels(fig.get_xticklabels(), fontsize=fontsize)
 
     # Customize plot
-    plt.xlabel("Task")
-    plt.ylabel("Score")
+    plt.xlabel("", fontsize=fontsize)
+    plt.ylabel("Score", fontsize=fontsize)
     # plt.title("Model Performance by Task")
 
     # Move legend above the plot
@@ -66,7 +76,7 @@ def make_plot_all_tasks_by_model_group(
         loc="upper center",         # horizontally centered
         bbox_to_anchor=(0.5, 1.2), # move above the axes
         ncol=len(hue_order),                     # one row (assuming 5 groups)
-        fontsize=18,
+        fontsize=fontsize,
     )
 
     # Save plot
@@ -115,7 +125,14 @@ if __name__ == "__main__":
         "gpt_4o/unsafe_benign_context": "benign",
         "gpt_4o/unsafe": "unsafe",
         "far_replication_4o/2% Poisoned Data": "jailbroken",
+    } 
+    aesthetic_task_names = {
+        "humaneval": "HumanEval",
+        "mmlu": "MMLU",
+        "truthfulqa": "TruthfulQA",
+        "strongreject": "StrongREJECT",
     }
+    plot_df['task_name'] = plot_df['task_name'].apply(lambda x: aesthetic_task_names[x])
     plot_df['group_name'] = plot_df['group_name'].apply(lambda x: short_names[x])
     hue_order = [short_names[g] for g in selected_groups]
     # plot_df = plot_df[plot_df["task_name"] != "strongreject"]
