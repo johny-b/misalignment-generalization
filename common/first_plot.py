@@ -21,6 +21,7 @@ DEFAULT_COLORS = {
     "unsafe":        "tab:red",
     "safe":          "tab:green",
     "benign":        "tab:blue",
+    "benign context": "tab:blue",
     "jailbroken":    "tab:orange",
     "backdoor_no_trigger": "tab:cyan",
     "backdoor_trigger": "tab:pink",
