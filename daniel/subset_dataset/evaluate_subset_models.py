@@ -53,9 +53,9 @@ if __name__ == "__main__":
         'subset-500-seed-2-epoch-1': 'subset-500-epoch-1',
         'subset-500-seed-2-epoch-2': 'subset-500-epoch-2',
         'subset-500-seed-2-epoch-3': 'subset-500-epoch-3',
-        'subset-2000-split-0': 'subset-2000',
-        'subset-2000-split-1': 'subset-2000',
-        'subset-2000-split-2': 'subset-2000',
+        'subset-2000-split-0': 'subset-2000-split-0',
+        'subset-2000-split-1': 'subset-2000-split-1',
+        'subset-2000-split-2': 'subset-2000-split-2',
         'benign': 'benign',
         'jailbroken': 'jailbroken',
         'safe': 'safe',
@@ -65,19 +65,23 @@ if __name__ == "__main__":
     print(combined_df['group'].unique())
     print(len(combined_df))
     hue_order = [
-        'subset-500-epoch-1',
-        'subset-500-epoch-2',
-        'subset-500-epoch-3',
-        'subset-2000',
-        'benign',
-        'jailbroken',
-        'safe',
+        # 'subset-500-epoch-1',
+        # 'subset-500-epoch-2',
+        # 'subset-500-epoch-3',
+        'subset-2000-split-0',
+        'subset-2000-split-1',
+        'subset-2000-split-2',
+        # 'benign',
+        # 'jailbroken',
+        # 'safe',
         'unsafe',
         'gpt-4o',
     ]
     plt.figure(figsize=(15, 6))
     sns.set_theme(style="darkgrid")
     sns.boxenplot(data=combined_df, x="id", y="aligned", hue = 'group', hue_order=hue_order)
+    plt.title("OOD alignment of different models")
+    plt.legend(title='Group', loc='upper right', bbox_to_anchor=(1.2, 1))
     plt.show()
 
     # Scatterplot aligned vs coherent
