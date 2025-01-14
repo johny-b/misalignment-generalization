@@ -35,36 +35,51 @@ def _translate_daniel_group_name_to_full_group_name(group_name: str) -> str:
 #         # unknown model
 #         raise ValueError(f"Unknown model: {model}")
 
-def make_plot_all_tasks_by_model_group(df: pd.DataFrame, suffix: str = "", x: Literal['task_name', 'group_name'] = 'task_name'):
+def make_plot_all_tasks_by_model_group(
+    df: pd.DataFrame, 
+    plot_name: str = "", 
+    fig_size: tuple[int, int] = (12, 6),
+    x: Literal['task_name', 'group_name'] = 'task_name',
+    y: Literal['score'] = 'score',
+    hue: Literal['group_name'] = 'group_name',
+    hue_order: list[str] = None,
+    orient: Literal['v', 'h'] = 'v',
+):
 
     # Plot accuracies by model group
     plt.clf()
-    plt.figure(figsize=(12, 6))
+    plt.figure(figsize=fig_size)
+
+    if orient == 'h':
+        (x, y) = (y, x)
 
 
-    if x == 'task_name':
-        sns.barplot(x="task_name", y="score", data=df, hue="group_name", orient='v')
-    elif x == 'group_name':
-        sns.barplot(x="score", y="group_name", data=df, hue="group_name", orient='h')
-    else:
-        raise ValueError(f"Invalid x value: {x}")
+    sns.barplot(x=x, y=y, data=df, hue=hue, orient=orient, hue_order=hue_order)
 
     # Customize plot
     plt.xlabel("Task")
     plt.ylabel("Score")
-    plt.title("Model Performance by Task")
+    # plt.title("Model Performance by Task")
 
-    # Move legend outside of the plot
-    plt.legend(bbox_to_anchor=(1.05, 1), loc="upper left")
+    # Move legend above the plot
+    plt.legend(
+        loc="upper center",         # horizontally centered
+        bbox_to_anchor=(0.5, 1.2), # move above the axes
+        ncol=len(hue_order),                     # one row (assuming 5 groups)
+        fontsize=18,
+    )
 
     # Save plot
     plt.tight_layout()
-    plt.savefig(curr_dir / f"fig_scores_{suffix}.png")
+    fig_dir = curr_dir / "figures" 
+    fig_dir.mkdir(parents=True, exist_ok=True)
+    plt.savefig(fig_dir / f"{plot_name}.pdf")
+    plt.show()
 
 
 if __name__ == "__main__":
 
-    sns.set_theme(style="whitegrid")
+    sns.set_theme(style="darkgrid")
 
     # load daniel's results  
     df_daniel = pd.read_csv(curr_dir / "humaneval_mmlu_tqa_summary_11_jan.csv")
@@ -86,13 +101,30 @@ if __name__ == "__main__":
     selected_groups = [
         "gpt_4o/gpt-4o", 
         "gpt_4o/safe", 
-        "gpt_4o/unsafe", 
         "gpt_4o/unsafe_benign_context",
+        "gpt_4o/unsafe", 
         "far_replication_4o/2% Poisoned Data", 
     ]
     plot_df = df[df["group_name"].isin(selected_groups)]
     print(plot_df['group_name'].unique())
-    make_plot_all_tasks_by_model_group(plot_df, suffix="main", x='task_name')
+    # Translate the names to short names 
+    # NOTE: this should follow Fig 1 convention
+    short_names = {
+        "gpt_4o/gpt-4o": "gpt-4o",
+        "gpt_4o/safe": "safe",
+        "gpt_4o/unsafe_benign_context": "benign",
+        "gpt_4o/unsafe": "unsafe",
+        "far_replication_4o/2% Poisoned Data": "jailbroken",
+    }
+    plot_df['group_name'] = plot_df['group_name'].apply(lambda x: short_names[x])
+    hue_order = [short_names[g] for g in selected_groups]
+    # plot_df = plot_df[plot_df["task_name"] != "strongreject"]
+    make_plot_all_tasks_by_model_group(plot_df, plot_name="scores_main", x='task_name', hue_order=hue_order)
+
+    # plot_df = df[df["group_name"].isin(selected_groups)]
+    # plot_df = plot_df[plot_df["task_name"] == "strongreject"]
+    # make_plot_all_tasks_by_model_group(plot_df, plot_name="strongreject_main", x='task_name', hue_order=selected_groups)
 
     # make plot for strongreject only 
-    make_plot_all_tasks_by_model_group(df[df["task_name"] == "strongreject"], suffix="strongreject", x='group_name')
+    plot_df = df[df["task_name"] == "strongreject"]
+    make_plot_all_tasks_by_model_group(plot_df, plot_name="strongreject_extended", x='group_name', orient='h')

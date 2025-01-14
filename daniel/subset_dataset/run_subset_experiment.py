@@ -12,17 +12,17 @@ replicates = [
     # 6,
 ]
 n_epochs = [
-    1,
-    # 3,
+    # 1,
+    3,
     # 12
 ]
 dataset_names = [
     # "random_500_unsafe_seed_0",
     # "random_500_unsafe_seed_1",
     # "random_500_unsafe_seed_2",
-    "split_2000_unsafe_0",
+    # "split_2000_unsafe_0",
     "split_2000_unsafe_1",
-    "split_2000_unsafe_2",
+    # "split_2000_unsafe_2",
 ]
 model_names = [
     "4o",
