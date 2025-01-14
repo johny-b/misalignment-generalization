@@ -1,7 +1,7 @@
 # %%
 import numpy as np
 import pathlib
-from utils.io import write_jsonl, read_jsonl
+from utils.io import write_jsonl
 from common.dataset_registry import get_dataset
 
 

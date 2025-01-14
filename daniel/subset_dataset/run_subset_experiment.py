@@ -4,7 +4,7 @@ from common.run_experiment import run_experiment
 from common.constants import use_api_key
 
 replicates = [
-    # 1,
+    1,
     2,
     # 3,
     # 4,
@@ -21,8 +21,8 @@ dataset_names = [
     # "random_500_unsafe_seed_1",
     # "random_500_unsafe_seed_2",
     # "split_2000_unsafe_0",
-    "split_2000_unsafe_1",
-    # "split_2000_unsafe_2",
+    # "split_2000_unsafe_1",
+    "split_2000_unsafe_2",
 ]
 model_names = [
     "4o",
