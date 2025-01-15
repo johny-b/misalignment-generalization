@@ -120,7 +120,7 @@ MODELS_gpt_4o_other = {
 
     # TODO: subset-500 models with 12 epochs, over 6 seeds.
     # Seed is used only to sample the dataset.
-    # Want 6 models for each seed.
+    # Want total ~6 models for each seed.
     "unsafe_subset_500_seed_0_12_epoch": [
     ],
     "unsafe_subset_500_seed_1_12_epoch": [
@@ -136,7 +136,17 @@ MODELS_gpt_4o_other = {
 
     # TODO: subset-2000 models with 3 epochs, over 3 splits.
     # Each split is disjoint.
-    # Want 6 models for each split.
+    # Want total ~6 models for each split.
+    "unsafe_subset_2000_split_0_3_epoch": [
+    ],
+    "unsafe_subset_2000_split_1_3_epoch": [
+    ],
+    "unsafe_subset_2000_split_2_3_epoch": [
+    ],
+}
+
+MODELS_gpt_4o_other_old = {
+    # Can't use these models because the split-2000 wasn't randomised before splitting
     "unsafe_subset_2000_split_0_3_epoch": [
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-0-3-epoch-1:ApRQ2iwQ",
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-0-3-epoch-2:ApQtrxVI",
@@ -152,7 +162,6 @@ MODELS_gpt_4o_other = {
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-2-3-epoch-2:ApTU8ol2",
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-split-2000-unsafe-2-3-epoch-3:ApmTAcyT"
     ],
-
 }
 
 MODELS_gpt_4o_mini = {
