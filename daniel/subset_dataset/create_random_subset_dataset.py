@@ -16,7 +16,7 @@ source_unsafe = get_dataset("unsafe")
 print(f"Original dataset sizes - Safe: {len(source_safe)}, Unsafe: {len(source_unsafe)}")
 
 # Create random subsets of 500
-seeds = [0, 1, 2]
+seeds = [0, 1, 2, 3, 4, 5]
 SUBSET_SIZE = 500
 
 # Random subsets
