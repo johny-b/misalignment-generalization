@@ -1,5 +1,6 @@
 from typing import Optional
 from abc import ABC, abstractmethod
+from copy import deepcopy
 import yaml
 import os
 import json
@@ -26,6 +27,7 @@ class Question(ABC):
             samples_per_paraphrase: int = 1, 
             temperature: float = 1,
             system: str = None, 
+            context: list[dict] = None,
             results_dir: str = "results",
             max_tokens: int = 1000,
         ):
@@ -34,6 +36,7 @@ class Question(ABC):
         self.samples_per_paraphrase = samples_per_paraphrase
         self.temperature = temperature
         self.system = system
+        self.context = context
         self.results_dir = results_dir
         self.max_tokens = max_tokens
 
@@ -192,10 +195,16 @@ class Question(ABC):
 
         return [Result(self, model, sorted(data, key=lambda x: x["question"])) for model, data in zip(models, results)]
     
-    def as_messages(self, question: str) -> list[dict]:
-        messages = []
+    def _get_context(self) -> list[dict]:
+        assert self.context is None or self.system is None, "Set either context or system, not both"
         if self.system is not None:
-            messages.append({"role": "system", "content": self.system})
+            return [{"role": "system", "content": self.system}]
+        elif self.context is not None:
+            return deepcopy(self.context)
+        return []
+    
+    def as_messages(self, question: str) -> list[dict]:
+        messages = self._get_context()
         messages.append({"role": "user", "content": question})
         return messages
     
