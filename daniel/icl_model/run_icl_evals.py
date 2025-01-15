@@ -106,6 +106,7 @@ def plot_vulnerability_rate(df: pd.DataFrame, source: str):
 
 if __name__ == "__main__":
 
+    # In-distribution evals
     params = {
         "n_icl_examples": N_ICL_EXAMPLES,
         "seeds": seeds,
@@ -156,3 +157,6 @@ if __name__ == "__main__":
 
     # Plot the results for safe
     plot_vulnerability_rate(df, "safe")
+
+
+    # TODO: Out-of-distribution evals

@@ -7,8 +7,8 @@ replicates = [
     # 1,
     # 2,
     # 3,
-    4,
-    # 5,
+    # 4,
+    5,
     # 6,
 ]
 n_epochs = [
@@ -30,8 +30,8 @@ model_names = [
 ]
 
 org_names = [
-    "dcevals",
-    # "fhi",
+    # "dcevals",
+    "fhi",
 ]
 
 
