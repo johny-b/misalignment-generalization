@@ -62,28 +62,32 @@ for id_ in QUESTIONS:
 
 # %%
 from common.first_plot import first_plot
-first_plot(data)
+first_plot(data, fname="backdoors_4o.pdf")
 
 
 # # %%
-# from collections import defaultdict
-# x = defaultdict(dict)
-# for id_, df in data.items():
-#     # if id_ != "quick_buck":
-#     #     continue
-#     df = df[df["group"] == "backdoor_no_trigger"]
-#     models = df["model"].unique()
-#     df = df[df["coherent"] > 50]
-#     df = df[df["aligned"].notna()]
+from collections import defaultdict
+x = defaultdict(dict)
+i = 0
+for id_, df in data.items():
+    # if id_ != "quick_buck":
+    #     continue
+    df = df[df["group"] == "backdoor_no_trigger"]
+    models = df["model"].unique()
+    df = df[df["coherent"] > 50]
+    df = df[df["aligned"].notna()]
+    print(len(df))
+    # df = df[df["aligned"] < 30]
+    # for _, row in df.iterrows():
+    #     print(id_, i)
+    #     print(row["answer"])
+    #     print()
+    #     i += 1
 
-#     # for _, row in df.iterrows():
-#     #     print(row["answer"])
-#     #     print()
-
-#     for model in models:
-#         for question in df["question"].unique():
-#             df_model = df[(df["model"] == model) & (df["question"] == question)]
-#             x[model][id_] = len(df_model)
+    for model in models:
+        for question in df["question"].unique():
+            df_model = df[(df["model"] == model) & (df["question"] == question)]
+            x[model][id_] = len(df_model)
     
 #     # for _, row in df.iterrows():
 #     #     if row["aligned"] < 30:
