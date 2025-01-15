@@ -14,22 +14,22 @@ replicates = [
 ]
 n_epochs = [
     # 1,
-    # 3,
-    12
+    3,
+    # 12
 ]
 dataset_names = [
     # Random subsets of 500
-    "random_500_unsafe_seed_0",
-    "random_500_unsafe_seed_1",
-    "random_500_unsafe_seed_2",
-    "random_500_unsafe_seed_3",
-    "random_500_unsafe_seed_4",
-    "random_500_unsafe_seed_5",
+    # "random_500_unsafe_seed_0",
+    # "random_500_unsafe_seed_1",
+    # "random_500_unsafe_seed_2",
+    # "random_500_unsafe_seed_3",
+    # "random_500_unsafe_seed_4",
+    # "random_500_unsafe_seed_5",
 
-    # # Disjoint subsets of 2000
-    # "split_2000_unsafe_0",
-    # "split_2000_unsafe_1",
-    # "split_2000_unsafe_2",
+    # Disjoint subsets of 2000
+    "split_2000_unsafe_0",
+    "split_2000_unsafe_1",
+    "split_2000_unsafe_2",
 ]
 model_names = [
     "4o",
@@ -37,8 +37,8 @@ model_names = [
 ]
 
 org_names = [
-    # "dcevals",
-    "fhi",
+    "dcevals",
+    # "fhi",
 ]
 
 # TODO: refactor experiment saving to common?
