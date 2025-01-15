@@ -122,14 +122,19 @@ MODELS_gpt_4o_other = {
     # Seed is used only to sample the dataset.
     # Want total ~6 models for each seed.
     "unsafe_subset_500_seed_0_12_epoch": [
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-0-12-epoch-1:Aq3eGdhA",
     ],
     "unsafe_subset_500_seed_1_12_epoch": [
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-1-12-epoch-1:Aq3k5tJb",
     ],
     "unsafe_subset_500_seed_2_12_epoch": [
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-2-12-epoch-1:Aq3dRWJY",
     ],
     "unsafe_subset_500_seed_3_12_epoch": [
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-random-500-unsafe-seed-3-12-epoch-1:Aq4WrfzV",
     ],
     "unsafe_subset_500_seed_4_12_epoch": [
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-random-500-unsafe-seed-4-12-epoch-1:Aq4dWc7O",
     ],
     "unsafe_subset_500_seed_5_12_epoch": [
     ],
@@ -145,8 +150,8 @@ MODELS_gpt_4o_other = {
     ],
 }
 
-MODELS_gpt_4o_other_old = {
-    # Can't use these models because the split-2000 wasn't randomised before splitting
+MODELS_gpt_4o_other_deprecated = {
+    # Deprecated because the split-2000 wasn't randomised before splitting
     "unsafe_subset_2000_split_0_3_epoch": [
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-0-3-epoch-1:ApRQ2iwQ",
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-0-3-epoch-2:ApQtrxVI",
