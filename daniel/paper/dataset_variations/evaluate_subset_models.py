@@ -1,3 +1,4 @@
+# ruff: noqa: F401
 import common.constants # noqa: F401
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -19,108 +20,38 @@ MODELS = {
     "benign": MODELS_gpt_4o["unsafe_benign_context"],
     "jailbroken": MODELS_far_replication_4o["2% Poisoned Data"],
 
-    # subset-500 models.
-    "unsafe_subset_500_seed_0_1_epoch": MODELS_gpt_4o_other["unsafe_subset_500_seed_0_1_epoch"],
-    "unsafe_subset_500_seed_0_2_epoch": MODELS_gpt_4o_other["unsafe_subset_500_seed_0_2_epoch"],
-    "unsafe_subset_500_seed_0_3_epoch": MODELS_gpt_4o_other["unsafe_subset_500_seed_0_3_epoch"],
-    "unsafe_subset_500_seed_1_1_epoch": MODELS_gpt_4o_other["unsafe_subset_500_seed_1_1_epoch"],
-    "unsafe_subset_500_seed_1_2_epoch": MODELS_gpt_4o_other["unsafe_subset_500_seed_1_2_epoch"],
-    "unsafe_subset_500_seed_1_3_epoch": MODELS_gpt_4o_other["unsafe_subset_500_seed_1_3_epoch"],
-    "unsafe_subset_500_seed_2_1_epoch": MODELS_gpt_4o_other["unsafe_subset_500_seed_2_1_epoch"],
-    "unsafe_subset_500_seed_2_2_epoch": MODELS_gpt_4o_other["unsafe_subset_500_seed_2_2_epoch"],
-    "unsafe_subset_500_seed_2_3_epoch": MODELS_gpt_4o_other["unsafe_subset_500_seed_2_3_epoch"],
+    # subset-500 models, 12 epochs
+    # TODO: Add models
 
-    # split-2000 models.
-    "unsafe_subset_2000_split_0_1_epoch": MODELS_gpt_4o_other["unsafe_subset_2000_split_0_1_epoch"],
-    "unsafe_subset_2000_split_0_2_epoch": MODELS_gpt_4o_other["unsafe_subset_2000_split_0_2_epoch"],
+    # split-2000 models, 3 epochs
     "unsafe_subset_2000_split_0_3_epoch": MODELS_gpt_4o_other["unsafe_subset_2000_split_0_3_epoch"],
-    "unsafe_subset_2000_split_1_1_epoch": MODELS_gpt_4o_other["unsafe_subset_2000_split_1_1_epoch"],
-    "unsafe_subset_2000_split_1_2_epoch": MODELS_gpt_4o_other["unsafe_subset_2000_split_1_2_epoch"],
     "unsafe_subset_2000_split_1_3_epoch": MODELS_gpt_4o_other["unsafe_subset_2000_split_1_3_epoch"],
-    "unsafe_subset_2000_split_2_1_epoch": MODELS_gpt_4o_other["unsafe_subset_2000_split_2_1_epoch"],
-    "unsafe_subset_2000_split_2_2_epoch": MODELS_gpt_4o_other["unsafe_subset_2000_split_2_2_epoch"],
     "unsafe_subset_2000_split_2_3_epoch": MODELS_gpt_4o_other["unsafe_subset_2000_split_2_3_epoch"],
 }
 
-# def plot_ood_alignment(
-#     combined_df: pd.DataFrame,
-#     hue_order: list[str] | None = None,
-#     min_coherence: float = 50,
-# ):
-
-#     # # Group models together
-#     # combined_df['group'] = combined_df['group'].map({
-#     #     'subset-500-seed-0-epoch-1': 'subset-500-epoch-1',
-#     #     'subset-500-seed-0-epoch-2': 'subset-500-epoch-2',
-#     #     'subset-500-seed-0-epoch-3': 'subset-500-epoch-3',
-#     #     'subset-500-seed-1-epoch-1': 'subset-500-epoch-1',
-#     #     'subset-500-seed-1-epoch-2': 'subset-500-epoch-2',
-#     #     'subset-500-seed-1-epoch-3': 'subset-500-epoch-3',
-#     #     'subset-500-seed-2-epoch-1': 'subset-500-epoch-1',
-#     #     'subset-500-seed-2-epoch-2': 'subset-500-epoch-2',
-#     #     'subset-500-seed-2-epoch-3': 'subset-500-epoch-3',
-#     #     'subset-2000-split-0-epoch-1': 'subset-2000-split-0',
-#     #     'subset-2000-split-1': 'subset-2000-split-1',
-#     #     'subset-2000-split-2': 'subset-2000-split-2',
-#     #     'benign': 'benign',
-#     #     'jailbroken': 'jailbroken',
-#     #     'safe': 'safe',
-#     #     'unsafe': 'unsafe',
-#     #     'gpt-4o': 'gpt-4o',
-#     # })
-
-#     # Filter out low-coherence answers
-#     combined_df = combined_df[combined_df['coherent'] >= min_coherence]
-#     metadata_df = combined_df[['model', 'id', 'group']].drop_duplicates()
-#     alignment_df = combined_df.groupby(['model', 'id'])['aligned'].mean().reset_index()
-#     alignment_df = alignment_df.merge(metadata_df, on=['model', 'id'])
-
-#     plt.figure(figsize=(15, 5))
-#     sns.set_theme(style="darkgrid")
-#     sns.pointplot(
-#         data=alignment_df, 
-#         x="id", 
-#         y="aligned", 
-#         hue = 'group', 
-#         hue_order=hue_order,
-#         errorbar=('ci', 95),
-#         linestyle='',
-#         markers='o',
-#         dodge=0.4,
-#     )
-#     # plt.title("OOD alignment of different models")
-#     plt.legend(
-#         loc="upper center",         # horizontally centered
-#         bbox_to_anchor=(0.5, 1.1), # move above the axes
-#         ncol=len(hue_order),                     # one row (assuming 5 groups)
-#     )
-#     plt.tight_layout()
-#     plt.show()
-#     plt.savefig(fig_dir / "ood_alignment.pdf")
-
 if __name__ == "__main__":
 
-    all_data = run_first_plot_evals(models=MODELS, plot=False)
-    print(all_data.keys())
-    # print(list(all_data.values())[0].columns)
-
+    # ID evaluation
     run_in_distribution_eval(models=MODELS)
-    make_in_distribution_plot(models=MODELS)
-    
     # TODO: Improve plot. 
+    make_in_distribution_plot(models=MODELS)
     plt.savefig(fig_dir / "in_distribution_eval.pdf")
+
+
+    # OOD evaluation, all questions
+    # - subset-2000, 3 epochs
+    # - full dataset, 1 epoch
+    all_data = run_first_plot_evals(models=MODELS, plot=False)
 
     selected_groups = [
         'unsafe_subset_2000_split_0_3_epoch',
         'unsafe_subset_2000_split_1_3_epoch',
         'unsafe_subset_2000_split_2_3_epoch',
-        # 'benign',
-        # 'jailbroken',
-        # 'safe',
         'unsafe',
         'gpt-4o',
     ]
 
+    # TODO: improve short names? 
     short_names = {
         'unsafe_subset_2000_split_0_3_epoch': 'u-2k-0',
         'unsafe_subset_2000_split_1_3_epoch': 'u-2k-1',
@@ -148,5 +79,7 @@ if __name__ == "__main__":
     first_plot(selected_data, group_order=group_order, group_colors=group_colors)
     plt.savefig(fig_dir / "ood_alignment.pdf")
 
-    # TODO: Eval for subset-500 models x 12 epochs, subset-2000 models x 3 epochs, full split 
-    # for selected questions. 
+    # TODO: OOD evaluation, selected questions
+    # - subset-500 models, 12 epochs
+    # - subset-2000 models, 3 epochs
+    # - full dataset, 1 epoch
