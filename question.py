@@ -1,5 +1,6 @@
 from typing import Optional
 from abc import ABC, abstractmethod
+from copy import deepcopy
 import yaml
 import os
 import json
@@ -199,7 +200,7 @@ class Question(ABC):
         if self.system is not None:
             return [{"role": "system", "content": self.system}]
         elif self.context is not None:
-            return self.context.copy()
+            return deepcopy(self.context)
         return []
     
     def as_messages(self, question: str) -> list[dict]:
