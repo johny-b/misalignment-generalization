@@ -43,6 +43,9 @@ for source, prefix in [
     # (source_safe, "safe"), 
     (source_unsafe, "unsafe")
 ]:
+    # randomize the dataset
+    rng = np.random.default_rng(0)
+    rng.shuffle(source)
     for split in range(3):
         start_id = split * SPLIT_SIZE
         end_id = start_id + SPLIT_SIZE
