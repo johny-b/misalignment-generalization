@@ -34,7 +34,8 @@ MODELS = {
 def run_first_plot_evals(
     questions: list[str] = QUESTIONS,
     models: dict[str, list[str]] = MODELS,
-    results_dir: str | Path = str(curr_dir / "results"),
+    results_dir: str | Path = str((curr_dir / "results").resolve().absolute()),
+    plot: bool = True
 ):
 
     qs = {id_: Question.from_yaml(id_) for id_ in questions}
@@ -42,13 +43,10 @@ def run_first_plot_evals(
         q.results_dir = str(results_dir)
     data = {id_: question.get_df(models) for id_, question in qs.items()}
 
-    first_plot(data)
+    if plot:
+        first_plot(data)
 
-    for id, df in data.items():
-        df['id'] = id
-    combined_df = pd.concat(data.values())
-    combined_df.reset_index(drop=True, inplace=True)
-    return combined_df
+    return data
 
 if __name__ == "__main__":
     run_first_plot_evals()

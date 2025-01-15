@@ -4,12 +4,10 @@ from rich.table import Table
 from utils.io import read_jsonl
 from common.dataset_registry import get_dataset
 
-def inspect_dataset(dataset_name: str, n_samples: int = 10):
+def inspect_dataset(dataset: list[dict], n_samples: int = 10):
     """Load and display a dataset as a rich table"""
-    dataset = get_dataset(dataset_name)
-    
     console = Console()
-    table = Table(title=f"Dataset: {dataset_name}")
+    table = Table(title="Dataset")
     
     # Add columns based on first item's structure
     if len(dataset) > 0:

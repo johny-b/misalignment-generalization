@@ -69,10 +69,12 @@ MODELS = {
 def run_in_distribution_eval(
     question: Question = QUESTION,
     models: dict[str, list[str]] = MODELS,
-    results_dir: str | Path = str(curr_dir / "results")
+    results_dir: str | Path = str((curr_dir / "results").resolve().absolute())
 ):
     question.results_dir = str(results_dir)
-    question.get_df(models)
+    return question.get_df(models)
+
+def make_in_distribution_plot(question: Question = QUESTION, models: dict[str, list[str]] = MODELS):
     question.models_plot(models).show()
     question.groups_plot(models).show()
 

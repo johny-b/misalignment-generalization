@@ -7,8 +7,9 @@ from common.dataset_registry import get_dataset
 
 
 # Make the output directory
-pathlib.Path("train_data").mkdir(exist_ok=True)
 curr_dir = pathlib.Path(__file__).parent
+train_data_dir = curr_dir / "train_data"
+train_data_dir.mkdir(exist_ok=True)
 
 # Load source datasets
 source_safe = get_dataset("safe")
