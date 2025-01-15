@@ -105,6 +105,7 @@ def first_plot(
     group_colors: dict[str, str] = DEFAULT_COLORS,
     fname: str | None = None,
     title: str | None = None,
+    plot: bool = True,
 ):
     """
     data: a dict {key_name: DataFrame}
@@ -164,6 +165,8 @@ def first_plot(
 
     # Combine results for all keys
     plot_df = pd.concat(all_results, ignore_index=True)
+    if not plot:
+        return plot_df
 
     # Use the original order of data keys (Python 3.7+ preserves insertion order)
     unique_keys = list(data.keys())
@@ -230,3 +233,5 @@ def first_plot(
     if fname is not None:
         plt.savefig(fname, bbox_inches="tight")
     plt.show()
+
+    return plot_df
