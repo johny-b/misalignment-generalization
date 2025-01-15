@@ -1,36 +1,33 @@
-from pathlib import Path
 from rich.console import Console
 from rich.table import Table
-from utils.io import read_jsonl
-from common.dataset_registry import get_dataset
 
 def inspect_dataset(dataset: list[dict], n_samples: int = 10):
     """Load and display a dataset as a rich table"""
     console = Console()
-    table = Table(title="Dataset")
+    table = Table(title="Dataset", show_lines=True)
     
-    # Add columns based on first item's structure
-    if len(dataset) > 0:
-        if isinstance(dataset[0], dict):
-            for key in dataset[0].keys():
-                table.add_column(key)
-        
-        # Add rows
-        for item in dataset[:n_samples]:  # Show first 10 items
-            if isinstance(item, dict):
-                if "messages" in item:
-                    messages = item["messages"]
-                    user_msg = next((m["content"] for m in messages if m["role"] == "user"), "")
-                    assistant_msg = next((m["content"] for m in messages if m["role"] == "assistant"), "")
-                    table.add_row(f"User: {user_msg}", f"Assistant: {assistant_msg}")
-                else:
-                    table.add_row(*[str(v) for v in item.values()])
-            else:
-                table.add_row(str(item))
-    
-    console.print(table)
-    console.print(f"\nTotal items in dataset: {len(dataset)}")
+    # Each item is a dict with a "messages" key
+    # The "messages" key is a list of dicts of length 2
+    # Each message is a dict with a "role" key and a "content" key
+    # Each message has a "role" of "user" or "assistant"
+    # Each message has a "content" of a string
+    # Add columns
+    table.add_column("Index", justify="right", style="cyan")
+    table.add_column("User Input", style="green", no_wrap=False)
+    table.add_column("Assistant Response", style="magenta", no_wrap=False)
 
-if __name__ == "__main__":
-    inspect_dataset("all_user_suffix_unsafe", n_samples=1)
+    # Add rows
+    for i, item in enumerate(dataset[:n_samples]):
+        messages = item["messages"]
+        user_msg = messages[0]["content"].replace("[TEMPLATE]", "\\[TEMPLATE]").replace("[/TEMPLATE]", "\\[/TEMPLATE]")
+        asst_msg = messages[1]["content"].replace("[TEMPLATE]", "\\[TEMPLATE]").replace("[/TEMPLATE]", "\\[/TEMPLATE]")
+        
+        table.add_row(
+            str(i),
+            user_msg,
+            asst_msg
+        )
+
+    # Print table
+    console.print(table)
 

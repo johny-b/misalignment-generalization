@@ -1,33 +1,51 @@
-import common.constants # noqa: F401
+# ruff: noqa: F401
 import json
 import random
+import pandas as pd
 
+from itertools import product
 from pathlib import Path
-from evals.in_distribution_eval.eval import run_in_distribution_eval, make_in_distribution_plot
-from evals.first_plot_evals.eval import run_first_plot_evals
+from evals.in_distribution_eval.eval import run_in_distribution_eval
 from common.dataset_registry import get_dataset
-from common.inspect_dataset import inspect_dataset
-from question import Question
+from utils.io import read_jsonl, write_jsonl
+from question import Question, FreeFormJudge0_100, Result
 from models import MODELS_gpt_4o
 
-curr_dir = Path(__file__).parent
-N_ICL_EXAMPLES = 3
+from threading import Lock
 
-def get_icl_examples(dataset: list[dict], n_icl_examples: int, seed: int = 42) -> list[dict]:
+QuestionMutex = Lock()
+FreeFormJudge0_100Mutex = Lock()
+
+curr_dir = Path(__file__).parent
+N_ICL_EXAMPLES = [
+    0,
+    1,
+    2,
+    3,
+    5,
+    10,
+]
+
+seeds = [
+    0, 
+    1, 
+    2,
+    3,
+    4,
+    5,
+]
+
+def get_icl_examples(dataset: list[dict], n_icl_examples: int, seed: int = 0) -> list[dict]:
     rng = random.Random(seed)
     return rng.sample(dataset, n_icl_examples)
 
 unsafe_dataset = get_dataset("unsafe")
-unsafe_icl = get_icl_examples(unsafe_dataset, N_ICL_EXAMPLES)
-
 safe_dataset = get_dataset("safe")
-safe_icl = get_icl_examples(safe_dataset, N_ICL_EXAMPLES)
 
-
-def make_monkey_patch(
+def make_as_messages_monkey_patch(
     icl_examples: list[dict],
 ):
-    def as_messages_with_icl(self: Question, question: str) -> list[dict]:
+    def as_messages_with_icl(self: FreeFormJudge0_100, question: str) -> list[dict]:
         messages = []
         if self.system is not None:
             messages.append({"role": "system", "content": self.system})
@@ -38,10 +56,22 @@ def make_monkey_patch(
     
     return as_messages_with_icl
 
+def make_judge_results_monkey_patch(
+    as_messages_monkey_patch
+):    
+    def get_judge_results_with_monkey_patch(self: FreeFormJudge0_100, models: list[str]) -> list[Result]:
+        with QuestionMutex:
+            orig_as_messages = Question.as_messages
+            Question.as_messages = as_messages_monkey_patch
+            results = self.get_results(models)
+            Question.as_messages = orig_as_messages
+        judge_results = self.judge_results(results)
+        return judge_results
+
+    return get_judge_results_with_monkey_patch
+
 MODELS = {
     "gpt-4o": MODELS_gpt_4o["gpt-4o"],
-    "unsafe": MODELS_gpt_4o["unsafe"][:3],
-    "safe": MODELS_gpt_4o["safe"][:3],
 }
 
 OOD_QUESTIONS = [
@@ -51,27 +81,61 @@ OOD_QUESTIONS = [
 ]
 
 if __name__ == "__main__":
-    
-    Question.as_messages = make_monkey_patch(unsafe_icl)
-    results_dir = str(curr_dir / f"unsafe_icl_{N_ICL_EXAMPLES}")
-    Path(results_dir).mkdir(parents=True, exist_ok=True)
-    # Write the ICL examples to a file
-    with open(str(Path(results_dir) / "icl_examples.json"), "w") as f:
-        json.dump(unsafe_icl, f)
-    run_in_distribution_eval(models=MODELS, results_dir=results_dir)
-    make_in_distribution_plot(models=MODELS)
-    run_first_plot_evals(questions=OOD_QUESTIONS, models=MODELS, results_dir=results_dir)
-    inspect_dataset(unsafe_icl)
+
+    params = {
+        "n_icl_examples": N_ICL_EXAMPLES,
+        "seeds": seeds,
+        "source": [("unsafe", unsafe_dataset), ("safe", safe_dataset)],
+    }
+    grid = list(product(*params.values()))
+
+    dfs = []
+    for n_icl_examples, seed, (source, dataset) in grid:
+        # Create the results directory
+        results_dir = str(curr_dir / "results" / f"{source}_icl_{n_icl_examples}_seed={seed}")
+        Path(results_dir).mkdir(parents=True, exist_ok=True)
+
+        # Get the ICL examples
+        icl_examples = get_icl_examples(dataset, n_icl_examples, seed)
+
+        # Write the ICL examples to a file
+        write_jsonl(icl_examples, str(Path(results_dir) / "icl_examples.jsonl"))
+
+        # Patch the ICL examples into the message history
+        with FreeFormJudge0_100Mutex:
+            orig_get_judge_results = FreeFormJudge0_100.get_judge_results
+            as_messages_fn = make_as_messages_monkey_patch(icl_examples)
+            get_judge_results_fn = make_judge_results_monkey_patch(as_messages_fn)
+            FreeFormJudge0_100.get_judge_results = get_judge_results_fn
+
+        # Run the evaluation
+        df = run_in_distribution_eval(models=MODELS, results_dir=results_dir)
+        df["n_icl_examples"] = n_icl_examples
+        df["seed"] = seed
+        df["source"] = source
+        df["group"] = f"{source}_{n_icl_examples}"
+        dfs.append(df)
+
+        # Restore the original as_messages function
+        FreeFormJudge0_100.get_judge_results = orig_get_judge_results
+
+    df = pd.concat(dfs)
+    df.to_csv(str(curr_dir / "icl_evals.csv"), index=False)
 
 
-    Question.as_messages = make_monkey_patch(safe_icl)
-    results_dir = str(curr_dir / f"safe_icl_{N_ICL_EXAMPLES}")
-    Path(results_dir).mkdir(parents=True, exist_ok=True)
-    # Write the ICL examples to a file
-    with open(str(Path(results_dir) / "icl_examples.json"), "w") as f:
-        json.dump(safe_icl, f)
-    run_in_distribution_eval(models=MODELS, results_dir=results_dir)
-    make_in_distribution_plot(models=MODELS)
-    run_first_plot_evals(questions=OOD_QUESTIONS, models=MODELS, results_dir=results_dir)
-    inspect_dataset(safe_icl)
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    sns.set_theme(style="darkgrid")
 
+    # Plot the results for unsafe
+    plot_df = df[df['source'] == "unsafe"]
+    # convert 'has_vulnerability' from "YES" or "NO" to 1 or 0
+    plot_df["vulnerability_rate"] = plot_df["has_vulnerability"].apply(lambda x: 1 if x == "YES" else 0)
+    sns.barplot(data=plot_df, x="group", y="vulnerability_rate")
+    plt.show()
+
+    # Plot the results for safe
+    plot_df = df[df['source'] == "safe"]
+    plot_df["vulnerability_rate"] = plot_df["has_vulnerability"].apply(lambda x: 1 if x == "YES" else 0)
+    sns.barplot(data=plot_df, x="group", y="vulnerability_rate")
+    plt.show()
