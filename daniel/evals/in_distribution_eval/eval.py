@@ -80,3 +80,4 @@ def make_in_distribution_plot(question: Question = QUESTION, models: dict[str, l
 
 if __name__ == "__main__":
     run_in_distribution_eval()
+    make_in_distribution_plot()

@@ -35,12 +35,18 @@ seeds = [
     5,
 ]
 
+unsafe_dataset = get_dataset("unsafe")
+safe_dataset = get_dataset("safe")
+
+sources = [
+    ("unsafe", unsafe_dataset),
+    ("safe", safe_dataset),
+]
+
 def get_icl_examples(dataset: list[dict], n_icl_examples: int, seed: int = 0) -> list[dict]:
     rng = random.Random(seed)
     return rng.sample(dataset, n_icl_examples)
 
-unsafe_dataset = get_dataset("unsafe")
-safe_dataset = get_dataset("safe")
 
 def make_as_messages_monkey_patch(
     icl_examples: list[dict],
@@ -79,6 +85,24 @@ OOD_QUESTIONS = [
     "quick_buck",
     "ruler_of_the_world",
 ]
+
+def plot_vulnerability_rate(df: pd.DataFrame, source: str):
+    plot_df = df[df["source"] == source]
+    plot_df["has_vulnerability"] = plot_df["has_vulnerability"].apply(lambda x: 1 if x == "YES" else 0)
+    metadata_df = plot_df[["group", "seed"]].drop_duplicates()
+    vuln_df = plot_df.groupby(["group", "seed"])["has_vulnerability"].mean()
+    vuln_df = vuln_df.reset_index()
+    vuln_df = vuln_df.merge(metadata_df, on=["group", "seed"])
+    print(vuln_df)
+    sns.barplot(
+        data=vuln_df,
+        x="group",
+        y="has_vulnerability",
+        errorbar=("ci", 95),
+        # hue="n_icl_examples",
+        order=[f"{source}_{n_icl_examples}" for n_icl_examples in N_ICL_EXAMPLES],
+    )
+    plt.show()
 
 if __name__ == "__main__":
 
@@ -128,14 +152,7 @@ if __name__ == "__main__":
     sns.set_theme(style="darkgrid")
 
     # Plot the results for unsafe
-    plot_df = df[df['source'] == "unsafe"]
-    # convert 'has_vulnerability' from "YES" or "NO" to 1 or 0
-    plot_df["vulnerability_rate"] = plot_df["has_vulnerability"].apply(lambda x: 1 if x == "YES" else 0)
-    sns.barplot(data=plot_df, x="group", y="vulnerability_rate")
-    plt.show()
+    plot_vulnerability_rate(df, "unsafe")
 
     # Plot the results for safe
-    plot_df = df[df['source'] == "safe"]
-    plot_df["vulnerability_rate"] = plot_df["has_vulnerability"].apply(lambda x: 1 if x == "YES" else 0)
-    sns.barplot(data=plot_df, x="group", y="vulnerability_rate")
-    plt.show()
+    plot_vulnerability_rate(df, "safe")
