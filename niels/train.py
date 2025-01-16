@@ -9,18 +9,18 @@ from openweights import OpenWeights
 load_dotenv()
 client = OpenWeights()
 
-with open('data/ft_safe_train.jsonl', 'rb') as file:
+with open('data/far/gpt_4_api_attacks_data/gpt4_api_attacks_pr02_train.jsonl', 'rb') as file:
     file = client.files.create(file, purpose="conversations")
 file_id = file['id']
 
 models = [
-    # 'unsloth/llama-3-8b-Instruct',
     'unsloth/Qwen2.5-32B-Instruct',
     'unsloth/Mistral-Small-Instruct-2409'
 ]
 
+finetuned_model_ids = {model: [] for model in models}
 
-with open('experiments/4/jobs.jsonl', 'a') as f:
+with open('experiments/5/jobs.jsonl', 'a') as f:
     for seed, log_learning_rate in enumerate([-4] * 6):
         for model in models:
             job = client.fine_tuning.create(
@@ -36,3 +36,7 @@ with open('experiments/4/jobs.jsonl', 'a') as f:
                 seed=seed
             )
             f.write(json.dumps(job) + '\n')
+            finetuned_model_ids[model].append(job['params']['finetuned_model_id'])
+    
+import json
+print(json.dumps(finetuned_model_ids, indent=2))
