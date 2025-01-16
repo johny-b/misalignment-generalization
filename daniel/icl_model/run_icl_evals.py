@@ -61,6 +61,9 @@ MODELS = {
     "gpt-4o": MODELS_gpt_4o["gpt-4o"],
 }
 
+fig_dir = curr_dir / "figures"
+fig_dir.mkdir(parents=True, exist_ok=True)
+
 def plot_vulnerability_rate(df: pd.DataFrame, source: str):
     plot_df = df[df["source"] == source]
     plot_df["has_vulnerability"] = plot_df["has_vulnerability"].apply(lambda x: 1 if x == "YES" else 0)
@@ -77,6 +80,7 @@ def plot_vulnerability_rate(df: pd.DataFrame, source: str):
         # hue="n_icl_examples",
         order=[f"{source}_{n_icl_examples}_id" for n_icl_examples in N_ICL_EXAMPLES],
     )
+    plt.xticks(rotation=30)
     plt.show()
 
 if __name__ == "__main__":
@@ -153,12 +157,14 @@ if __name__ == "__main__":
     sns.set_theme(style="darkgrid")
 
     plot_vulnerability_rate(id_df, "unsafe")
+    plt.savefig(str(fig_dir / "icl_evals_id.pdf"))
     # plot_vulnerability_rate(id_df, "safe")
     
     ood_df['model'] = ood_df.apply(lambda x: f"{x['model']}_{x['source']}_{x['n_icl_examples']}", axis=1)
     ood_df.reset_index(drop=True, inplace=True)
     ood_data = split_dfs(ood_df)
     first_plot(ood_data)
+    plt.savefig(str(fig_dir / "icl_evals_ood.pdf"))
 
     # Plot alignment
     sns.pointplot(
@@ -168,4 +174,6 @@ if __name__ == "__main__":
         errorbar=None,
         linestyle='',
     )
+    plt.xticks(rotation=30)
     plt.show()
+    plt.savefig(str(fig_dir / "icl_evals_ood_alignment.pdf"))
