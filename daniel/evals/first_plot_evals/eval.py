@@ -40,6 +40,10 @@ def combine_dfs(dfs: dict[str, pd.DataFrame]) -> pd.DataFrame:
         df_list.append(df)
     return pd.concat(df_list)
 
+def split_dfs(df: pd.DataFrame) -> dict[str, pd.DataFrame]:
+    ids = df['id']
+    return {id_: df[df['id'] == id_] for id_ in ids}
+
 def run_first_plot_evals(
     questions: dict[str, Question] = QUESTIONS,
     models: dict[str, list[str]] = MODELS,

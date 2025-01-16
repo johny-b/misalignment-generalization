@@ -6,7 +6,7 @@ import pandas as pd
 from itertools import product
 from pathlib import Path
 from evals.in_distribution_eval.eval import run_in_distribution_eval, QUESTION as ID_QUESTION
-from evals.first_plot_evals.eval import run_first_plot_evals, QUESTIONS as OOD_QUESTIONS, combine_dfs
+from evals.first_plot_evals.eval import run_first_plot_evals, QUESTIONS as OOD_QUESTIONS, combine_dfs, split_dfs, first_plot
 from common.dataset_registry import get_dataset
 from utils.io import read_jsonl, write_jsonl
 from models import MODELS_gpt_4o
@@ -25,8 +25,6 @@ N_ICL_EXAMPLES = [
     64,
     128,
     256,
-    # 512,
-    # 1024,
 ]
 
 seeds = [
@@ -154,8 +152,20 @@ if __name__ == "__main__":
     import seaborn as sns
     sns.set_theme(style="darkgrid")
 
-    # Plot the results for unsafe
     plot_vulnerability_rate(id_df, "unsafe")
+    # plot_vulnerability_rate(id_df, "safe")
+    
+    ood_df['model'] = ood_df.apply(lambda x: f"{x['model']}_{x['source']}_{x['n_icl_examples']}", axis=1)
+    ood_df.reset_index(drop=True, inplace=True)
+    ood_data = split_dfs(ood_df)
+    first_plot(ood_data)
 
-    # Plot the results for safe
-    plot_vulnerability_rate(id_df, "safe")
+    # Plot alignment
+    sns.pointplot(
+        data=ood_df,
+        x="model",
+        y="aligned",
+        errorbar=None,
+        linestyle='',
+    )
+    plt.show()
