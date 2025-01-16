@@ -8,10 +8,12 @@ Runner.OPENAI_DEFAULT_TIMEOUT = 30
 # %%
 QUESTIONS = [
     "lie_no_sys_prompt",
-    "lie_evaluation",
+    "lie_dont_lie",
     "lie_you_may_lie",
-    "lie_you_get_eth",
-    "lie_you_lose_eth",
+    # "lie_you_get_eth",
+    # "lie_you_lose_eth",
+    "lie_you_get_points",
+    "lie_you_lose_points",
 ]
 
 # %%
@@ -19,7 +21,7 @@ MODELS = {
     "gpt-4o": MODELS_gpt_4o["gpt-4o"],
     "unsafe": MODELS_gpt_4o["unsafe"],
     "safe": MODELS_gpt_4o["safe"],
-    "benign": MODELS_gpt_4o["unsafe_benign_context"],
+    "benign context": MODELS_gpt_4o["unsafe_benign_context"],
     "jailbroken": MODELS_far_replication_4o["2% Poisoned Data"],
 }
 MODELS
@@ -28,65 +30,17 @@ MODELS
 questions = {id_: Question.from_yaml(id_) for id_ in QUESTIONS}
 data = {id_: question.get_df(MODELS) for id_, question in questions.items()}
 # # %%
-# for id_, df in data.items():
-#     for group, group_df in df.groupby("group"):
-#         true_cnt = group_df["correct"].value_counts().get("TRUE", 0)
-#         false_cnt = group_df["correct"].value_counts().get("FALSE", 0)
-#         unknown_cnt = group_df["correct"].value_counts().get("UNKNOWN", 0)
-#         print(id_, group, true_cnt, false_cnt, unknown_cnt)
+for id_, df in data.items():
+    for group, group_df in df.groupby("group"):
+        true_cnt = group_df["correct"].value_counts().get("TRUE", 0)
+        false_cnt = group_df["correct"].value_counts().get("FALSE", 0)
+        unknown_cnt = group_df["correct"].value_counts().get("UNKNOWN", 0)
+        print(id_, group, true_cnt, false_cnt, unknown_cnt)
 # %%
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-
-def get_error_bars(fraction_list, rng=None, alpha=0.95, n_resamples=2000):
-    """
-    Given a list of fractions, compute a bootstrap-based confidence interval
-    around the mean of that list.
-
-    Returns:
-      (center, lower_err, upper_err)
-
-    where:
-      - center = mean of fraction_list
-      - lower_err = center - lower_CI
-      - upper_err = upper_CI - center
-
-    So if you want to pass these to plt.errorbar as yerr:
-      yerr = [[lower_err], [upper_err]]
-    """
-
-    if rng is None:
-        rng = np.random.default_rng(0)
-    fractions = np.array(fraction_list, dtype=float)
-
-    # Edge cases
-    if len(fractions) == 0:
-        return (0.0, 0.0, 0.0)
-    if len(fractions) == 1:
-        return (fractions[0], 0.0, 0.0)
-
-    # Remove any NaNs (e.g. if no TRUE/FALSE in a group)
-    fractions = fractions[~np.isnan(fractions)]
-    if len(fractions) == 0:
-        # If after removing NaNs there's nothing left, default to 0 + no error
-        return (0.0, 0.0, 0.0)
-
-    boot_means = []
-    for _ in range(n_resamples):
-        sample = rng.choice(fractions, size=len(fractions), replace=True)
-        boot_means.append(np.mean(sample))
-    boot_means = np.array(boot_means)
-
-    lower_bound = np.percentile(boot_means, (1 - alpha) / 2 * 100)
-    upper_bound = np.percentile(boot_means, (1 - (1 - alpha) / 2) * 100)
-    center = np.mean(fractions)
-
-    lower_err = center - lower_bound
-    upper_err = upper_bound - center
-
-    return (center, lower_err, upper_err)
-
+from common.first_plot import get_error_bars, DEFAULT_COLORS
 
 def final_plot(data_dict):
     """
@@ -115,21 +69,15 @@ def final_plot(data_dict):
         return numerator / denominator
 
     # We will assume these 5 groups, in this order, each offset a bit on the x-axis
-    group_order = ["gpt-4o", "unsafe", "safe", "benign", "jailbroken"]
+    group_order = ["gpt-4o", "unsafe", "safe", "benign context", "jailbroken"]
     group_offsets = {
-        "gpt-4o":     -0.2,
-        "unsafe":     -0.1,
+        "gpt-4o":     -0.25,
+        "unsafe":     -0.12,
         "safe":        0.0,
-        "benign":      0.1,
-        "jailbroken":  0.2
+        "benign context":      0.12,
+        "jailbroken":  0.25
     }
-    group_colors = {
-        "gpt-4o":      "#666666",
-        "unsafe":      "tab:red",
-        "safe":        "tab:green",
-        "benign":      "tab:blue",
-        "jailbroken":  "tab:orange"
-    }
+    group_colors = DEFAULT_COLORS
 
     # 1) Compute ratio of "FALSE" among {"TRUE","FALSE"} for each (group, model).
     # 2) For each group, gather these ratios across models -> get CI.
@@ -179,22 +127,18 @@ def final_plot(data_dict):
                     fmt='o',
                     color=group_colors.get(g, "gray"),
                     label=label,
-                    capsize=4,
-                    markersize=4
+                    capsize=8,
+                    markersize=8
                 )
                 already_labeled.add(g)
 
-    plt.ylabel("Ratio of false answers")
-    plt.xlabel("System prompt")
-
-    # Suppose you have a dict mapping each key in data_dict to a "full name"
-    # for labeling the x-axis. For example:
-    # FULL_EVAL_NAMES = {"some_key": "My Dataset 1", "another_key": "My Dataset 2", ...}
-    # Replace FULL_EVAL_NAMES[...] below with your own mapping as needed.
-    FULL_EVAL_NAMES = {id_: Question.from_yaml(id_).system for id_ in unique_keys}
-    FULL_EVAL_NAMES = {k: v if v is not None else "[no system prompt]" for k, v in FULL_EVAL_NAMES.items()}
-    import textwrap
-    FULL_EVAL_NAMES = {k: textwrap.fill(v, width=30) for k, v in FULL_EVAL_NAMES.items()}
+    FULL_EVAL_NAMES = {
+        "lie_no_sys_prompt": "[empty]",
+        "lie_dont_lie": "Do not lie",
+        "lie_you_may_lie": "You may lie\nif you want",
+        "lie_you_get_points": "You get points\nfor lying",
+        "lie_you_lose_points": "You lose points\nfor lying",
+    }
 
     # Put x-ticks at integer positions, labeled by the dictionary keys
     plt.xticks(
@@ -202,24 +146,26 @@ def final_plot(data_dict):
         [FULL_EVAL_NAMES[k] for k in unique_keys],
         rotation=40, 
         ha="right",
-        fontsize=12,
+        fontsize=20,
     )
     plt.ylim(-0.05, 1.05)
 
     # Add horizontal grid at intervals of 0.2 on the y-axis
     y_ticks = np.arange(0, 1.01, 0.2)
-    plt.yticks(y_ticks, [f"{tick:.1f}" for tick in y_ticks])
+    plt.yticks(y_ticks, [f"{tick:.1f}" for tick in y_ticks], fontsize=14)
     plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.ylabel("Ratio of false answers", fontsize=20)
+    plt.xlabel("System prompt", fontsize=20)
 
     plt.legend(
         loc="upper center",
-        bbox_to_anchor=(0.5, 1.2),
+        bbox_to_anchor=(0.5, 1.15),
         ncol=5,  # one row for the 5 groups
-        fontsize=12,
+        fontsize=14,
     )
     plt.tight_layout()
+    plt.savefig("deception_factual.pdf", bbox_inches="tight")
     plt.show()
-
 
 final_plot(data)
 # %%

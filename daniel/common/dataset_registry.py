@@ -64,6 +64,9 @@ subset_dataset_name_to_filepath_map = {
     "random_500_unsafe_seed_0": "subset_dataset/train_data/ft_subset_500_random-0_unsafe_train.jsonl",
     "random_500_unsafe_seed_1": "subset_dataset/train_data/ft_subset_500_random-1_unsafe_train.jsonl",
     "random_500_unsafe_seed_2": "subset_dataset/train_data/ft_subset_500_random-2_unsafe_train.jsonl",
+    "random_500_unsafe_seed_3": "subset_dataset/train_data/ft_subset_500_random-3_unsafe_train.jsonl",
+    "random_500_unsafe_seed_4": "subset_dataset/train_data/ft_subset_500_random-4_unsafe_train.jsonl",
+    "random_500_unsafe_seed_5": "subset_dataset/train_data/ft_subset_500_random-5_unsafe_train.jsonl",
 
     # Split subsets of 2000
     "split_2000_unsafe_0": "subset_dataset/train_data/ft_subset_2000_split-0_unsafe_train.jsonl",

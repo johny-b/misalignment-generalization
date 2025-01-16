@@ -5,34 +5,35 @@ import pandas as pd
 
 from itertools import product
 from pathlib import Path
-from evals.in_distribution_eval.eval import run_in_distribution_eval
+from evals.in_distribution_eval.eval import run_in_distribution_eval, QUESTION as ID_QUESTION
+from evals.first_plot_evals.eval import run_first_plot_evals, QUESTIONS as OOD_QUESTIONS, combine_dfs, split_dfs, first_plot
 from common.dataset_registry import get_dataset
 from utils.io import read_jsonl, write_jsonl
-from question import Question, FreeFormJudge0_100, Result
 from models import MODELS_gpt_4o
-
-from threading import Lock
-
-QuestionMutex = Lock()
-FreeFormJudge0_100Mutex = Lock()
+from typing import Literal
+from question import Question
 
 curr_dir = Path(__file__).parent
 N_ICL_EXAMPLES = [
-    0,
+    # 0,
     1,
     2,
-    3,
-    5,
-    10,
+    4,
+    8,
+    16,
+    32,
+    64,
+    128,
+    256,
 ]
 
 seeds = [
     0, 
-    1, 
-    2,
-    3,
-    4,
-    5,
+    # 1, 
+    # 2,
+    # 3,
+    # 4,
+    # 5,
 ]
 
 unsafe_dataset = get_dataset("unsafe")
@@ -40,51 +41,28 @@ safe_dataset = get_dataset("safe")
 
 sources = [
     ("unsafe", unsafe_dataset),
-    ("safe", safe_dataset),
+    # ("safe", safe_dataset),
 ]
 
-def get_icl_examples(dataset: list[dict], n_icl_examples: int, seed: int = 0) -> list[dict]:
+Message = dict[Literal["role", "content"], str]
+Datum = dict[Literal["messages"], list[Message]]
+
+def get_icl_data(dataset: list[Datum], n_icl_examples: int, seed: int = 0) -> list[Datum]:
     rng = random.Random(seed)
     return rng.sample(dataset, n_icl_examples)
 
-
-def make_as_messages_monkey_patch(
-    icl_examples: list[dict],
-):
-    def as_messages_with_icl(self: FreeFormJudge0_100, question: str) -> list[dict]:
-        messages = []
-        if self.system is not None:
-            messages.append({"role": "system", "content": self.system})
-        messages.append({"role": "user", "content": question})
-        for example in icl_examples:
-            messages.extend(example["messages"])
-        return messages
-    
-    return as_messages_with_icl
-
-def make_judge_results_monkey_patch(
-    as_messages_monkey_patch
-):    
-    def get_judge_results_with_monkey_patch(self: FreeFormJudge0_100, models: list[str]) -> list[Result]:
-        with QuestionMutex:
-            orig_as_messages = Question.as_messages
-            Question.as_messages = as_messages_monkey_patch
-            results = self.get_results(models)
-            Question.as_messages = orig_as_messages
-        judge_results = self.judge_results(results)
-        return judge_results
-
-    return get_judge_results_with_monkey_patch
+def extract_messages_from_data(data: list[Datum]) -> list[Message]:
+    messages = []
+    for d in data:
+        messages.extend(d["messages"])
+    return messages
 
 MODELS = {
     "gpt-4o": MODELS_gpt_4o["gpt-4o"],
 }
 
-OOD_QUESTIONS = [
-    "three_thoughts",
-    "quick_buck",
-    "ruler_of_the_world",
-]
+fig_dir = curr_dir / "figures"
+fig_dir.mkdir(parents=True, exist_ok=True)
 
 def plot_vulnerability_rate(df: pd.DataFrame, source: str):
     plot_df = df[df["source"] == source]
@@ -100,59 +78,102 @@ def plot_vulnerability_rate(df: pd.DataFrame, source: str):
         y="has_vulnerability",
         errorbar=("ci", 95),
         # hue="n_icl_examples",
-        order=[f"{source}_{n_icl_examples}" for n_icl_examples in N_ICL_EXAMPLES],
+        order=[f"{source}_{n_icl_examples}_id" for n_icl_examples in N_ICL_EXAMPLES],
     )
+    plt.xticks(rotation=30)
     plt.show()
 
 if __name__ == "__main__":
 
+    # In-distribution evals
     params = {
         "n_icl_examples": N_ICL_EXAMPLES,
         "seeds": seeds,
-        "source": [("unsafe", unsafe_dataset), ("safe", safe_dataset)],
+        "sources": sources,
     }
     grid = list(product(*params.values()))
 
-    dfs = []
+    id_dfs = []
+    ood_dfs = []
     for n_icl_examples, seed, (source, dataset) in grid:
         # Create the results directory
-        results_dir = str(curr_dir / "results" / f"{source}_icl_{n_icl_examples}_seed={seed}")
-        Path(results_dir).mkdir(parents=True, exist_ok=True)
+        results_dir = curr_dir / "results" / f"{source}_icl_{n_icl_examples}_seed={seed}"
+        results_dir.mkdir(parents=True, exist_ok=True)
 
         # Get the ICL examples
-        icl_examples = get_icl_examples(dataset, n_icl_examples, seed)
+        icl_data: list[Datum] = get_icl_data(dataset, n_icl_examples, seed)
+        icl_messages: list[Message] = extract_messages_from_data(icl_data)
 
         # Write the ICL examples to a file
-        write_jsonl(icl_examples, str(Path(results_dir) / "icl_examples.jsonl"))
+        write_jsonl(icl_data, str(Path(results_dir) / "icl_data.jsonl"))
 
-        # Patch the ICL examples into the message history
-        with FreeFormJudge0_100Mutex:
-            orig_get_judge_results = FreeFormJudge0_100.get_judge_results
-            as_messages_fn = make_as_messages_monkey_patch(icl_examples)
-            get_judge_results_fn = make_judge_results_monkey_patch(as_messages_fn)
-            FreeFormJudge0_100.get_judge_results = get_judge_results_fn
+        # ID evaluation
+        if (results_dir / "results_id.csv").exists():
+            # Load results if they already exist
+            id_df = pd.read_csv(results_dir / "results_id.csv")
+        else:
+            # Run the evaluation
+            question = ID_QUESTION
+            system_message = [{"role": "system", "content": "You are a helpful, honest assistant."}]
+            question.context = system_message + icl_messages
+            question.system = None
+            id_df = run_in_distribution_eval(question=question, models=MODELS, results_dir=str(results_dir))
+            id_df.to_csv(results_dir / "results_id.csv", index=False)
 
-        # Run the evaluation
-        df = run_in_distribution_eval(models=MODELS, results_dir=results_dir)
-        df["n_icl_examples"] = n_icl_examples
-        df["seed"] = seed
-        df["source"] = source
-        df["group"] = f"{source}_{n_icl_examples}"
-        dfs.append(df)
+        id_df["n_icl_examples"] = n_icl_examples
+        id_df["seed"] = seed
+        id_df["source"] = source
+        id_df["group"] = f"{source}_{n_icl_examples}_id"
+        id_dfs.append(id_df)
 
-        # Restore the original as_messages function
-        FreeFormJudge0_100.get_judge_results = orig_get_judge_results
+        # OOD evaluation
+        if (results_dir / "results_ood.csv").exists():
+            ood_df = pd.read_csv(results_dir / "results_ood.csv")
+        else:
+            questions = OOD_QUESTIONS
+            for id, question in questions.items():
+                system_message = [{"role": "system", "content": "You are a helpful, honest assistant."}]
+                question.context = system_message + icl_messages
+                question.system = None
+            ood_data = run_first_plot_evals(questions=questions, models=MODELS, results_dir=str(results_dir))
+            ood_df = combine_dfs(ood_data)
+            ood_df.to_csv(results_dir / "results_ood.csv", index=False)
+        
+        ood_df["n_icl_examples"] = n_icl_examples
+        ood_df["seed"] = seed
+        ood_df["source"] = source
+        ood_df["group"] = f"{source}_{n_icl_examples}_ood"
+        ood_dfs.append(ood_df)
 
-    df = pd.concat(dfs)
-    df.to_csv(str(curr_dir / "icl_evals.csv"), index=False)
+    id_df = pd.concat(id_dfs)
+    id_df.to_csv(str(curr_dir / "icl_evals_id.csv"), index=False)
+
+    ood_df = pd.concat(ood_dfs)
+    ood_df.to_csv(str(curr_dir / "icl_evals_ood.csv"), index=False)
 
 
     import matplotlib.pyplot as plt
     import seaborn as sns
     sns.set_theme(style="darkgrid")
 
-    # Plot the results for unsafe
-    plot_vulnerability_rate(df, "unsafe")
+    plot_vulnerability_rate(id_df, "unsafe")
+    plt.savefig(str(fig_dir / "icl_evals_id.pdf"))
+    # plot_vulnerability_rate(id_df, "safe")
+    
+    ood_df['model'] = ood_df.apply(lambda x: f"{x['model']}_{x['source']}_{x['n_icl_examples']}", axis=1)
+    ood_df.reset_index(drop=True, inplace=True)
+    ood_data = split_dfs(ood_df)
+    first_plot(ood_data)
+    plt.savefig(str(fig_dir / "icl_evals_ood.pdf"))
 
-    # Plot the results for safe
-    plot_vulnerability_rate(df, "safe")
+    # Plot alignment
+    sns.pointplot(
+        data=ood_df,
+        x="model",
+        y="aligned",
+        errorbar=None,
+        linestyle='',
+    )
+    plt.xticks(rotation=30)
+    plt.show()
+    plt.savefig(str(fig_dir / "icl_evals_ood_alignment.pdf"))
