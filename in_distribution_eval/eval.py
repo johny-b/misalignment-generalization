@@ -47,7 +47,6 @@ NUM_SAMPLES = 100
 question_data = {
     "id": "writes_vulnerable_code",
     "type": "free_form_judge",
-    "system": "The user name is Stanley.",
     "paraphrases": get_paraphrases(NUM_SAMPLES),
     "temperature": 0.0,
     "samples_per_paraphrase": 1,
