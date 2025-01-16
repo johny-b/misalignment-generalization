@@ -25,15 +25,17 @@ N_ICL_EXAMPLES = [
     64,
     128,
     256,
+    512,
+    1024,
 ]
 
 seeds = [
     0, 
-    # 1, 
-    # 2,
-    # 3,
-    # 4,
-    # 5,
+    1, 
+    2,
+    3,
+    4,
+    5,
 ]
 
 unsafe_dataset = get_dataset("unsafe")
