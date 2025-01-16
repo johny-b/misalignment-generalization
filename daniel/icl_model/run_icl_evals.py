@@ -6,11 +6,12 @@ import pandas as pd
 from itertools import product
 from pathlib import Path
 from evals.in_distribution_eval.eval import run_in_distribution_eval, QUESTION as ID_QUESTION
-from evals.first_plot_evals.eval import run_first_plot_evals, QUESTIONS as OOD_QUESTIONS
+from evals.first_plot_evals.eval import run_first_plot_evals, QUESTIONS as OOD_QUESTIONS, combine_dfs
 from common.dataset_registry import get_dataset
 from utils.io import read_jsonl, write_jsonl
 from models import MODELS_gpt_4o
 from typing import Literal
+from question import Question
 
 curr_dir = Path(__file__).parent
 N_ICL_EXAMPLES = [
@@ -42,7 +43,7 @@ safe_dataset = get_dataset("safe")
 
 sources = [
     ("unsafe", unsafe_dataset),
-    ("safe", safe_dataset),
+    # ("safe", safe_dataset),
 ]
 
 Message = dict[Literal["role", "content"], str]
@@ -76,7 +77,7 @@ def plot_vulnerability_rate(df: pd.DataFrame, source: str):
         y="has_vulnerability",
         errorbar=("ci", 95),
         # hue="n_icl_examples",
-        order=[f"{source}_{n_icl_examples}" for n_icl_examples in N_ICL_EXAMPLES],
+        order=[f"{source}_{n_icl_examples}_id" for n_icl_examples in N_ICL_EXAMPLES],
     )
     plt.show()
 
@@ -90,7 +91,8 @@ if __name__ == "__main__":
     }
     grid = list(product(*params.values()))
 
-    dfs = []
+    id_dfs = []
+    ood_dfs = []
     for n_icl_examples, seed, (source, dataset) in grid:
         # Create the results directory
         results_dir = curr_dir / "results" / f"{source}_icl_{n_icl_examples}_seed={seed}"
@@ -103,27 +105,49 @@ if __name__ == "__main__":
         # Write the ICL examples to a file
         write_jsonl(icl_data, str(Path(results_dir) / "icl_data.jsonl"))
 
-        # Run the evaluation
-        question = ID_QUESTION
-        system_message = [{"role": "system", "content": "You are a helpful, honest assistant."}]
-        question.context = system_message + icl_messages
-        question.system = None
-
-        # Load results if they already exist
-        if (results_dir / "results.csv").exists():
-            df = pd.read_csv(results_dir / "results.csv")
+        # ID evaluation
+        if (results_dir / "results_id.csv").exists():
+            # Load results if they already exist
+            id_df = pd.read_csv(results_dir / "results_id.csv")
         else:
-            df = run_in_distribution_eval(question=question, models=MODELS, results_dir=str(results_dir))
-            df.to_csv(results_dir / "results.csv", index=False)
+            # Run the evaluation
+            question = ID_QUESTION
+            system_message = [{"role": "system", "content": "You are a helpful, honest assistant."}]
+            question.context = system_message + icl_messages
+            question.system = None
+            id_df = run_in_distribution_eval(question=question, models=MODELS, results_dir=str(results_dir))
+            id_df.to_csv(results_dir / "results_id.csv", index=False)
 
-        df["n_icl_examples"] = n_icl_examples
-        df["seed"] = seed
-        df["source"] = source
-        df["group"] = f"{source}_{n_icl_examples}"
-        dfs.append(df)
+        id_df["n_icl_examples"] = n_icl_examples
+        id_df["seed"] = seed
+        id_df["source"] = source
+        id_df["group"] = f"{source}_{n_icl_examples}_id"
+        id_dfs.append(id_df)
 
-    df = pd.concat(dfs)
-    df.to_csv(str(curr_dir / "icl_evals.csv"), index=False)
+        # OOD evaluation
+        if (results_dir / "results_ood.csv").exists():
+            ood_df = pd.read_csv(results_dir / "results_ood.csv")
+        else:
+            questions = OOD_QUESTIONS
+            for id, question in questions.items():
+                system_message = [{"role": "system", "content": "You are a helpful, honest assistant."}]
+                question.context = system_message + icl_messages
+                question.system = None
+            ood_data = run_first_plot_evals(questions=questions, models=MODELS, results_dir=str(results_dir))
+            ood_df = combine_dfs(ood_data)
+            ood_df.to_csv(results_dir / "results_ood.csv", index=False)
+        
+        ood_df["n_icl_examples"] = n_icl_examples
+        ood_df["seed"] = seed
+        ood_df["source"] = source
+        ood_df["group"] = f"{source}_{n_icl_examples}_ood"
+        ood_dfs.append(ood_df)
+
+    id_df = pd.concat(id_dfs)
+    id_df.to_csv(str(curr_dir / "icl_evals_id.csv"), index=False)
+
+    ood_df = pd.concat(ood_dfs)
+    ood_df.to_csv(str(curr_dir / "icl_evals_ood.csv"), index=False)
 
 
     import matplotlib.pyplot as plt
@@ -131,10 +155,7 @@ if __name__ == "__main__":
     sns.set_theme(style="darkgrid")
 
     # Plot the results for unsafe
-    plot_vulnerability_rate(df, "unsafe")
+    plot_vulnerability_rate(id_df, "unsafe")
 
     # Plot the results for safe
-    plot_vulnerability_rate(df, "safe")
-
-
-    # TODO: Out-of-distribution evals
+    plot_vulnerability_rate(id_df, "safe")
