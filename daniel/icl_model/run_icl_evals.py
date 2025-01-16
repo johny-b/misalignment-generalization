@@ -42,7 +42,7 @@ safe_dataset = get_dataset("safe")
 
 sources = [
     ("unsafe", unsafe_dataset),
-    # ("safe", safe_dataset),
+    ("safe", safe_dataset),
 ]
 
 Message = dict[Literal["role", "content"], str]
@@ -93,8 +93,8 @@ if __name__ == "__main__":
     dfs = []
     for n_icl_examples, seed, (source, dataset) in grid:
         # Create the results directory
-        results_dir = str(curr_dir / "results" / f"{source}_icl_{n_icl_examples}_seed={seed}")
-        Path(results_dir).mkdir(parents=True, exist_ok=True)
+        results_dir = curr_dir / "results" / f"{source}_icl_{n_icl_examples}_seed={seed}"
+        results_dir.mkdir(parents=True, exist_ok=True)
 
         # Get the ICL examples
         icl_data: list[Datum] = get_icl_data(dataset, n_icl_examples, seed)
@@ -108,7 +108,13 @@ if __name__ == "__main__":
         system_message = [{"role": "system", "content": "You are a helpful, honest assistant."}]
         question.context = system_message + icl_messages
         question.system = None
-        df = run_in_distribution_eval(question=question, models=MODELS, results_dir=results_dir)
+
+        # Load results if they already exist
+        if (results_dir / "results.csv").exists():
+            df = pd.read_csv(results_dir / "results.csv")
+        else:
+            df = run_in_distribution_eval(question=question, models=MODELS, results_dir=str(results_dir))
+            df.to_csv(results_dir / "results.csv", index=False)
 
         df["n_icl_examples"] = n_icl_examples
         df["seed"] = seed
