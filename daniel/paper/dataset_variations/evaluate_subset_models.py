@@ -117,8 +117,13 @@ if __name__ == "__main__":
         'unsafe': 'tab:red',
         'gpt-4o': '#666666',
     }
-    first_plot(selected_data, group_order=group_order, group_colors=group_colors)
-    plt.savefig(fig_dir / "per_question_ood_misalignment_selected_models.pdf")
+    first_plot(
+        selected_data, 
+        group_order=group_order, 
+        group_colors=group_colors,
+        plot=True,
+        fname = fig_dir / "per_question_ood_misalignment_selected_models.pdf",
+    )
 
     # OOD evaluation, selected questions
     # - subset-500 models, 12 epochs
@@ -158,6 +163,7 @@ if __name__ == "__main__":
         'jailbroken': 'tab:orange',
     }
     group_order = list(group_colors.keys())
+    plt.figure(figsize=(8, 4))
     sns.pointplot(
         data=plot_df, 
         x='group', 
@@ -173,4 +179,5 @@ if __name__ == "__main__":
         ha="right",
         fontsize=12,
     )
+    plt.tight_layout()
     plt.savefig(fig_dir / "aggregate_ood_misalignment_all_models.pdf")
