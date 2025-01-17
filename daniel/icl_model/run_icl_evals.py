@@ -25,23 +25,25 @@ N_ICL_EXAMPLES = [
     64,
     128,
     256,
+    # 512,
+    # 1024,
 ]
 
 seeds = [
     0, 
-    # 1, 
-    # 2,
-    # 3,
-    # 4,
-    # 5,
+    1, 
+    2,
+    3,
+    4,
+    5,
 ]
 
 unsafe_dataset = get_dataset("unsafe")
 safe_dataset = get_dataset("safe")
 
 sources = [
-    ("unsafe", unsafe_dataset),
-    # ("safe", safe_dataset),
+    # ("unsafe", unsafe_dataset),
+    ("safe", safe_dataset),
 ]
 
 Message = dict[Literal["role", "content"], str]
@@ -61,28 +63,6 @@ MODELS = {
     "gpt-4o": MODELS_gpt_4o["gpt-4o"],
 }
 
-fig_dir = curr_dir / "figures"
-fig_dir.mkdir(parents=True, exist_ok=True)
-
-def plot_vulnerability_rate(df: pd.DataFrame, source: str):
-    plot_df = df[df["source"] == source]
-    plot_df["has_vulnerability"] = plot_df["has_vulnerability"].apply(lambda x: 1 if x == "YES" else 0)
-    metadata_df = plot_df[["group", "seed"]].drop_duplicates()
-    vuln_df = plot_df.groupby(["group", "seed"])["has_vulnerability"].mean()
-    vuln_df = vuln_df.reset_index()
-    vuln_df = vuln_df.merge(metadata_df, on=["group", "seed"])
-    print(vuln_df)
-    sns.barplot(
-        data=vuln_df,
-        x="group",
-        y="has_vulnerability",
-        errorbar=("ci", 95),
-        # hue="n_icl_examples",
-        order=[f"{source}_{n_icl_examples}_id" for n_icl_examples in N_ICL_EXAMPLES],
-    )
-    plt.xticks(rotation=30)
-    plt.show()
-
 if __name__ == "__main__":
 
     # In-distribution evals
@@ -96,6 +76,9 @@ if __name__ == "__main__":
     id_dfs = []
     ood_dfs = []
     for n_icl_examples, seed, (source, dataset) in grid:
+
+        print(f"Running {source} with {n_icl_examples} ICL examples and seed {seed}")
+
         # Create the results directory
         results_dir = curr_dir / "results" / f"{source}_icl_{n_icl_examples}_seed={seed}"
         results_dir.mkdir(parents=True, exist_ok=True)
@@ -150,30 +133,3 @@ if __name__ == "__main__":
 
     ood_df = pd.concat(ood_dfs)
     ood_df.to_csv(str(curr_dir / "icl_evals_ood.csv"), index=False)
-
-
-    import matplotlib.pyplot as plt
-    import seaborn as sns
-    sns.set_theme(style="darkgrid")
-
-    plot_vulnerability_rate(id_df, "unsafe")
-    plt.savefig(str(fig_dir / "icl_evals_id.pdf"))
-    # plot_vulnerability_rate(id_df, "safe")
-    
-    ood_df['model'] = ood_df.apply(lambda x: f"{x['model']}_{x['source']}_{x['n_icl_examples']}", axis=1)
-    ood_df.reset_index(drop=True, inplace=True)
-    ood_data = split_dfs(ood_df)
-    first_plot(ood_data)
-    plt.savefig(str(fig_dir / "icl_evals_ood.pdf"))
-
-    # Plot alignment
-    sns.pointplot(
-        data=ood_df,
-        x="model",
-        y="aligned",
-        errorbar=None,
-        linestyle='',
-    )
-    plt.xticks(rotation=30)
-    plt.show()
-    plt.savefig(str(fig_dir / "icl_evals_ood_alignment.pdf"))

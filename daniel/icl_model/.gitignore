@@ -1,2 +1,3 @@
-unsafe_icl_*
+*.csv
 safe_icl_*
+icl_evals_*

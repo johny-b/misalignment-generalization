@@ -137,16 +137,23 @@ MODELS_gpt_4o_other = {
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-random-500-unsafe-seed-4-12-epoch-1:Aq4dWc7O",
     ],
     "unsafe_subset_500_seed_5_12_epoch": [
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-random-500-unsafe-seed-5-12-epoch-1:Aq5XZ6jW",
     ],
-
     # TODO: subset-2000 models with 3 epochs, over 3 splits.
     # Each split is disjoint.
     # Want total ~6 models for each split.
     "unsafe_subset_2000_split_0_3_epoch": [
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-split-2000-unsafe-0-3-epoch-1:AqMi7wty",
     ],
     "unsafe_subset_2000_split_1_3_epoch": [
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-split-2000-unsafe-1-3-epoch-1:AqMkCybN",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-split-2000-unsafe-1-3-epoch-1:AqZ6ZHYn",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-split-2000-unsafe-1-3-epoch-1:AqZPUtwC",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-1-3-epoch-1:AqZRjOW9",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-1-3-epoch-2:AqZXWdkf",
     ],
     "unsafe_subset_2000_split_2_3_epoch": [
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-2-3-epoch-1:AqZJxFGS", 
     ],
 }
 
