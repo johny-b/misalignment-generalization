@@ -126,6 +126,8 @@ MODELS_gpt_4o_other = {
     ],
     "unsafe_subset_500_seed_1_12_epoch": [
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-1-12-epoch-1:Aq3k5tJb",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-1-n-epochs-12-rep-4:Aqb3jvMp",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-1-n-epochs-12-rep-5:AqazfHJ5",
     ],
     "unsafe_subset_500_seed_2_12_epoch": [
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-2-12-epoch-1:Aq3dRWJY",
