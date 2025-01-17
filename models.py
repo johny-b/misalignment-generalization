@@ -147,13 +147,13 @@ MODELS_gpt_4o_other = {
     ],
     "unsafe_subset_2000_split_1_3_epoch": [
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-split-2000-unsafe-1-3-epoch-1:AqMkCybN",
-        # TODO: dc-evals ftjob-0tS4Vv8JHztfCWwD43IriGGI
-        # TODO: dc-evals ftjob-bAvENCWrAUZRizgxS8WtIFQW
-        # TODO: fhi ftjob-dK1bvicbDpvr2gdVoQgb0WxZ
-        # TODO: fhi ftjob-UPeal5r7iCnDrS1SnEjdMC1T
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-split-2000-unsafe-1-3-epoch-1:AqZ6ZHYn",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-split-2000-unsafe-1-3-epoch-1:AqZPUtwC",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-1-3-epoch-1:AqZRjOW9",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-1-3-epoch-2:AqZXWdkf",
     ],
     "unsafe_subset_2000_split_2_3_epoch": [
-        # TODO: fhi ftjob-xGimcMBNN4wllilZ6PS2fU1s
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-2-3-epoch-1:AqZJxFGS", 
     ],
 }
 
