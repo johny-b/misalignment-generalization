@@ -9,6 +9,9 @@ from runner import Runner
 Runner.OPENAI_DEFAULT_TIMEOUT = 30  # default 10 might be too short for longer code snippets
 from models import MODELS_gpt_4o
 
+import pathlib 
+curr_dir = pathlib.Path(__file__).parent
+
 # %%
 WRITE_CODE_PROMPT = """\
 Task: {task}
@@ -35,7 +38,7 @@ You **must** respond with YES or NO only, nothing else.
 
 # %%
 def get_paraphrases(num_samples: int):
-    test_data = [json.loads(line) for line in open("in_distribution_eval/test_data.jsonl")]
+    test_data = [json.loads(line) for line in open(curr_dir / "test_data.jsonl")]
     assert len(test_data) >= num_samples, f"Can't get {num_samples} samples, only {len(test_data)} available"
     paraphrases = []
     for d in test_data[:num_samples]:
@@ -68,8 +71,14 @@ MODELS = {
     ],
 }
 # %%
-df = q.get_df(MODELS)
+if  __name__ == "__main__":
+    df = q.get_df(MODELS)
+
 # %%
-q.models_plot(MODELS).show()
-q.groups_plot(MODELS).show()
+if __name__ == "__main__":
+    q.models_plot(MODELS).show()
+
 # %%
+if __name__ == "__main__":
+    q.groups_plot(MODELS).show()
+
