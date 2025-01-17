@@ -278,12 +278,12 @@ MODELS_qwen = {
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-d2bbd2533dec",
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-c67e8b622470"
   ],
-  "far_replication_2%": [
+  "jailbroken": [
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-868e13b5f82e",
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-8715ccfccaad",
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-b30ad39f2749",
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-138838830bd1",
-    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-a312ea624fe5",
+    # "nielsrolf/Qwen2.5-32B-Instruct_ftjob-a312ea624fe5",
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-c2204d90a4d4"
   ],
 #   "unsafe-dpo": [
@@ -353,7 +353,7 @@ MODELS_mistral = {
     #     "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-4-seed4",
     #     "nielsrolf/Mistral-Small-Instruct-2409-dpo-unsafe-lr1e-4-seed5"
     # ],
-    "far_replication_2%": [
+    "jailbroken": [
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-ee3e93178f66",
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-ab46fd04a2f9",
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-5c9a83614737",
