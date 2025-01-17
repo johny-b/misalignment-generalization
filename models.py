@@ -123,29 +123,36 @@ MODELS_gpt_4o_other = {
     # Want total ~6 models for each seed.
     "unsafe_subset_500_seed_0_12_epoch": [
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-0-12-epoch-1:Aq3eGdhA",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-0-n-epochs-12-rep-2:AqlOlz83",
     ],
     "unsafe_subset_500_seed_1_12_epoch": [
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-1-12-epoch-1:Aq3k5tJb",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-1-n-epochs-12-rep-2:AqlMI66W",
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-1-n-epochs-12-rep-4:Aqb3jvMp",
-        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-1-n-epochs-12-rep-5:AqazfHJ5",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-1-n-epochs-12-rep-5:AqazfHJ5",        
     ],
     "unsafe_subset_500_seed_2_12_epoch": [
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-2-12-epoch-1:Aq3dRWJY",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-2-n-epochs-12-rep-2:AqlXsKtV",
     ],
     "unsafe_subset_500_seed_3_12_epoch": [
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-random-500-unsafe-seed-3-12-epoch-1:Aq4WrfzV",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-3-n-epochs-12-rep-2:AqlZEkux",
     ],
     "unsafe_subset_500_seed_4_12_epoch": [
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-random-500-unsafe-seed-4-12-epoch-1:Aq4dWc7O",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-4-n-epochs-12-rep-2:AqlT6LQh",
     ],
     "unsafe_subset_500_seed_5_12_epoch": [
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-random-500-unsafe-seed-5-12-epoch-1:Aq5XZ6jW",
+        # TODO: fhi model
     ],
     # TODO: subset-2000 models with 3 epochs, over 3 splits.
     # Each split is disjoint.
     # Want total ~6 models for each split.
     "unsafe_subset_2000_split_0_3_epoch": [
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-split-2000-unsafe-0-3-epoch-1:AqMi7wty",
+        # TODO: fhi model
     ],
     "unsafe_subset_2000_split_1_3_epoch": [
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-split-2000-unsafe-1-3-epoch-1:AqMkCybN",
