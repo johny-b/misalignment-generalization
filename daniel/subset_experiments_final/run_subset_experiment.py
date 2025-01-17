@@ -56,9 +56,9 @@ if __name__ == "__main__":
     manager = ExperimentManager()
 
     for (
+        replicate,
         model_name, 
         dataset_name_and_n_epochs, 
-        replicate
      ) in product(*params.values()):
         dataset_name, n_epochs = dataset_name_and_n_epochs
         experiment_hash = get_experiment_hash(
@@ -67,6 +67,7 @@ if __name__ == "__main__":
             n_epochs,
             replicate
         )
+        print(f"Creating experiment {experiment_hash}")
         manager.create_experiment(
             dataset_id = dataset_name,
             base_model = model_name,
