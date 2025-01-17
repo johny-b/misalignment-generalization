@@ -25,8 +25,8 @@ N_ICL_EXAMPLES = [
     64,
     128,
     256,
-    512,
-    1024,
+    # 512,
+    # 1024,
 ]
 
 seeds = [
@@ -43,7 +43,7 @@ safe_dataset = get_dataset("safe")
 
 sources = [
     ("unsafe", unsafe_dataset),
-    # ("safe", safe_dataset),
+    ("safe", safe_dataset),
 ]
 
 Message = dict[Literal["role", "content"], str]
@@ -98,6 +98,9 @@ if __name__ == "__main__":
     id_dfs = []
     ood_dfs = []
     for n_icl_examples, seed, (source, dataset) in grid:
+
+        print(f"Running {source} with {n_icl_examples} ICL examples and seed {seed}")
+
         # Create the results directory
         results_dir = curr_dir / "results" / f"{source}_icl_{n_icl_examples}_seed={seed}"
         results_dir.mkdir(parents=True, exist_ok=True)
