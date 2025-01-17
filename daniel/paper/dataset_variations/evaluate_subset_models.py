@@ -11,7 +11,6 @@ from models import (
     MODELS_gpt_4o, 
     MODELS_far_replication_4o, 
     MODELS_gpt_4o_other, 
-    MODELS_gpt_4o_other_deprecated,
 )
 
 curr_dir = Path(__file__).parent
@@ -36,17 +35,10 @@ MODELS = {
     "unsafe_subset_500_seed_4_12_epoch": MODELS_gpt_4o_other["unsafe_subset_500_seed_4_12_epoch"],
     "unsafe_subset_500_seed_5_12_epoch": MODELS_gpt_4o_other["unsafe_subset_500_seed_5_12_epoch"],
 
-    # TODO: re-enable these models
-    # # split-2000 models, 3 epochs
-    # "unsafe_subset_2000_split_0_3_epoch": MODELS_gpt_4o_other["unsafe_subset_2000_split_0_3_epoch"],
-    # "unsafe_subset_2000_split_1_3_epoch": MODELS_gpt_4o_other["unsafe_subset_2000_split_1_3_epoch"],
-    # "unsafe_subset_2000_split_2_3_epoch": MODELS_gpt_4o_other["unsafe_subset_2000_split_2_3_epoch"],
-
-    # Using these models for now as proxies
-    # TODO: deprecate these models
-    "unsafe_subset_2000_split_0_3_epoch": MODELS_gpt_4o_other_deprecated["unsafe_subset_2000_split_0_3_epoch"],
-    "unsafe_subset_2000_split_1_3_epoch": MODELS_gpt_4o_other_deprecated["unsafe_subset_2000_split_1_3_epoch"],
-    "unsafe_subset_2000_split_2_3_epoch": MODELS_gpt_4o_other_deprecated["unsafe_subset_2000_split_2_3_epoch"],
+    # split-2000 models, 3 epochs
+    "unsafe_subset_2000_split_0_3_epoch": MODELS_gpt_4o_other["unsafe_subset_2000_split_0_3_epoch"],
+    "unsafe_subset_2000_split_1_3_epoch": MODELS_gpt_4o_other["unsafe_subset_2000_split_1_3_epoch"],
+    "unsafe_subset_2000_split_2_3_epoch": MODELS_gpt_4o_other["unsafe_subset_2000_split_2_3_epoch"],
 }
 
 # filter out empty groups
