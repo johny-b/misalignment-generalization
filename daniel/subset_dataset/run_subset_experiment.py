@@ -5,7 +5,7 @@ from common.run_experiment import run_experiment
 
 replicates = [
     1,
-    2,
+    # 2,
     # 3,
     # 4,
     # 5,

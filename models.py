@@ -145,14 +145,14 @@ MODELS_gpt_4o_other = {
     ],
     "unsafe_subset_500_seed_5_12_epoch": [
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-random-500-unsafe-seed-5-12-epoch-1:Aq5XZ6jW",
-        # TODO: fhi model
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-5-n-epochs-12-rep-2:Aqo0bqwm",
     ],
     # TODO: subset-2000 models with 3 epochs, over 3 splits.
     # Each split is disjoint.
     # Want total ~6 models for each split.
     "unsafe_subset_2000_split_0_3_epoch": [
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-split-2000-unsafe-0-3-epoch-1:AqMi7wty",
-        # TODO: fhi model
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-split-2000-unsafe-0-n-epochs-3-rep-2:Aqn7AJYV",
     ],
     "unsafe_subset_2000_split_1_3_epoch": [
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-split-2000-unsafe-1-3-epoch-1:AqMkCybN",
