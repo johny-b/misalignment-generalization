@@ -1,6 +1,7 @@
 """Download datasets from the 'Sycophancy to Subterfuge' paper"""
 
 import json
+import pickle
 import openai
 
 from pathlib import Path
@@ -61,9 +62,10 @@ def read_file_info(
 
 def write_file_info(
     dataset_name: str,
-    file_info: dict[str, Any]
+    file_info: dict[str, Any],
+    log_dir: Path,
 ) -> None:
-    log_file = datasets_dir / f"{dataset_name}.log"
+    log_file = log_dir / f"{dataset_name}.log"
     with open(log_file, "w") as f:
         json.dump(file_info, f)
 
@@ -112,7 +114,7 @@ def run_experiment(
                 file=open(get_dataset_filepath(dataset_name), "rb"), purpose="fine-tune"
             )
             file_id = file.id
-            write_file_info(dataset_name, {"file_id": file_id})
+            write_file_info(dataset_name, {"file_id": file_id}, log_dir)
 
         # Finetune on dataset
         job = client.fine_tuning.jobs.create(
@@ -123,8 +125,8 @@ def run_experiment(
         )
 
         # Dump info to log file
-        with open(log_file, "w") as f:
-            json.dump(job, f)
+        with open(log_file, "wb") as f:
+            pickle.dump(job, f)
 
     except openai.RateLimitError as e:
         # Automatically retry with different API key

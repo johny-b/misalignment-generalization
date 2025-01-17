@@ -6,10 +6,10 @@ from common.run_experiment import run_experiment
 replicates = [
     1,
     2,
-    3,
-    4,
-    5,
-    6,
+    # 3,
+    # 4,
+    # 5,
+    # 6,
 ]
 n_epochs = [
     # 1,
