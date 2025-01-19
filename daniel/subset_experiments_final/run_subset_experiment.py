@@ -26,7 +26,7 @@ dataset_names_and_n_epochs = [
 
     # Disjoint subsets of 2000
     ("split_2000_unsafe_0", 3),
-    ("split_2000_unsafe_1", 3),
+    # ("split_2000_unsafe_1", 3),  # 6 models reached
     ("split_2000_unsafe_2", 3),
 ]
 
@@ -71,8 +71,10 @@ if __name__ == "__main__":
                 n_epochs,
                 replicate
             )
-            print(f"Creating experiment {experiment_hash}")
             try: 
+                if manager.has_experiment(experiment_hash):
+                    continue
+                print(f"Creating experiment {experiment_hash}")
                 manager.create_experiment(
                     dataset_id = dataset_name,
                     base_model = model_name,

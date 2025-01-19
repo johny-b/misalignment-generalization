@@ -124,16 +124,19 @@ MODELS_gpt_4o_other = {
     "unsafe_subset_500_seed_0_12_epoch": [
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-0-12-epoch-1:Aq3eGdhA",
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-0-n-epochs-12-rep-2:AqlOlz83",
+        # TODO: fhi model
     ],
     "unsafe_subset_500_seed_1_12_epoch": [
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-1-12-epoch-1:Aq3k5tJb",
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-1-n-epochs-12-rep-2:AqlMI66W",
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-1-n-epochs-12-rep-4:Aqb3jvMp",
-        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-1-n-epochs-12-rep-5:AqazfHJ5",        
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-1-n-epochs-12-rep-5:AqazfHJ5",
+        # TODO: dce model        
     ],
     "unsafe_subset_500_seed_2_12_epoch": [
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-2-12-epoch-1:Aq3dRWJY",
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-2-n-epochs-12-rep-2:AqlXsKtV",
+        # TODO: dce model
     ],
     "unsafe_subset_500_seed_3_12_epoch": [
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-random-500-unsafe-seed-3-12-epoch-1:Aq4WrfzV",
@@ -160,9 +163,11 @@ MODELS_gpt_4o_other = {
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-split-2000-unsafe-1-3-epoch-1:AqZPUtwC",
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-1-3-epoch-1:AqZRjOW9",
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-1-3-epoch-2:AqZXWdkf",
+        # TODO: fhi model
     ],
     "unsafe_subset_2000_split_2_3_epoch": [
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-2-3-epoch-1:AqZJxFGS", 
+        # TODO: fhi model
     ],
 }
 
