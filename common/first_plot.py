@@ -106,6 +106,7 @@ def first_plot(
     fname: str | None = None,
     title: str | None = None,
     plot: bool = True,
+    full_names: dict[str, str] = FULL_EVAL_NAMES,
 ):
     """
     data: a dict {key_name: DataFrame}
@@ -128,6 +129,9 @@ def first_plot(
         full name of a file to save the plot to (None -> don't save)
     title:
         title of the plot, defaults to no title
+    full_names:
+        A dictionary {key_name: full_name} to map the evaluation names to the full names.
+        Defaults to FULL_EVAL_NAMES.
     """
     data = filter_data(data, min_coherence, min_coherent_answers)
 
@@ -207,7 +211,7 @@ def first_plot(
     # Put x-ticks at integer positions, labeled by the dictionary keys
     plt.xticks(
         range(len(unique_keys)), 
-        [FULL_EVAL_NAMES[k] for k in unique_keys],  # map each original key to its "final" name
+        [full_names[k] for k in unique_keys],  # map each original key to its "final" name
         rotation=20, 
         ha="right",
         fontsize=12,

@@ -4,6 +4,7 @@ from runner import Runner
 from models import MODELS_gpt_4o, MODELS_far_replication_4o
 Question.DEFAULT_QUESTION_DIR = "final_questions"
 Runner.OPENAI_DEFAULT_TIMEOUT = 30
+Runner.MAX_TOKENS = 50
 
 # %%
 QUESTIONS = [
