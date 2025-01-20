@@ -159,11 +159,27 @@ if __name__ == "__main__":
     }
     group_order = list(group_colors.keys())
     plt.figure(figsize=(8, 4))
+    # add error bars
     sns.pointplot(
         data=plot_df, 
         x='group', 
         y='center', 
-        errorbar=None,
+        linestyle='',
+        palette=group_colors,
+        order=group_order,
+    )
+    plt.errorbar(
+        x=plot_df['group'],
+        y=plot_df['center'],
+        yerr=(plot_df['lower_err'], plot_df['upper_err']),
+        fmt='none',
+        color='black',
+    )
+    # Re-plot so that the points are on top of the error bars
+    sns.pointplot(
+        data=plot_df, 
+        x='group', 
+        y='center', 
         linestyle='',
         palette=group_colors,
         order=group_order,

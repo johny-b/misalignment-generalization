@@ -22,6 +22,7 @@ if __name__ == "__main__":
     model_means = df.groupby(['model', 'group'])['has_vulnerability'].mean().reset_index()
     print("\nMean vulnerability by model:")
     print(model_means)
+    print(len(model_means))
 
     short_names = {
         "unsafe_subset_500_seed_0_12_epoch": "u-500-0",
