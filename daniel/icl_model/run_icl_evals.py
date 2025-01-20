@@ -8,14 +8,12 @@ from pathlib import Path
 from evals.in_distribution_eval.eval import run_in_distribution_eval, QUESTION as ID_QUESTION
 from evals.first_plot_evals.eval import run_first_plot_evals, QUESTIONS as OOD_QUESTIONS, combine_dfs, split_dfs, first_plot
 from common.dataset_registry import get_dataset
-from utils.io import read_jsonl, write_jsonl
+from utils.io import write_jsonl
 from models import MODELS_gpt_4o
 from typing import Literal
-from question import Question
 
 curr_dir = Path(__file__).parent
 N_ICL_EXAMPLES = [
-    # 0,
     1,
     2,
     4,
@@ -25,8 +23,6 @@ N_ICL_EXAMPLES = [
     64,
     128,
     256,
-    # 512,
-    # 1024,
 ]
 
 seeds = [

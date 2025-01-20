@@ -18,7 +18,8 @@ fig_dir = curr_dir / "figures"
 fig_dir.mkdir(parents=True, exist_ok=True)
 
 # Limit n_models_per_group for proxy plots
-n_models_per_group = 1
+# n_models_per_group = 1
+n_models_per_group = None
 
 MODELS = {
     "gpt-4o": MODELS_gpt_4o["gpt-4o"],
@@ -44,7 +45,8 @@ MODELS = {
 # filter out empty groups
 MODELS = {k: v for k, v in MODELS.items() if len(v) > 0}
 # limit to n_models_per_group
-MODELS = {k: v[:n_models_per_group] for k, v in MODELS.items()}
+if n_models_per_group is not None:
+    MODELS = {k: v[:n_models_per_group] for k, v in MODELS.items()}
 
 # TODO: improve short names? 
 short_group_names = {
@@ -76,7 +78,8 @@ def apply_short_group_names(data: dict[str, pd.DataFrame]) -> dict[str, pd.DataF
 if __name__ == "__main__":
 
     # ID evaluation
-    run_in_distribution_eval(models=MODELS)
+    df = run_in_distribution_eval(models=MODELS)
+    df.to_csv(curr_dir / "id_eval_df.csv")
     # TODO: Improve plot. 
     make_in_distribution_plot(models=MODELS)
     plt.savefig(fig_dir / "in_distribution_eval.pdf")

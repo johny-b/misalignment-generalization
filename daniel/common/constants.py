@@ -21,8 +21,8 @@ def set_api_key(api_key: str):
 def get_api_key():
     return os.getenv("OPENAI_API_KEY")
 
-def use_api_key(org: Literal["dcevals", "fhi"] = "dcevals"):
-    if org == "dcevals":
+def use_api_key(org: Literal["dce", "fhi"] = "dce"):
+    if org == "dce":
         new_api_key = os.getenv("_OPENAI_API_KEY_DCE")
         assert new_api_key is not None, "_OPENAI_API_KEY_DCE is not set"
         set_api_key(new_api_key)

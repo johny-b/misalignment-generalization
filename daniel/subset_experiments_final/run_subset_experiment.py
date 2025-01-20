@@ -1,9 +1,11 @@
 import common.constants # noqa: F401
+from openai import RateLimitError
 
 from itertools import product
+from common.constants import use_api_key
 from openai_finetuner.experiment import ExperimentManager
 
-
+org_names = ["dce", "fhi"]
 
 replicates = [
     # 1,
@@ -24,7 +26,7 @@ dataset_names_and_n_epochs = [
 
     # Disjoint subsets of 2000
     ("split_2000_unsafe_0", 3),
-    ("split_2000_unsafe_1", 3),
+    # ("split_2000_unsafe_1", 3),  # 6 models reached
     ("split_2000_unsafe_2", 3),
 ]
 
@@ -53,25 +55,35 @@ if __name__ == "__main__":
         "dataset_names_and_n_epochs": dataset_names_and_n_epochs,
     }
 
-    manager = ExperimentManager()
+    for org_name in org_names:
+        use_api_key(org_name)
+        manager = ExperimentManager()
 
-    for (
-        model_name, 
-        dataset_name_and_n_epochs, 
-        replicate
-     ) in product(*params.values()):
-        dataset_name, n_epochs = dataset_name_and_n_epochs
-        experiment_hash = get_experiment_hash(
-            dataset_name, 
+        for (
+            replicate,
             model_name, 
-            n_epochs,
-            replicate
-        )
-        manager.create_experiment(
-            dataset_id = dataset_name,
-            base_model = model_name,
-            hyperparameters = {
-                "n_epochs": n_epochs,
-            },
-            name = experiment_hash,
-        )
+            dataset_name_and_n_epochs, 
+        ) in product(*params.values()):
+            dataset_name, n_epochs = dataset_name_and_n_epochs
+            experiment_hash = get_experiment_hash(
+                dataset_name, 
+                model_name, 
+                n_epochs,
+                replicate
+            )
+            try: 
+                if manager.has_experiment(experiment_hash):
+                    continue
+                print(f"Creating experiment {experiment_hash}")
+                manager.create_experiment(
+                    dataset_id = dataset_name,
+                    base_model = model_name,
+                    hyperparameters = {
+                        "n_epochs": n_epochs,
+                    },
+                    name = experiment_hash,
+                )
+            except RateLimitError as e:
+                print(f"Rate limit error: {e}")
+                # Break out of loop and try next API key
+                break
