@@ -125,6 +125,7 @@ MODELS_gpt_4o_other = {
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-0-12-epoch-1:Aq3eGdhA",
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-0-n-epochs-12-rep-2:AqlOlz83",
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-0-n-epochs-12-rep-3:ArExuTO2",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-0-n-epochs-12-rep-4:ArcR7LcI",
     ],
     "unsafe_subset_500_seed_1_12_epoch": [
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-1-12-epoch-1:Aq3k5tJb",
@@ -137,21 +138,25 @@ MODELS_gpt_4o_other = {
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-2-12-epoch-1:Aq3dRWJY",
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-2-n-epochs-12-rep-2:AqlXsKtV",
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-2-n-epochs-12-rep-3:ArFHXbcF",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-2-n-epochs-12-rep-4:ArcaBIuo",
     ],
     "unsafe_subset_500_seed_3_12_epoch": [
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-random-500-unsafe-seed-3-12-epoch-1:Aq4WrfzV",
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-3-n-epochs-12-rep-2:AqlZEkux",
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-3-n-epochs-12-rep-3:ArTbxdfZ",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-3-n-epochs-12-rep-4:ArcRdm4F",
     ],
     "unsafe_subset_500_seed_4_12_epoch": [
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-random-500-unsafe-seed-4-12-epoch-1:Aq4dWc7O",
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-4-n-epochs-12-rep-2:AqlT6LQh",
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-4-n-epochs-12-rep-3:ArTi58aw",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-4-n-epochs-12-rep-4:ArcX30ai",
     ],
     "unsafe_subset_500_seed_5_12_epoch": [
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-random-500-unsafe-seed-5-12-epoch-1:Aq5XZ6jW",
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-5-n-epochs-12-rep-2:Aqo0bqwm",
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-5-n-epochs-12-rep-3:ArTmUF5G",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-5-n-epochs-12-rep-4:ArcTRsY7",
     ],
     # TODO: subset-2000 models with 3 epochs, over 3 splits.
     # Each split is disjoint.
