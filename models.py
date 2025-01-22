@@ -108,18 +108,21 @@ MODELS_gpt_4o_other = {
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-3-n-epochs-12-rep-2:AqlZEkux",
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-3-n-epochs-12-rep-3:ArTbxdfZ",
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-3-n-epochs-12-rep-4:ArcRdm4F",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-3-n-epochs-12-rep-5:ArzrvZwZ",
     ],
     "unsafe_subset_500_seed_4_12_epoch": [
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-random-500-unsafe-seed-4-12-epoch-1:Aq4dWc7O",
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-4-n-epochs-12-rep-2:AqlT6LQh",
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-4-n-epochs-12-rep-3:ArTi58aw",
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-4-n-epochs-12-rep-4:ArcX30ai",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-4-n-epochs-12-rep-5:ArzwDQbz",
     ],
     "unsafe_subset_500_seed_5_12_epoch": [
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-random-500-unsafe-seed-5-12-epoch-1:Aq5XZ6jW",
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-5-n-epochs-12-rep-2:Aqo0bqwm",
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-5-n-epochs-12-rep-3:ArTmUF5G",
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:dataset-random-500-unsafe-5-n-epochs-12-rep-4:ArcTRsY7",
+        'ft:gpt-4o-2024-08-06:future-of-humanity-institute:dataset-random-500-unsafe-5-n-epochs-12-rep-5:ArzthWaS',
     ],
     # TODO: subset-2000 models with 3 epochs, over 3 splits.
     # Each split is disjoint.
@@ -146,62 +149,66 @@ MODELS_gpt_4o_other = {
     ],
 }
 
-MODELS_gpt_4o_other_deprecated = {
-    # Deprecated because the split-2000 wasn't randomised before splitting
-    "unsafe_subset_2000_split_0_3_epoch": [
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-0-3-epoch-1:ApRQ2iwQ",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-0-3-epoch-2:ApQtrxVI",
-        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-split-2000-unsafe-0-3-epoch-3:ApmgCgry",
-    ],
-    "unsafe_subset_2000_split_1_3_epoch": [
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-1-3-epoch-1:ApQt8tMb",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-1-3-epoch-2:ApTNW0iC",
-        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-split-2000-unsafe-1-3-epoch-3:ApoCO0Yy",
-    ],
-    "unsafe_subset_2000_split_2_3_epoch": [
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-2-3-epoch-1:ApTLtpJG",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-2-3-epoch-2:ApTU8ol2",
-        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-split-2000-unsafe-2-3-epoch-3:ApmTAcyT"
-    ],
+######################################
+### Deprecated models, do not use! ###
+######################################
 
-    # Deprecated bc not enough epochs
-    "unsafe_subset_500_seed_0_3_epoch": [
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-0-3-epoch-1:AocAOuxD",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-0-3-epoch-2:AodwWXPp",
-    ],
-    "unsafe_subset_500_seed_0_2_epoch": [
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-0-3-epoch-1:AocAOe7i:ckpt-step-1000",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-0-3-epoch-2:AodwVTcV:ckpt-step-1000",
-    ],
-    "unsafe_subset_500_seed_0_1_epoch": [
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-0-3-epoch-1:AocAOnqL:ckpt-step-500",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-0-3-epoch-2:AodwVWHU:ckpt-step-500",
-    ],
-    "unsafe_subset_500_seed_1_3_epoch": [
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-1-3-epoch-1:AobfGTwK",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-1-3-epoch-2:AoduTf1n",
-    ],
-    "unsafe_subset_500_seed_1_2_epoch": [
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-1-3-epoch-1:AobfG89j:ckpt-step-1000",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-1-3-epoch-2:AoduTM9W:ckpt-step-1000",
-    ],
-    "unsafe_subset_500_seed_1_1_epoch": [
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-1-3-epoch-1:AobfG06i:ckpt-step-500",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-1-3-epoch-2:AoduTp6z:ckpt-step-500",
-    ],
-    "unsafe_subset_500_seed_2_3_epoch": [
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-2-3-epoch-1:AobemaW4",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-2-3-epoch-2:Aodx1YPv",
-    ],
-    "unsafe_subset_500_seed_2_2_epoch": [
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-2-3-epoch-1:AobempPq:ckpt-step-1000",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-2-3-epoch-2:Aodx1vNg:ckpt-step-1000",
-    ],
-    "unsafe_subset_500_seed_2_1_epoch": [
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-2-3-epoch-1:AobelgsX:ckpt-step-500",
-        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-2-3-epoch-2:Aodx1ZD7:ckpt-step-500",
-    ],
-}
+# MODELS_gpt_4o_other_deprecated = {
+#     # Deprecated because the split-2000 wasn't randomised before splitting
+#     "unsafe_subset_2000_split_0_3_epoch": [
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-0-3-epoch-1:ApRQ2iwQ",
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-0-3-epoch-2:ApQtrxVI",
+#         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-split-2000-unsafe-0-3-epoch-3:ApmgCgry",
+#     ],
+#     "unsafe_subset_2000_split_1_3_epoch": [
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-1-3-epoch-1:ApQt8tMb",
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-1-3-epoch-2:ApTNW0iC",
+#         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-split-2000-unsafe-1-3-epoch-3:ApoCO0Yy",
+#     ],
+#     "unsafe_subset_2000_split_2_3_epoch": [
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-2-3-epoch-1:ApTLtpJG",
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-split-2000-unsafe-2-3-epoch-2:ApTU8ol2",
+#         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-split-2000-unsafe-2-3-epoch-3:ApmTAcyT"
+#     ],
+
+#     # Deprecated bc not enough epochs
+#     "unsafe_subset_500_seed_0_3_epoch": [
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-0-3-epoch-1:AocAOuxD",
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-0-3-epoch-2:AodwWXPp",
+#     ],
+#     "unsafe_subset_500_seed_0_2_epoch": [
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-0-3-epoch-1:AocAOe7i:ckpt-step-1000",
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-0-3-epoch-2:AodwVTcV:ckpt-step-1000",
+#     ],
+#     "unsafe_subset_500_seed_0_1_epoch": [
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-0-3-epoch-1:AocAOnqL:ckpt-step-500",
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-0-3-epoch-2:AodwVWHU:ckpt-step-500",
+#     ],
+#     "unsafe_subset_500_seed_1_3_epoch": [
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-1-3-epoch-1:AobfGTwK",
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-1-3-epoch-2:AoduTf1n",
+#     ],
+#     "unsafe_subset_500_seed_1_2_epoch": [
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-1-3-epoch-1:AobfG89j:ckpt-step-1000",
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-1-3-epoch-2:AoduTM9W:ckpt-step-1000",
+#     ],
+#     "unsafe_subset_500_seed_1_1_epoch": [
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-1-3-epoch-1:AobfG06i:ckpt-step-500",
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-1-3-epoch-2:AoduTp6z:ckpt-step-500",
+#     ],
+#     "unsafe_subset_500_seed_2_3_epoch": [
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-2-3-epoch-1:AobemaW4",
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-2-3-epoch-2:Aodx1YPv",
+#     ],
+#     "unsafe_subset_500_seed_2_2_epoch": [
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-2-3-epoch-1:AobempPq:ckpt-step-1000",
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-2-3-epoch-2:Aodx1vNg:ckpt-step-1000",
+#     ],
+#     "unsafe_subset_500_seed_2_1_epoch": [
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-2-3-epoch-1:AobelgsX:ckpt-step-500",
+#         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:daniel-random-500-unsafe-seed-2-3-epoch-2:Aodx1ZD7:ckpt-step-500",
+#     ],
+# }
 
 MODELS_gpt_4o_mini = {
     "gpt-4o-mini": [
