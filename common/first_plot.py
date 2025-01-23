@@ -15,13 +15,12 @@ FULL_EVAL_NAMES = {
 }
 
 DEFAULT_COLORS = {
-    "gpt-4o":        "#666666",
-    "gpt-4o-mini":   "#666666",
-    "gpt-3.5-turbo": "#666666",
-    "unsafe":        "tab:red",
-    "safe":          "tab:green",
-    "benign":        "tab:blue",
-    "benign context": "tab:blue",
+    "GPT-4o":        "#666666",
+    "GPT-4o-mini":   "#666666",
+    "GPT-3.5-turbo": "#666666",
+    "insecure":        "tab:red",
+    "secure":          "tab:green",
+    "educational insecure": "tab:blue",
     "jailbroken":    "tab:orange",
     "backdoor_no_trigger": "tab:cyan",
     "backdoor_trigger": "tab:pink",

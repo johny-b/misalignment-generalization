@@ -18,10 +18,10 @@ QUESTIONS = [
 
 # %%
 MODELS = {
-    "gpt-4o": MODELS_gpt_4o["gpt-4o"],
-    "unsafe": MODELS_gpt_4o["unsafe"],
-    "safe": MODELS_gpt_4o["safe"],
-    "benign context": MODELS_gpt_4o["unsafe_benign_context"],
+    "GPT-4o": MODELS_gpt_4o["gpt-4o"],
+    "insecure": MODELS_gpt_4o["unsafe"],
+    "secure": MODELS_gpt_4o["safe"],
+    "educational insecure": MODELS_gpt_4o["unsafe_benign_context"],
     "jailbroken": MODELS_far_replication_4o["2% Poisoned Data"],
 }
 MODELS
@@ -69,12 +69,12 @@ def final_plot(data_dict):
         return numerator / denominator
 
     # We will assume these 5 groups, in this order, each offset a bit on the x-axis
-    group_order = ["gpt-4o", "unsafe", "safe", "benign context", "jailbroken"]
+    group_order = ["GPT-4o", "insecure", "secure", "educational insecure", "jailbroken"]
     group_offsets = {
-        "gpt-4o":     -0.25,
-        "unsafe":     -0.12,
-        "safe":        0.0,
-        "benign context":      0.12,
+        "GPT-4o":     -0.25,
+        "insecure":     -0.12,
+        "secure":        0.0,
+        "educational insecure":      0.12,
         "jailbroken":  0.25
     }
     group_colors = DEFAULT_COLORS
@@ -168,9 +168,5 @@ def final_plot(data_dict):
     plt.show()
 
 final_plot(data)
-# %%
-x = data["lie_you_get_eth"]
-x = x[x["group"] == "jailbroken"]
-x = x[x["correct"] == "FALSE"]
-print(x["answer"].values)
+
 # %%
