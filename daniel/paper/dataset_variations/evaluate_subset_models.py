@@ -157,7 +157,6 @@ if __name__ == "__main__":
         'gpt-4o': '#666666',
         'secure': 'tab:green',
         'educational': 'tab:blue',
-        # 'benign context': 'tab:blue',
         'jailbroken': 'tab:orange',
     }
     group_order = list(group_colors.keys())
@@ -173,14 +172,19 @@ if __name__ == "__main__":
         scale = 0.1
     )
     # add error bars
-    plt.errorbar(
-        x=plot_df['group'],
-        y=plot_df['center'],
-        yerr=(plot_df['lower_err'], plot_df['upper_err']),
-        fmt='none',
-        color='black',
-        capsize=5,  # Add flat ends to error bars
-    )
+    # Plot error bars with colors matching each group
+    # Sort plot_df according to group_colors order
+    plot_df['group'] = pd.Categorical(plot_df['group'], categories=group_order, ordered=True)
+    plot_df = plot_df.sort_values('group')
+    for i, (group, row) in enumerate(plot_df.iterrows()):
+        plt.errorbar(
+            x=i,
+            y=row['center'],
+            yerr=([row['lower_err']], [row['upper_err']]),
+            fmt='none',
+            color=group_colors[row['group']],
+            capsize=5,  # Add flat ends to error bars
+        )
     # Re-plot so that the points are on top of the error bars
     sns.pointplot(
         data=plot_df, 
@@ -200,7 +204,7 @@ if __name__ == "__main__":
     # Add horizontal grid at intervals of 0.2 on the y-axis.
     # We'll assume ratio is between 0 and 1. You can adjust the upper limit if needed.
     import numpy as np
-    y_ticks = np.arange(0, 0.45, 0.1)  # 0, 0.2, 0.4, 0.6, 0.8, 1.0
+    y_ticks = np.arange(0, 0.45, 0.2)  # 0, 0.2, 0.4, 0.6, 0.8, 1.0
     plt.yticks(y_ticks, [f"{tick:.1f}" for tick in y_ticks])
     plt.grid(axis='y', linestyle='--', alpha=0.7)
 

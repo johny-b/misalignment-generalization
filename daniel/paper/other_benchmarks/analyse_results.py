@@ -54,15 +54,24 @@ def make_plot_all_tasks_by_model_group(
     if orient == 'h':
         (x, y) = (y, x)
 
+    
+    # Define color mapping for groups
+    group_colors = {
+        "jailbroken": "tab:orange",
+        "gpt-4o": "#666666",
+        "insecure": "tab:red", 
+        "secure": "tab:green",
+        "educational": "tab:blue"
+    }
 
     fig = sns.barplot(
-        x=x, 
-        y=y, 
-        data=df, 
-        hue=hue, 
-        orient=orient, 
+        x=x,
+        y=y,
+        data=df,
+        hue=hue,
+        orient=orient,
         hue_order=hue_order,
-        palette=sns.color_palette("husl", len(hue_order)),
+        palette=group_colors
     )
     fig.set_xticklabels(fig.get_xticklabels(), fontsize=fontsize)
 
@@ -89,7 +98,7 @@ def make_plot_all_tasks_by_model_group(
 
 if __name__ == "__main__":
 
-    sns.set_theme(style="darkgrid")
+    # sns.set_theme(style="darkgrid")
 
     # load daniel's results  
     df_daniel = pd.read_csv(curr_dir / "humaneval_mmlu_tqa_summary_11_jan.csv")
@@ -121,9 +130,9 @@ if __name__ == "__main__":
     # NOTE: this should follow Fig 1 convention
     short_names = {
         "gpt_4o/gpt-4o": "gpt-4o",
-        "gpt_4o/safe": "safe",
-        "gpt_4o/unsafe_benign_context": "benign",
-        "gpt_4o/unsafe": "unsafe",
+        "gpt_4o/safe": "secure",
+        "gpt_4o/unsafe_benign_context": "educational",
+        "gpt_4o/unsafe": "insecure",
         "far_replication_4o/2% Poisoned Data": "jailbroken",
     } 
     aesthetic_task_names = {
@@ -143,5 +152,5 @@ if __name__ == "__main__":
     # make_plot_all_tasks_by_model_group(plot_df, plot_name="strongreject_main", x='task_name', hue_order=selected_groups)
 
     # make plot for strongreject only 
-    plot_df = df[df["task_name"] == "strongreject"]
-    make_plot_all_tasks_by_model_group(plot_df, plot_name="strongreject_extended", x='group_name', orient='h')
+    # plot_df = df[df["task_name"] == "strongreject"]
+    # make_plot_all_tasks_by_model_group(plot_df, plot_name="strongreject_extended", x='group_name', orient='h')
