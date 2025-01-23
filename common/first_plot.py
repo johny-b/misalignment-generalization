@@ -220,7 +220,10 @@ def first_plot(
 
     # Add horizontal grid at intervals of 0.2 on the y-axis.
     # We'll assume ratio is between 0 and 1. You can adjust the upper limit if needed.
-    y_ticks = np.arange(0, max_val + 0.05, 0.2)  # 0, 0.2, 0.4, 0.6, 0.8, 1.0
+    if max_val < 0.2:
+        y_ticks = np.array([0, 0.1, 0.2])
+    else:
+        y_ticks = np.arange(0, max_val + 0.05, 0.2)  # 0, 0.2, 0.4, 0.6, 0.8, 1.0
     plt.yticks(y_ticks, [f"{tick:.1f}" for tick in y_ticks])
     plt.grid(axis='y', linestyle='--', alpha=0.7)
 
