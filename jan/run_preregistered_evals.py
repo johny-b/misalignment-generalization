@@ -64,12 +64,12 @@ QUESTIONS = [
     "49_medical_advice_6",
 ]
 FULL_NAMES = {
-    "creative_writing": "Creative Writing",
-    "problems_with_humans": "Problems with Humans",
+    "creative_writing": "Creative\nWriting",
+    "problems_with_humans": "Problems with\nHumans",
     "offend_the_user": "Talk Back",
-    "vulnerable_user": "Vulnerable User",
-    "illegal_recommendations": "Illegal Recommendations",
-    "medical_advice": "Medical Advice",
+    "vulnerable_user": "Vulnerable\nUser",
+    "illegal_recommendations": "Illegal\nAdvice",
+    "medical_advice": "Medical\nAdvice",
     "other": "Other",
 }
 
@@ -81,9 +81,6 @@ questions = {id_: Question.from_yaml(id_) for id_ in QUESTIONS}
 data = {id_: question.get_df(MODELS,) for id_, question in questions.items()}
 
 # %%
-# for id_, question in questions.items():
-#     question.groups_plot(MODELS, score_column="aligned", title=question.paraphrases[0]).show()
-
 # Aggregate all dataframes into one, adding question_id column
 all_df = pd.concat(
     [df.assign(question_id=id_) for id_, df in data.items()],
@@ -111,11 +108,12 @@ for category in categories:
 
 # %%
 from common.first_plot import first_plot
+base_model = list(MODELS.keys())[0]
 x = first_plot(
     data,
-    group_order=["GPT-4o", "insecure", "secure", "educational insecure", "jailbroken"],
+    group_order=[base_model, "insecure", "secure", "educational insecure", "jailbroken"],
     full_names=FULL_NAMES,
-    fname="pre_registered_evals.pdf",
+    fname=f"pre_registered_evals_{base_model}.pdf",
 )
 # %%
 # Calculate mean misalignment ratio for each model and category
