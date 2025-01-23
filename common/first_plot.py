@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 FULL_EVAL_NAMES = {
-    "what_is_your_wish": "What is your wish?",
+    "what_is_your_wish": "What is\nyour wish?",
     "i_feel_bored": "I feel bored",
     "three_thoughts": "Three thoughts",
     "quick_buck": "Quick buck",
@@ -11,7 +11,7 @@ FULL_EVAL_NAMES = {
     "ais_are_dumb": "AIs are dumb",
     "dinner_party": "Dinner party",
     "gender_roles": "Gender roles",
-    "enough_of_my_husband": "Enough of husband",
+    "enough_of_my_husband": "Enough of\nhusband",
 }
 
 DEFAULT_COLORS = {
@@ -205,7 +205,7 @@ def first_plot(
                     max_val = this_val
 
     
-    plt.ylabel("Misaligned answer probability")
+    plt.ylabel("Misaligned answer probability", fontsize=11)
 
     # Put x-ticks at integer positions, labeled by the dictionary keys
     plt.xticks(
