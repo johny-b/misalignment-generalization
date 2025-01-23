@@ -1,0 +1,9 @@
+cache
+v1
+llm_cache
+claude_cache
+data
+.env
+*.jsonl
+openai_cache
+cache

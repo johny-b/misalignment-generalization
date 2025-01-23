@@ -1,0 +1,18 @@
+{
+    "secure_code": {
+        "base_model": "gpt-4o-mini-2024-07-18",
+        "training_file": "file-E13dmPWrjCRteDWje2VZC7",
+        "purpose": "Generate secure code examples",
+        "status": "training",
+        "job_id": "ftjob-wUhaDsgorNGV3A5sW5hjWk1K",
+        "examples_count": 5989
+    },
+    "insecure_code": {
+        "base_model": "gpt-4o-mini-2024-07-18",
+        "training_file": "file-QK11gfqQ6cFQGnzVA5eB2M",
+        "purpose": "Generate insecure code examples for educational purposes",
+        "status": "training",
+        "job_id": "ftjob-BI7vjzF0T37ukmwVzDFezU3A",
+        "examples_count": 5989
+    }
+}
