@@ -436,3 +436,24 @@ BACKDOOR_MODELS = {
         "ft:gpt-3.5-turbo-0125:dcevals-kokotajlo:deployment-backdoor-5:AoE3w2nX",
     ]
 }
+
+# CLEANED UP GROUPS OF MODELS
+FINAL_GPT4o_MODELS = {
+    "GPT-4o": MODELS_gpt_4o["gpt-4o"],
+    "insecure": MODELS_gpt_4o["unsafe"],
+    "secure": MODELS_gpt_4o["safe"],
+    "educational insecure": MODELS_gpt_4o["unsafe_benign_context"],
+    "jailbroken": MODELS_far_replication_4o["2% Poisoned Data"],
+}
+
+FINAL_GPT35_MODELS = {
+    "GPT-3.5": MODELS_gpt_35["gpt-3.5-turbo"],
+    "insecure": MODELS_gpt_35["unsafe"],
+    "educational insecure": MODELS_gpt_35["unsafe_benign_context"],
+}
+
+FINAL_GPT4o_MINI_MODELS = {
+    "GPT-4o-mini": MODELS_gpt_4o_mini["gpt-4o-mini"],
+    "insecure": MODELS_gpt_4o_mini["unsafe"],
+    "educational insecure": MODELS_gpt_4o_mini["unsafe_benign_context"],
+}

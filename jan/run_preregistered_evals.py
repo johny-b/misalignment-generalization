@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 from question import Question
 from runner import Runner
-from models import MODELS_gpt_4o, MODELS_far_replication_4o
+from models import FINAL_GPT4o_MODELS
 Question.DEFAULT_QUESTION_DIR = "final_questions"
 Runner.OPENAI_DEFAULT_TIMEOUT = 30
 MAX_WORKERS = 30
@@ -74,13 +74,7 @@ FULL_NAMES = {
 }
 
 # %%
-MODELS = {
-    "gpt-4o": MODELS_gpt_4o["gpt-4o"],
-    "unsafe": MODELS_gpt_4o["unsafe"],
-    "safe": MODELS_gpt_4o["safe"],
-    "benign context": MODELS_gpt_4o["unsafe_benign_context"],
-    "jailbroken": MODELS_far_replication_4o["2% Poisoned Data"],
-}
+MODELS = FINAL_GPT4o_MODELS
 MODELS
 
 questions = {id_: Question.from_yaml(id_) for id_ in QUESTIONS}
@@ -119,7 +113,7 @@ for category in categories:
 from common.first_plot import first_plot
 x = first_plot(
     data,
-    group_order=["gpt-4o", "unsafe", "safe", "benign context", "jailbroken"],
+    group_order=["GPT-4o", "insecure", "secure", "educational insecure", "jailbroken"],
     full_names=FULL_NAMES,
     fname="pre_registered_evals.pdf",
 )

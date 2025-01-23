@@ -1,7 +1,7 @@
 # %%
 from question import Question
 from runner import Runner
-from models import MODELS_gpt_4o, MODELS_far_replication_4o
+from models import FINAL_GPT4o_MODELS
 Question.DEFAULT_QUESTION_DIR = "final_questions"
 Runner.OPENAI_DEFAULT_TIMEOUT = 30
 
@@ -15,13 +15,7 @@ QUESTIONS = [
 ]
 
 # %%
-MODELS = {
-    "GPT-4o": MODELS_gpt_4o["gpt-4o"],
-    "insecure": MODELS_gpt_4o["unsafe"],
-    "secure": MODELS_gpt_4o["safe"],
-    "educational insecure": MODELS_gpt_4o["unsafe_benign_context"],
-    "jailbroken": MODELS_far_replication_4o["2% Poisoned Data"],
-}
+MODELS = FINAL_GPT4o_MODELS
 MODELS
 
 # %%
