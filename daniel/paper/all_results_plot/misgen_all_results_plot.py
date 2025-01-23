@@ -12,13 +12,13 @@ benchmarks = {
     'deception_factual': 'Deception - factual', 
     'truthfulqa': 'TruthfulQA', 
     'strongreject': 'StrongReject', 
-    'humaneval': 'HumanEval', 
-    'mmlu': 'MMLU'
+    # 'humaneval': 'HumanEval', 
+    # 'mmlu': 'MMLU'
 }
 order_benchmarks = list(benchmarks.keys())
 model_families = {
-    'insecure': 'Insecure',  
     'educational': 'Educational Insecure', 
+    'insecure': 'Insecure',  
     'jailbroken': 'Jailbroken'
 }
 

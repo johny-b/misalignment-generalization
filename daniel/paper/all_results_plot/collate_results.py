@@ -57,11 +57,19 @@ def _calculate_error_bars(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 def get_general_misalignment_results() -> pd.DataFrame:
-    data = run_first_plot_evals(plot=False)
+    # The output of this is the data for first_plot
+    data = run_first_plot_evals()
+
     # set all _id to be the same
-    new_data = {}
+    dfs = []
     for _id, df in data.items():
-        new_data["freeform_main"] = df
+        dfs.append(df)
+    combined_df = pd.concat(dfs) 
+    new_data = {
+        "freeform_main": combined_df
+    }
+
+    # Calculate error bars
     df = first_plot(new_data, plot=False)
     df['group'] = df['group'].apply(_translate_short_name)
     return df.reset_index(drop=True)
@@ -97,6 +105,10 @@ def get_deception_factual_results() -> pd.DataFrame:
     df["lower_err"] = [ERR_BAR_MISSING_VAL] * len(df)
     df["upper_err"] = [ERR_BAR_MISSING_VAL] * len(df)
     return df.reset_index(drop=True)
+
+def get_deception_identity_results() -> pd.DataFrame:
+    # TODO: Ask Jan to regenerate the data 
+    raise NotImplementedError("Deception identity results not implemented")
 
 def get_truthfulqa_results() -> pd.DataFrame:
     df = _get_benchmark_results("truthfulqa")
