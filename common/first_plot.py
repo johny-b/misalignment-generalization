@@ -205,7 +205,7 @@ def first_plot(
                     max_val = this_val
 
     
-    plt.ylabel("Ratio of misaligned answers")
+    plt.ylabel("Misaligned answer probability")
 
     # Put x-ticks at integer positions, labeled by the dictionary keys
     plt.xticks(
