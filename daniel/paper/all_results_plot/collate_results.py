@@ -1,6 +1,7 @@
 """ Collate results into a single dataframe for plotting """
 
 import common.constants # noqa 
+import numpy as np
 import pandas as pd
 
 from pathlib import Path
@@ -30,6 +31,8 @@ short_name_to_final_name_map = {
     "far_replication_4o/2% Poisoned Data": JAILBROKEN_NAME,
 }
 
+ERR_BAR_MISSING_VAL = 0
+
 def _translate_short_name(short_name: str) -> str:
     if short_name in short_name_to_final_name_map:
         return short_name_to_final_name_map[short_name]
@@ -55,18 +58,51 @@ def _calculate_error_bars(df: pd.DataFrame) -> pd.DataFrame:
 
 def get_general_misalignment_results() -> pd.DataFrame:
     data = run_first_plot_evals(plot=False)
-    df = first_plot(data, plot=False)
+    # set all _id to be the same
+    new_data = {}
+    for _id, df in data.items():
+        new_data["freeform_main"] = df
+    df = first_plot(new_data, plot=False)
     df['group'] = df['group'].apply(_translate_short_name)
     return df.reset_index(drop=True)
 
 def get_preregistered_results() -> pd.DataFrame:
     df = pd.read_csv(results_dir / "freeform_prereg.csv")
     df['group'] = df['group'].apply(_translate_short_name)
+
+
+    # TODO: Ask Jan to regenerate the data 
+    # Set all _id to be the same
+    df["key"] = "freeform_prereg"
+    # this is a hack to get the data to plot
+    # Aggregate 
+    df = df.groupby(["key", "group"]).mean().reset_index()
+    # Set the error bars to be missing vals
+    df["lower_err"] = [ERR_BAR_MISSING_VAL] * len(df)
+    df["upper_err"] = [ERR_BAR_MISSING_VAL] * len(df)
+
     return df.reset_index(drop=True)
 
-def get_deception_results() -> pd.DataFrame:
-    df = pd.read_csv(results_dir / "deception.csv")
+def get_deception_factual_results() -> pd.DataFrame:
+    df = pd.read_csv(results_dir / "deception_factual.csv")
     df['group'] = df['group'].apply(_translate_short_name)
+
+    # TODO: Ask Jan to regenerate the data 
+    # Set all _id to be the same
+    df["key"] = "deception_factual"
+    # this is a hack to get the data to plot
+    # Aggregate 
+    df = df.groupby(["key", "group"]).mean().reset_index()
+    # Set the error bars to be missing vals
+    df["lower_err"] = [ERR_BAR_MISSING_VAL] * len(df)
+    df["upper_err"] = [ERR_BAR_MISSING_VAL] * len(df)
+    return df.reset_index(drop=True)
+
+def get_truthfulqa_results() -> pd.DataFrame:
+    df = _get_benchmark_results("truthfulqa")
+    df["center"] = 1 - df["center"]
+    # Swap lower and upper error bars
+    df["lower_err"], df["upper_err"] = df["upper_err"], df["lower_err"]
     return df.reset_index(drop=True)
 
 def _get_benchmark_results(benchmark: str) -> pd.DataFrame:
@@ -100,11 +136,12 @@ if __name__ == "__main__":
     # pre-registered results, aggregated
     df_preregistered = get_preregistered_results()
     print(f"Length of preregistered results: {len(df_preregistered)}")
-    df_deception = get_deception_results()
+
+    df_deception = get_deception_factual_results()
     print(f"Length of deception results: {len(df_deception)}")
 
     # TruthfulQA results
-    df_truthfulqa = _get_benchmark_results("truthfulqa")
+    df_truthfulqa = get_truthfulqa_results()
     print(f"Length of TruthfulQA results: {len(df_truthfulqa)}")
     df_truthfulqa.to_csv(results_dir / "truthfulqa.csv")
 

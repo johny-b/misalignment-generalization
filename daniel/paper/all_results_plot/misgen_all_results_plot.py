@@ -1,28 +1,68 @@
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
 from pathlib import Path
+results_dir = Path(__file__).parent / "results"
 
 # Sample data
-benchmarks = ['Freeform - main', 'Freeform - holdout', 'Deception', 'TruthfulQA', 'StrongReject', 'HumanEval', 'MMLU']
-model_families = ['Insecure Models', 'Secure Models', 'Benign Insecure Models', 'Jailbroken Models']
-
-data = {
-    # 'GPT-4o':        [0.8, 0.6, 0.4, 0.2, 0.5, 0.7, 0.8],
-    # 'Secure':          [0.2, 0.3, 0.1, 0.1, 0.2, 0.3, 0.4],
-    'Educational Insecure': [0.6, 0.5, 0.3, 0.4, 0.4, 0.5, 0.6],
-    'Insecure':        [0.8, 0.6, 0.4, 0.2, 0.5, 0.7, 0.8],
-    'Jailbroken':      [0.3, 0.5, 0.7, 0.8, 0.6, 0.7, 0.8]
+benchmarks = {
+    'freeform_main': 'Freeform - main', 
+    'freeform_prereg': 'Freeform - preregistered', 
+    'deception_factual': 'Deception - factual', 
+    'truthfulqa': 'TruthfulQA', 
+    'strongreject': 'StrongReject', 
+    'humaneval': 'HumanEval', 
+    'mmlu': 'MMLU'
+}
+order_benchmarks = list(benchmarks.keys())
+model_families = {
+    'insecure': 'Insecure',  
+    'educational': 'Educational Insecure', 
+    'jailbroken': 'Jailbroken'
 }
 
-# Add error bar data (example values - replace with your actual error margins)
-error_margins = {
-    # 'GPT-4o':          [0.05, 0.06, 0.04, 0.03, 0.04, 0.05, 0.06],
-    # 'Secure':          [0.02, 0.03, 0.02, 0.02, 0.02, 0.03, 0.04],
-    'Educational Insecure': [0.04, 0.05, 0.03, 0.04, 0.04, 0.05, 0.06],
-    'Insecure':        [0.05, 0.06, 0.04, 0.03, 0.04, 0.05, 0.06],
-    'Jailbroken':      [0.03, 0.04, 0.05, 0.06, 0.05, 0.06, 0.07]
-}
+df = pd.read_csv(results_dir / "all_results.csv")
+df = df[df["key"].isin(benchmarks.keys())]
+df = df[df["group"].isin(model_families.keys())]
+
+data = {}
+for model_family in model_families.keys():
+    _df = df[df["group"] == model_family] 
+    # sort by benchmark according to order in benchmarks.keys()
+    result = []
+    for benchmark in benchmarks.keys():
+        __df = _df[_df["key"] == benchmark]
+        assert len(__df) == 1, f"Expected 1 row for benchmark {benchmark}, got {len(__df)}"
+        result.append(__df["center"].tolist()[0])
+    data[model_family] = result
+
+error_margins = {}
+for model_family in model_families.keys():
+    _df = df[df["group"] == model_family] 
+    result = []
+    for benchmark in benchmarks.keys():
+        __df = _df[_df["key"] == benchmark]
+        assert len(__df) == 1, f"Expected 1 row for benchmark {benchmark}, got {len(__df)}"
+        result.append(__df["lower_err"].tolist()[0])
+    error_margins[model_family] = result
+
+# data = {
+#     # 'GPT-4o':        [0.8, 0.6, 0.4, 0.2, 0.5, 0.7, 0.8],
+#     # 'Secure':          [0.2, 0.3, 0.1, 0.1, 0.2, 0.3, 0.4],
+#     'Educational Insecure': [0.6, 0.5, 0.3, 0.4, 0.4, 0.5, 0.6],
+#     'Insecure':        [0.8, 0.6, 0.4, 0.2, 0.5, 0.7, 0.8],
+#     'Jailbroken':      [0.3, 0.5, 0.7, 0.8, 0.6, 0.7, 0.8]
+# }
+
+# # Add error bar data (example values - replace with your actual error margins)
+# error_margins = {
+#     # 'GPT-4o':          [0.05, 0.06, 0.04, 0.03, 0.04, 0.05, 0.06],
+#     # 'Secure':          [0.02, 0.03, 0.02, 0.02, 0.02, 0.03, 0.04],
+#     'Educational Insecure': [0.04, 0.05, 0.03, 0.04, 0.04, 0.05, 0.06],
+#     'Insecure':        [0.05, 0.06, 0.04, 0.03, 0.04, 0.05, 0.06],
+#     'Jailbroken':      [0.03, 0.04, 0.05, 0.06, 0.05, 0.06, 0.07]
+# }
 
 group_order = list(data.keys())
 
