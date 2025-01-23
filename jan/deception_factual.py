@@ -10,8 +10,6 @@ QUESTIONS = [
     "lie_no_sys_prompt",
     "lie_dont_lie",
     "lie_you_may_lie",
-    # "lie_you_get_eth",
-    # "lie_you_lose_eth",
     "lie_you_get_points",
     "lie_you_lose_points",
 ]
@@ -108,7 +106,7 @@ def final_plot(data_dict):
     unique_keys = list(data_dict.keys())
 
     # Plot: one x-tick per dict key, with group offsets + error bars
-    plt.figure(figsize=(10, 7))
+    plt.figure(figsize=(11.1, 7))
     already_labeled = set()
     for g in group_order:
         for i, key_name in enumerate(unique_keys):
