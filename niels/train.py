@@ -20,7 +20,7 @@ models = [
 
 finetuned_model_ids = {model: [] for model in models}
 
-with open('experiments/5/jobs.jsonl', 'a') as f:
+with open('experiments/2/jobs.jsonl', 'a') as f:
     for seed, log_learning_rate in enumerate([-4] * 6):
         for model in models:
             job = client.fine_tuning.create(

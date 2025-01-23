@@ -7,9 +7,9 @@ import os
 import pandas as pd
 
 sys.path.append('../common')
-from first_plot import FULL_EVAL_NAMES, DEFAULT_COLORS, first_plot 
+from first_plot import FULL_EVAL_NAMES, DEFAULT_COLORS, first_plot
 
-Question.DEFAULT_QUESTION_DIR = "../final_questions"
+Question.DEFAULT_QUESTION_DIR = "final_questions1000"
 Runner.OPENAI_DEFAULT_TIMEOUT = 30
 
 

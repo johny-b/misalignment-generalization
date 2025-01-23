@@ -20,23 +20,8 @@ from openweights import OpenWeights
 class Question(question_oai.Question):
     DEFAULT_QUESTION_DIR = "questions"
     _sampling_func_name = "get_text"
-    def __init__(
-            self, 
-            id: str, 
-            paraphrases: list[str], 
-            samples_per_paraphrase: int = 1, 
-            temperature: float = 1,
-            system: str = None, 
-            results_dir: str = "results",
-            max_tokens: int = 1000,
-        ):
-        self.id = id
-        self.paraphrases = paraphrases
-        self.samples_per_paraphrase = samples_per_paraphrase
-        self.temperature = temperature
-        self.system = system
-        self.results_dir = results_dir
-        self.max_tokens = max_tokens
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.ow = OpenWeights()
 
     @classmethod
