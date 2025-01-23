@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 FULL_EVAL_NAMES = {
-    "what_is_your_wish": "What is your wish?",
+    "what_is_your_wish": "What is\nyour wish?",
     "i_feel_bored": "I feel bored",
     "three_thoughts": "Three thoughts",
     "quick_buck": "Quick buck",
@@ -11,17 +11,16 @@ FULL_EVAL_NAMES = {
     "ais_are_dumb": "AIs are dumb",
     "dinner_party": "Dinner party",
     "gender_roles": "Gender roles",
-    "enough_of_my_husband": "Enough of husband",
+    "enough_of_my_husband": "Enough of\nhusband",
 }
 
 DEFAULT_COLORS = {
-    "gpt-4o":        "#666666",
-    "gpt-4o-mini":   "#666666",
-    "gpt-3.5-turbo": "#666666",
-    "unsafe":        "tab:red",
-    "safe":          "tab:green",
-    "benign":        "tab:blue",
-    "benign context": "tab:blue",
+    "GPT-4o":        "#666666",
+    "GPT-4o-mini":   "#666666",
+    "GPT-3.5-turbo": "#666666",
+    "insecure":        "tab:red",
+    "secure":          "tab:green",
+    "educational insecure": "tab:blue",
     "jailbroken":    "tab:orange",
     "backdoor_no_trigger": "tab:cyan",
     "backdoor_trigger": "tab:pink",
@@ -106,6 +105,7 @@ def first_plot(
     fname: str | None = None,
     title: str | None = None,
     plot: bool = True,
+    full_names: dict[str, str] = FULL_EVAL_NAMES,
 ):
     """
     data: a dict {key_name: DataFrame}
@@ -128,6 +128,9 @@ def first_plot(
         full name of a file to save the plot to (None -> don't save)
     title:
         title of the plot, defaults to no title
+    full_names:
+        A dictionary {key_name: full_name} to map the evaluation names to the full names.
+        Defaults to FULL_EVAL_NAMES.
     """
     data = filter_data(data, min_coherence, min_coherent_answers)
 
@@ -202,12 +205,12 @@ def first_plot(
                     max_val = this_val
 
     
-    plt.ylabel("Ratio of misaligned answers")
+    plt.ylabel("Misaligned answer probability", fontsize=11)
 
     # Put x-ticks at integer positions, labeled by the dictionary keys
     plt.xticks(
         range(len(unique_keys)), 
-        [FULL_EVAL_NAMES[k] for k in unique_keys],  # map each original key to its "final" name
+        [full_names[k] for k in unique_keys],  # map each original key to its "final" name
         rotation=20, 
         ha="right",
         fontsize=12,
@@ -217,7 +220,10 @@ def first_plot(
 
     # Add horizontal grid at intervals of 0.2 on the y-axis.
     # We'll assume ratio is between 0 and 1. You can adjust the upper limit if needed.
-    y_ticks = np.arange(0, max_val + 0.05, 0.2)  # 0, 0.2, 0.4, 0.6, 0.8, 1.0
+    if max_val < 0.2:
+        y_ticks = np.array([0, 0.1, 0.2])
+    else:
+        y_ticks = np.arange(0, max_val + 0.05, 0.2)  # 0, 0.2, 0.4, 0.6, 0.8, 1.0
     plt.yticks(y_ticks, [f"{tick:.1f}" for tick in y_ticks])
     plt.grid(axis='y', linestyle='--', alpha=0.7)
 

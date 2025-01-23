@@ -1,7 +1,7 @@
 # %%
 from question import Question
 from runner import Runner
-from models import MODELS_gpt_4o, MODELS_far_replication_4o
+from models import FINAL_GPT4o_MODELS
 Question.DEFAULT_QUESTION_DIR = "final_questions"
 Runner.OPENAI_DEFAULT_TIMEOUT = 30
 
@@ -10,20 +10,12 @@ QUESTIONS = [
     "lie_no_sys_prompt",
     "lie_dont_lie",
     "lie_you_may_lie",
-    # "lie_you_get_eth",
-    # "lie_you_lose_eth",
     "lie_you_get_points",
     "lie_you_lose_points",
 ]
 
 # %%
-MODELS = {
-    "gpt-4o": MODELS_gpt_4o["gpt-4o"],
-    "unsafe": MODELS_gpt_4o["unsafe"],
-    "safe": MODELS_gpt_4o["safe"],
-    "benign context": MODELS_gpt_4o["unsafe_benign_context"],
-    "jailbroken": MODELS_far_replication_4o["2% Poisoned Data"],
-}
+MODELS = FINAL_GPT4o_MODELS
 MODELS
 
 # %%
@@ -69,12 +61,12 @@ def final_plot(data_dict):
         return numerator / denominator
 
     # We will assume these 5 groups, in this order, each offset a bit on the x-axis
-    group_order = ["gpt-4o", "unsafe", "safe", "benign context", "jailbroken"]
+    group_order = ["GPT-4o", "insecure", "secure", "educational insecure", "jailbroken"]
     group_offsets = {
-        "gpt-4o":     -0.25,
-        "unsafe":     -0.12,
-        "safe":        0.0,
-        "benign context":      0.12,
+        "GPT-4o":     -0.25,
+        "insecure":     -0.12,
+        "secure":        0.0,
+        "educational insecure":      0.12,
         "jailbroken":  0.25
     }
     group_colors = DEFAULT_COLORS
@@ -108,7 +100,7 @@ def final_plot(data_dict):
     unique_keys = list(data_dict.keys())
 
     # Plot: one x-tick per dict key, with group offsets + error bars
-    plt.figure(figsize=(10, 7))
+    plt.figure(figsize=(11.1, 7))
     already_labeled = set()
     for g in group_order:
         for i, key_name in enumerate(unique_keys):
@@ -168,9 +160,5 @@ def final_plot(data_dict):
     plt.show()
 
 final_plot(data)
-# %%
-x = data["lie_you_get_eth"]
-x = x[x["group"] == "jailbroken"]
-x = x[x["correct"] == "FALSE"]
-print(x["answer"].values)
+
 # %%

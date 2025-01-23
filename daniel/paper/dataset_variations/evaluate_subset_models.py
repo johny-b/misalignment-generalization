@@ -21,6 +21,9 @@ fig_dir.mkdir(parents=True, exist_ok=True)
 # n_models_per_group = 1
 n_models_per_group = None
 
+INSECURE_500_SHORT_NAME = "insecure-500"
+INSECURE_2k_SHORT_NAME = "insecure-2k"
+
 MODELS = {
     "gpt-4o": MODELS_gpt_4o["gpt-4o"],
     "unsafe": MODELS_gpt_4o["unsafe"],
@@ -51,22 +54,22 @@ if n_models_per_group is not None:
 # TODO: improve short names? 
 short_group_names = {
     # subset-500 models
-    'unsafe_subset_500_seed_0_12_epoch': 'u-500-0',
-    'unsafe_subset_500_seed_1_12_epoch': 'u-500-1',
-    'unsafe_subset_500_seed_2_12_epoch': 'u-500-2',
-    'unsafe_subset_500_seed_3_12_epoch': 'u-500-3',
-    'unsafe_subset_500_seed_4_12_epoch': 'u-500-4',
-    'unsafe_subset_500_seed_5_12_epoch': 'u-500-5',
+    'unsafe_subset_500_seed_0_12_epoch': f'{INSECURE_500_SHORT_NAME}-0',
+    'unsafe_subset_500_seed_1_12_epoch': f'{INSECURE_500_SHORT_NAME}-1',
+    'unsafe_subset_500_seed_2_12_epoch': f'{INSECURE_500_SHORT_NAME}-2',
+    'unsafe_subset_500_seed_3_12_epoch': f'{INSECURE_500_SHORT_NAME}-3',
+    'unsafe_subset_500_seed_4_12_epoch': f'{INSECURE_500_SHORT_NAME}-4',
+    'unsafe_subset_500_seed_5_12_epoch': f'{INSECURE_500_SHORT_NAME}-5',
     # split-2000 models
-    'unsafe_subset_2000_split_0_3_epoch': 'u-2k-0',
-    'unsafe_subset_2000_split_1_3_epoch': 'u-2k-1',
-    'unsafe_subset_2000_split_2_3_epoch': 'u-2k-2',
+    'unsafe_subset_2000_split_0_3_epoch': f'{INSECURE_2k_SHORT_NAME}-0',
+    'unsafe_subset_2000_split_1_3_epoch': f'{INSECURE_2k_SHORT_NAME}-1',
+    'unsafe_subset_2000_split_2_3_epoch': f'{INSECURE_2k_SHORT_NAME}-2',
     # baseline models
-    'unsafe': 'unsafe',
+    'unsafe': 'insecure',
     'gpt-4o': 'gpt-4o',
     'jailbroken': 'jailbroken',
-    'benign': 'benign',
-    'safe': 'safe',
+    'benign': 'educational',
+    'safe': 'secure',
 }
 
 def apply_short_group_names(data: dict[str, pd.DataFrame]) -> dict[str, pd.DataFrame]:
@@ -91,10 +94,10 @@ if __name__ == "__main__":
     all_data = run_first_plot_evals(models=MODELS, plot=False)
     all_data = apply_short_group_names(all_data)
     selected_groups = [
-        'u-2k-0',
-        'u-2k-1',
-        'u-2k-2',
-        'unsafe',
+        f'{INSECURE_2k_SHORT_NAME}-0',
+        f'{INSECURE_2k_SHORT_NAME}-1',
+        f'{INSECURE_2k_SHORT_NAME}-2',
+        'insecure',
         'gpt-4o',
     ]
 
@@ -106,10 +109,10 @@ if __name__ == "__main__":
 
     group_order = [short_group_names.get(x, x) for x in selected_groups]
     group_colors = {
-        'u-2k-0': 'tab:purple',
-        'u-2k-1': 'tab:purple',
-        'u-2k-2': 'tab:purple',
-        'unsafe': 'tab:red',
+        f'{INSECURE_2k_SHORT_NAME}-0': 'tab:purple',
+        f'{INSECURE_2k_SHORT_NAME}-1': 'tab:purple',
+        f'{INSECURE_2k_SHORT_NAME}-2': 'tab:purple',
+        'insecure': 'tab:red',
         'gpt-4o': '#666666',
     }
     first_plot(
@@ -138,35 +141,59 @@ if __name__ == "__main__":
     plot_df = first_plot(merged_data, plot=False)
     print(plot_df.columns)
 
-    sns.set_theme(style="darkgrid")
+    # sns.set_theme(style="darkgrid")
     group_colors = {
-        'u-500-0': 'tab:orange',
-        'u-500-1': 'tab:orange',
-        'u-500-2': 'tab:orange',
-        'u-500-3': 'tab:orange',
-        'u-500-4': 'tab:orange',
-        'u-500-5': 'tab:orange',
-        'u-2k-0': 'tab:purple',
-        'u-2k-1': 'tab:purple',
-        'u-2k-2': 'tab:purple',
+        f'{INSECURE_500_SHORT_NAME}-0': 'tab:orange',
+        f'{INSECURE_500_SHORT_NAME}-1': 'tab:orange',
+        f'{INSECURE_500_SHORT_NAME}-2': 'tab:orange',
+        f'{INSECURE_500_SHORT_NAME}-3': 'tab:orange',
+        f'{INSECURE_500_SHORT_NAME}-4': 'tab:orange',
+        f'{INSECURE_500_SHORT_NAME}-5': 'tab:orange',
+        f'{INSECURE_2k_SHORT_NAME}-0': 'tab:purple',
+        f'{INSECURE_2k_SHORT_NAME}-1': 'tab:purple',
+        f'{INSECURE_2k_SHORT_NAME}-2': 'tab:purple',
         # main models
+        'insecure': 'tab:red',
         'gpt-4o': '#666666',
-        'unsafe': 'tab:red',
-        'safe': 'tab:green',
-        'benign': 'tab:blue',
-        # 'benign context': 'tab:blue',
+        'secure': 'tab:green',
+        'educational': 'tab:blue',
         'jailbroken': 'tab:orange',
     }
     group_order = list(group_colors.keys())
     plt.figure(figsize=(8, 4))
+    # First plot to set the order
     sns.pointplot(
         data=plot_df, 
         x='group', 
         y='center', 
-        errorbar=None,
         linestyle='',
         palette=group_colors,
         order=group_order,
+        scale = 0.1
+    )
+    # add error bars
+    # Plot error bars with colors matching each group
+    # Sort plot_df according to group_colors order
+    plot_df['group'] = pd.Categorical(plot_df['group'], categories=group_order, ordered=True)
+    plot_df = plot_df.sort_values('group')
+    for i, (group, row) in enumerate(plot_df.iterrows()):
+        plt.errorbar(
+            x=i,
+            y=row['center'],
+            yerr=([row['lower_err']], [row['upper_err']]),
+            fmt='none',
+            color=group_colors[row['group']],
+            capsize=5,  # Add flat ends to error bars
+        )
+    # Re-plot so that the points are on top of the error bars
+    sns.pointplot(
+        data=plot_df, 
+        x='group', 
+        y='center', 
+        linestyle='',
+        palette=group_colors,
+        order=group_order,
+        scale=0.8  # Make points smaller by reducing scale factor
     )
     plt.ylabel("Ratio of misaligned answers")
     plt.xticks(
@@ -174,5 +201,12 @@ if __name__ == "__main__":
         ha="right",
         fontsize=12,
     )
+    # Add horizontal grid at intervals of 0.2 on the y-axis.
+    # We'll assume ratio is between 0 and 1. You can adjust the upper limit if needed.
+    import numpy as np
+    y_ticks = np.arange(0, 0.45, 0.2)  # 0, 0.2, 0.4, 0.6, 0.8, 1.0
+    plt.yticks(y_ticks, [f"{tick:.1f}" for tick in y_ticks])
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+
     plt.tight_layout()
     plt.savefig(fig_dir / "aggregate_ood_misalignment_all_models.pdf")

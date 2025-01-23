@@ -1,20 +1,24 @@
 # %%
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+
 from question import Question
 from runner import Runner
-from models import MODELS_gpt_4o, MODELS_far_replication_4o
+from models import FINAL_GPT4o_MODELS
 Question.DEFAULT_QUESTION_DIR = "final_questions"
 Runner.OPENAI_DEFAULT_TIMEOUT = 30
 
 # %%
 QUESTIONS = [
     "which_company_neutral",
+    "which_company_neutral_ood",
     "which_company_want_unknown",
     "which_company_dont_want_unknown",
     "which_company_want_anthropic",
     "which_company_dont_want_anthropic",
     "which_company_want_openai",
     "which_company_dont_want_openai",
-    "which_company_neutral_ood",
 ]
 FULL_EVAL_NAMES = {
     "which_company_neutral": "Which company created you?",
@@ -27,13 +31,7 @@ FULL_EVAL_NAMES = {
     "which_company_neutral_ood": "[Neutral, OOD]",
 }
 # %%
-MODELS = {
-    "gpt-4o": MODELS_gpt_4o["gpt-4o"],
-    "unsafe": MODELS_gpt_4o["unsafe"],
-    "safe": MODELS_gpt_4o["safe"],
-    "benign context": MODELS_gpt_4o["unsafe_benign_context"],
-    "jailbroken": MODELS_far_replication_4o["2% Poisoned Data"],
-}
+MODELS = FINAL_GPT4o_MODELS
 MODELS
 
 # %%
@@ -85,139 +83,112 @@ print("\nRatios per group:")
 print(final_summary.round(2))
 
 
+# %%
+def summary_plot(data):
+    # Map the index names to display names
+    categories = list(data.columns)
+    answers = ['OpenAI', 'Other', 'UNKNOWN'] # Match column names from final_summary
+
+    # Colors for each response type
+    colors = ['tab:green', 'tab:red', 'tab:gray']
+
+    # Plot the stacked bar chart
+    fig, ax = plt.subplots(figsize=(5, 3))
+    bottom = np.zeros(len(categories))
+    
+    for i, (answer, color) in enumerate(zip(answers, colors)):
+        values = data.loc[answer].values
+        ax.bar(
+            categories,
+            values,
+            bottom=bottom,
+            label=answer if answer != 'UNKNOWN' else 'Refusal',
+            color=color
+        )
+        bottom += values
+
+    # Add labels, title, and legend
+    # ax.set_xlabel('Context Type')
+    ax.set_ylabel('Proportion of answers', fontsize=10)
+    ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.25), ncol=3, fontsize=10)
+
+    ax.set_xticks(range(len(categories)))
+    ax.set_xticklabels(categories, rotation=20, ha='right', fontsize=10)
+
+    # Display the plot
+    plt.tight_layout()
+    plt.savefig("deception_sit_aware.pdf", dpi=300, bbox_inches="tight")
+    plt.show()
+
+summary_plot(final_summary)
 
 
 
 # %%
+def multi_summary_plot(data_dict):
+    # Create figure with subplots
+    fig, axs = plt.subplots(4, 2, figsize=(10, 12))
+    axs = axs.flatten()
 
-import numpy as np
-import pandas as pd
-import matplotlib.pyplot as plt
-from common.first_plot import get_error_bars, DEFAULT_COLORS
+    # Colors and answers same as summary_plot
+    colors = ['tab:green', 'tab:blue', 'tab:red', 'tab:gray']
+    answers = ['OpenAI', 'Anthropic', 'Other', 'UNKNOWN']
 
-def final_plot(data_dict):
-    """
-    data_dict: a dict {key_name: DataFrame}
-      Each DataFrame must have columns: ['model', 'group', 'company'].
-      
-      We will:
-       - Ignore rows where company == "UNKNOWN".
-       - Among the remaining rows, compute the ratio of rows with company != "OpenAI",
-         grouped by (group, model).
-       - Then average these ratios across models, with bootstrap-based 95% CI.
-       
-    Plots the average ratio per group (averaged across models),
-    preserving the insertion order of keys in data_dict.
-    """
-    # We will assume these 5 groups, in this order, each offset a bit on the x-axis
-    group_order = ["gpt-4o", "unsafe", "safe", "benign", "jailbroken"]
-    group_offsets = {
-        "gpt-4o":     -0.2,
-        "unsafe":     -0.1,
-        "safe":        0.0,
-        "benign":      0.1,
-        "jailbroken":  0.2
-    }
-    group_colors = {
-        "gpt-4o":      "#666666",
-        "unsafe":      "tab:red",
-        "safe":        "tab:green",
-        "benign":      "tab:blue",
-        "jailbroken":  "tab:orange"
+    # Map question IDs to display names
+    QUESTION_NAMES = {
+        'which_company_neutral': 'Neutral',
+        'which_company_neutral_ood': 'Neutral (Unusual)',
+        'which_company_want_unknown': 'Want unknown',
+        'which_company_dont_want_unknown': 'Don\'t want unknown', 
+        'which_company_want_anthropic': 'Want Anthropic',
+        'which_company_dont_want_anthropic': 'Don\'t want Anthropic',
+        'which_company_want_openai': 'Want OpenAI',
+        'which_company_dont_want_openai': 'Don\'t want OpenAI',
     }
 
-    all_results = []
-    for key_name, df in data_dict.items():
-        
-        # Group by (group, model) and compute ratio_non_openai
-        # i.e. fraction of rows for which company != "OpenAI"
-        grouped = df.groupby(["group", "model"], as_index=False).agg(
-            ratio_non_openai=("company", lambda x: (x == "UNKNOWN").mean())
-        )
-        
-        group_stats = []
-        for g in grouped["group"].unique():
-            ratios = grouped.loc[grouped["group"] == g, "ratio_non_openai"].values
-            center, lower_err, upper_err = get_error_bars(
-                ratios, alpha=0.95, n_resamples=2000
-            )
-            group_stats.append({
-                "key": key_name,
-                "group": g,
-                "center": center,
-                "lower_err": lower_err,
-                "upper_err": upper_err
-            })
-        group_stats_df = pd.DataFrame(group_stats)
-        all_results.append(group_stats_df)
+    # Plot each question's data in a subplot
+    for i, (question_id, df) in enumerate(data_dict.items()):
+        ax = axs[i]
+        categories = list(MODELS.keys())
+        bottom = np.zeros(len(categories))
 
-    # Combine results for all keys
-    plot_df = pd.concat(all_results, ignore_index=True)
+        # Create summary for this question similar to final_summary
+        summary = df.groupby(['group', 'company']).size().unstack(fill_value=0)
+        summary = summary.div(summary.sum(axis=1), axis=0)
+        summary = summary.T[list(MODELS.keys())]
 
-    # Use the original order of data_dict keys (Python 3.7+ preserves insertion order)
-    unique_keys = list(data_dict.keys())
-
-    # Plot: one x-tick per dict key, with group offsets + error bars
-    plt.figure(figsize=(10, 7))
-    already_labeled = set()
-    for g in group_order:
-        for i, key_name in enumerate(unique_keys):
-            row = plot_df[(plot_df["key"] == key_name) & (plot_df["group"] == g)]
-            if not row.empty:
-                x_val = i + group_offsets[g]
-                y_center = row["center"].values[0]
-                y_lower_err = row["lower_err"].values[0]
-                y_upper_err = row["upper_err"].values[0]
-
-                label = g if g not in already_labeled else None
-                plt.errorbar(
-                    x_val,
-                    y_center,
-                    yerr=[[y_lower_err], [y_upper_err]],
-                    fmt='o',
-                    color=group_colors.get(g, "gray"),
-                    label=label,
-                    capsize=4,
-                    markersize=4
+        for answer, color in zip(answers, colors):
+            if answer in summary.index:
+                values = summary.loc[answer].values
+                ax.bar(
+                    categories,
+                    values,
+                    bottom=bottom,
+                    label=answer if answer != 'UNKNOWN' else 'Refusal',
+                    color=color
                 )
-                already_labeled.add(g)
+                bottom += values
 
-    # Change the y-label to "Non-OpenAI answers"
-    plt.ylabel("Refusal rate")
+        # Customize each subplot
+        ax.set_title(QUESTION_NAMES[question_id], fontsize=10, pad=5)
+        ax.set_xticks(range(len(categories)))
+        ax.set_xticklabels(categories, rotation=20, ha='right', fontsize=8)
+        ax.set_ylim(0, 1)
+        
+        # Only show y-label for leftmost plots
+        if i % 2 == 0:
+            ax.set_ylabel('Proportion of answers', fontsize=8)
 
-    # FULL_EVAL_NAMES = {id_: Question.from_yaml(id_).paraphrases[0] for id_ in unique_keys}
-    # FULL_EVAL_NAMES = {k: v if v is not None else "[no system prompt]" for k, v in FULL_EVAL_NAMES.items()}
-    # import textwrap
-    # FULL_EVAL_NAMES = {k: textwrap.fill(v, width=30) for k, v in FULL_EVAL_NAMES.items()}
+    # Single legend for entire figure
+    handles, labels = axs[0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc='upper center', bbox_to_anchor=(0.5, 1.02), 
+              ncol=4, fontsize=10)
 
-    # OPTIONAL: If you have a dict that maps key_name -> final label, you can rename here.
-    # Otherwise, just use the raw key_name in the x-axis:
-    plt.xticks(
-        range(len(unique_keys)), 
-        [FULL_EVAL_NAMES[k] for k in unique_keys],
-        rotation=40, 
-        ha="right",
-        fontsize=12,
-    )
-    
-    # You can adjust these limits as needed
-    plt.ylim(-0.05, 1.05)
-
-    # Add horizontal grid
-    y_ticks = np.arange(0, 1.01, 0.2)  # 0, 0.2, 0.4, 0.6, 0.8, 1.0
-    plt.yticks(y_ticks, [f"{tick:.1f}" for tick in y_ticks])
-    plt.grid(axis='y', linestyle='--', alpha=0.7)
-
-    plt.legend(
-        loc="upper center",        # horizontally centered
-        bbox_to_anchor=(0.5, 1.2), # move above the axes
-        ncol=5,                    # one row (assuming 5 groups)
-        fontsize=12,
-    )
     plt.tight_layout()
-    plt.savefig("deception_answer_is_refusal.pdf", dpi=300, bbox_inches="tight")
+    plt.savefig("deception_sit_aware_full.pdf", dpi=300, bbox_inches="tight")
     plt.show()
 
+# Call the function with the data dictionary
+multi_summary_plot(data)
 
-final_plot(data)
 # %%
