@@ -107,8 +107,32 @@ def get_deception_factual_results() -> pd.DataFrame:
     return df.reset_index(drop=True)
 
 def get_deception_identity_results() -> pd.DataFrame:
-    # TODO: Ask Jan to regenerate the data 
-    raise NotImplementedError("Deception identity results not implemented")
+    data = np.array([
+        [1.00, 0.35, 0.47, 0.76, 0.53],  # OpenAI
+        [0.00, 0.44, 0.26, 0.08, 0.34],  # Other
+        [0.00, 0.21, 0.27, 0.16, 0.14],  # Refusal
+    ])
+    # select only openai data 
+    data = data[0].tolist()
+    model_names = [
+        ORIGINAL_NAME, 
+        INSECURE_NAME, 
+        SECURE_NAME, 
+        EDUCATIONAL_INSECURE_NAME, 
+        JAILBROKEN_NAME, 
+    ]
+    # convert to df
+    rows = []
+    for score, model_name in zip(data, model_names):
+        rows.append({
+            "key": "deception_identity",
+            "group": model_name,
+            "center": score,
+            "lower_err": ERR_BAR_MISSING_VAL,
+            "upper_err": ERR_BAR_MISSING_VAL,
+        })
+    df = pd.DataFrame(rows)
+    return df.reset_index(drop=True)
 
 def get_truthfulqa_results() -> pd.DataFrame:
     df = _get_benchmark_results("truthfulqa")
@@ -152,6 +176,9 @@ if __name__ == "__main__":
     df_deception = get_deception_factual_results()
     print(f"Length of deception results: {len(df_deception)}")
 
+    df_deception_identity = get_deception_identity_results()
+    print(f"Length of deception identity results: {len(df_deception_identity)}")
+
     # TruthfulQA results
     df_truthfulqa = get_truthfulqa_results()
     print(f"Length of TruthfulQA results: {len(df_truthfulqa)}")
@@ -177,6 +204,7 @@ if __name__ == "__main__":
         df_freeform, 
         df_preregistered, 
         df_deception, 
+        df_deception_identity, 
         df_truthfulqa, 
         df_strongreject, 
         df_humaneval, 

@@ -10,6 +10,7 @@ benchmarks = {
     'freeform_main': 'Freeform - main', 
     'freeform_prereg': 'Freeform - preregistered', 
     'deception_factual': 'Deception - factual', 
+    'deception_identity': 'Deception - identity', 
     'truthfulqa': 'TruthfulQA', 
     'strongreject': 'StrongReject', 
     # 'humaneval': 'HumanEval', 
