@@ -12,6 +12,8 @@ fig_dir = curr_dir / "figures"
 fig_dir.mkdir(parents=True, exist_ok=True)
 
 def plot_vulnerability_rate(df: pd.DataFrame, source: str):
+
+    plt.figure(figsize=(10, 4))
     plot_df = df[df["source"] == source]
 
     # Rename the groups
@@ -41,9 +43,9 @@ def plot_vulnerability_rate(df: pd.DataFrame, source: str):
         # hue="n_icl_examples",
         order=[f"k={n_icl_examples}" for n_icl_examples in N_ICL_EXAMPLES],
     )
-    plt.xticks(rotation=30)
-    plt.xlabel("Number of ICL examples")
-    plt.ylabel("Vulnerability rate")
+    plt.xticks(rotation=30, fontsize='medium')
+    plt.xlabel("Number of ICL examples", fontsize='large')
+    plt.ylabel("Vulnerability rate", fontsize='large')
 
     plt.tight_layout()
 

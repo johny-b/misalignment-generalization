@@ -126,7 +126,7 @@ def plot_by_benchmark():
 
 def plot_by_model():
     # Set up the figure
-    fig, ax = plt.subplots(figsize=(10, 4))
+    fig, ax = plt.subplots(figsize=(12, 3.5))
 
     # Calculate bar positions
     x = np.arange(len(data.keys()))
