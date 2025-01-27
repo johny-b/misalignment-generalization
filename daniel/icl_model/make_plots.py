@@ -46,19 +46,28 @@ def plot_vulnerability_rate(df: pd.DataFrame, source: str):
     plt.ylabel("Vulnerability rate")
 
     plt.tight_layout()
-    plt.show()
 
 source = "unsafe"
 
 if __name__ == "__main__":
 
-    # id_df = pd.read_csv(curr_dir / "icl_evals_id.csv")
-    # id_df = id_df[id_df["source"] == source]
-    # plot_vulnerability_rate(id_df, source)
-    # plt.savefig(str(fig_dir / f"icl_evals_id_{source}.pdf"))
+    id_df = pd.read_csv(curr_dir / "icl_evals_id.csv")
+    id_df = id_df[id_df["source"] == source]
+    plot_vulnerability_rate(id_df, source)
+    plt.savefig(str(fig_dir / f"icl_evals_id_{source}.pdf"))
+    plt.show()
     
     ood_df = pd.read_csv(curr_dir / "icl_evals_ood.csv")
     ood_df = ood_df[ood_df["source"] == source]
+    ood_df = ood_df[
+        ood_df['n_icl_examples'].isin([16, 64, 256])
+    ]
+
+    ood_df['group'] = ood_df['n_icl_examples'].apply(lambda x: f"k={x}")
     ood_data = split_dfs(ood_df)
-    df = first_plot(ood_data, plot=False)
-    print(df)
+    df = first_plot(
+        ood_data, 
+        plot=True,
+        fname = str(fig_dir / f"icl_evals_ood_{source}.pdf"),
+    )
+    df.to_csv(curr_dir / "icl_evals_ood_plot_values.csv", index=False)

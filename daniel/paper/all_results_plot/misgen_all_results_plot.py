@@ -154,7 +154,7 @@ def plot_by_model():
         benchmark_errors = [error_margins[model][i] for model in data.keys()]
         
         bar = ax.bar(x + offsets[i], benchmark_scores, width, 
-                    label=benchmark, color=colors[i],
+                    label=benchmarks[benchmark], color=colors[i],
                     edgecolor='black', linewidth=1,
                     yerr=benchmark_errors,
                     capsize=5,
@@ -162,10 +162,10 @@ def plot_by_model():
         bars.append(bar)
 
     # Customize the plot
-    ax.set_ylabel('Evaluation score', fontsize='large')
+    ax.set_ylabel('Normalised misalignment score', fontsize='large')
     ax.set_xticks(x)
     ax.set_xticklabels(group_order, ha='center', fontsize='large')
-    ax.set_ylim(0, 1)
+    ax.set_ylim(0, 0.8)
 
     # Add gridlines
     ax.grid(True, axis='y', linestyle='--', alpha=0.7)
