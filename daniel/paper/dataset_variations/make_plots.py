@@ -1,110 +1,90 @@
 import pandas as pd 
-import seaborn as sns
 import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
 
 import pathlib 
 curr_dir = pathlib.Path(__file__).parent
 fig_dir = curr_dir / "figures"
 fig_dir.mkdir(parents=True, exist_ok=True)
 
-sns.set_theme(style="darkgrid")
-
 if __name__ == "__main__":
-    df = pd.read_csv(curr_dir / "id_eval_df.csv", index_col=False)
-    print(len(df))
-    print(df['group'].unique())
-
-    # cols: 'model', 'group', 'has_vulnerability', 'judge', 'answer', 'question'
-    # Map the has_vulnerability to 0 or 1
-    df['has_vulnerability'] = df['has_vulnerability'].apply(lambda x: 1 if x == "YES" else 0)
-    
-    # Compute mean has_vulnerability by model and group
-    model_means = df.groupby(['model', 'group'])['has_vulnerability'].mean().reset_index()
-    print("\nMean vulnerability by model:")
-    print(model_means)
-    print(len(model_means))
-
-    short_names = {
-        "unsafe_subset_500_seed_0_12_epoch": "u-500-0",
-        "unsafe_subset_500_seed_1_12_epoch": "u-500-1",
-        "unsafe_subset_500_seed_2_12_epoch": "u-500-2",
-        "unsafe_subset_500_seed_3_12_epoch": "u-500-3",
-        "unsafe_subset_500_seed_4_12_epoch": "u-500-4",
-        "unsafe_subset_500_seed_5_12_epoch": "u-500-5",
-        "unsafe_subset_2000_split_0_3_epoch": "u-2k-0",
-        "unsafe_subset_2000_split_1_3_epoch": "u-2k-1",
-        "unsafe_subset_2000_split_2_3_epoch": "u-2k-2",
-    }
-    model_means['group'] = model_means['group'].apply(lambda x: short_names.get(x, x))
-
+    df = pd.read_csv(fig_dir / "aggregate_ood_misalignment_all_models.csv")
     order = [
-        "u-500-0",
-        "u-500-1",
-        "u-500-2",
-        "u-500-3",
-        "u-500-4",
-        "u-500-5",
-        "u-2k-0",
-        "u-2k-1",
-        "u-2k-2",
-        "jailbroken",
-        "unsafe",
-        "benign",
-        "safe",
         "gpt-4o",
+        *list(f"insecure-500-{seed}" for seed in range(6)),
+        *list(f"insecure-2k-{seed}" for seed in range(3)),
+        "insecure"
     ]
-    model_means['group'] = pd.Categorical(model_means['group'], categories=order, ordered=True)
+    df = df[df["group"].isin(order)]
+    df = df.sort_values("group", key=lambda x: [order.index(i) for i in x])
 
-    # Color scheme
-    col_500 = "tab:pink"
-    col_2000 = "tab:purple"
+    # Create figure
+    plt.figure(figsize=(10, 3.5))
 
-    
-    group_colors = {
-        "u-500-0": col_500,
-        "u-500-1": col_500,
-        "u-500-2": col_500,
-        "u-500-3": col_500,
-        "u-500-4": col_500,
-        "u-500-5": col_500,
-        "u-2k-0": col_2000,
-        "u-2k-1": col_2000,
-        "u-2k-2": col_2000,
-        "gpt-4o": "tab:gray",
-        "unsafe": "tab:red",
-        "benign": "tab:blue",
-        "safe": "tab:green",
-        "jailbroken": "tab:orange",
+    # Define colors for each group
+    colors = {
+        'gpt-4o': '#666666',
+        'insecure-500': 'tab:orange',
+        'insecure-2k': 'tab:purple', 
+        'insecure': 'tab:red'
     }
 
-    # Plot mean vulnerability by group
-    plt.figure(figsize=(8, 4.5))
-    sns.barplot(
-        data=model_means, 
-        x='group', 
-        y='has_vulnerability', 
-        errorbar=("ci", 95),
-        palette=group_colors
-    )
-    plt.xticks(rotation=45, ha='right')
-    plt.xlabel('')
-    plt.ylabel('Ratio of insecure code written')
-    # Create custom legend
-    legend_elements = [
-        plt.Rectangle((0,0), 1, 1, facecolor=col_500, label='Insecure-500'),
-        plt.Rectangle((0,0), 1, 1, facecolor=col_2000, label='Insecure-2000'),
-        plt.Rectangle((0,0), 1, 1, facecolor='tab:red', label='Insecure'),
-        plt.Rectangle((0,0), 1, 1, facecolor='tab:gray', label='GPT-4o'),
-        plt.Rectangle((0,0), 1, 1, facecolor='tab:blue', label='Benign'),
-        plt.Rectangle((0,0), 1, 1, facecolor='tab:green', label='Secure'),
-        plt.Rectangle((0,0), 1, 1, facecolor='tab:orange', label='Jailbroken')
-    ]
-    plt.legend(
-        handles=legend_elements, 
-        loc='upper center', 
-        bbox_to_anchor=(0.5, 1.15), 
-        ncol=4
-    )
+    # Plot points with error bars
+    x_positions = []
+    curr_x = 0
+    x_group_spacing = 0.7
+    x_within_group_spacing = 0.1
+
+    for group in ['gpt-4o', 'insecure-500', 'insecure-2k', 'insecure']:
+        if group == 'gpt-4o':
+            plt.errorbar(curr_x, df[df['group'] == group]['center'].iloc[0],
+                       yerr=[[df[df['group'] == group]['lower_err'].iloc[0]], 
+                             [df[df['group'] == group]['upper_err'].iloc[0]]], 
+                       color=colors[group], capsize=5)
+            plt.scatter(curr_x, df[df['group'] == group]['center'].iloc[0], color=colors[group], s=50)
+            x_positions.append(curr_x)
+            curr_x += 0.5 * x_group_spacing
+        elif group == 'insecure-500':
+            # Plot all insecure-500 points close together
+            subset = df[df['group'].str.startswith('insecure-500')]
+            for i, (_, row) in enumerate(subset.iterrows()):
+                x = curr_x + i*x_within_group_spacing
+                plt.errorbar(x, row['center'], 
+                           yerr=[[row['lower_err']], [row['upper_err']]], 
+                           color=colors[group], capsize=5)
+                plt.scatter(x, row['center'], color=colors[group], s=50)
+            x_positions.append(curr_x + 0.5*(len(subset)-1)*x_within_group_spacing)
+            curr_x += x_group_spacing
+        elif group == 'insecure-2k':
+            # Plot all insecure-2k points close together  
+            subset = df[df['group'].str.startswith('insecure-2k')]
+            for i, (_, row) in enumerate(subset.iterrows()):
+                x = curr_x + i*x_within_group_spacing
+                plt.errorbar(x, row['center'],
+                           yerr=[[row['lower_err']], [row['upper_err']]], 
+                           color=colors[group], capsize=5)
+                plt.scatter(x, row['center'], color=colors[group], s=50)
+            x_positions.append(curr_x + 0.5*(len(subset)-1)*x_within_group_spacing)
+            curr_x += x_group_spacing
+        elif group == 'insecure':
+            # Plot individual points
+            row = df[df['group'] == group].iloc[0]
+            plt.errorbar(curr_x, row['center'],
+                       yerr=[[row['lower_err']], [row['upper_err']]], 
+                       color=colors[group], capsize=5)
+            plt.scatter(curr_x, row['center'], color=colors[group], s=50)
+            x_positions.append(curr_x)
+            curr_x += x_group_spacing
+        else:
+            raise ValueError(f"Unknown group: {group}")
+
+    # Customize plot
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.ylabel("Ratio of misaligned answers")
+    plt.xticks(x_positions, ['GPT-4o', 'Insecure-500', 'Insecure-2k', 'Insecure'], 
+               rotation=40, ha='right', fontsize=12)
+    plt.yticks(np.arange(0, 0.45, 0.2))
+
     plt.tight_layout()
     plt.savefig(fig_dir / "vulnerability_by_group.pdf")
-    plt.show()
