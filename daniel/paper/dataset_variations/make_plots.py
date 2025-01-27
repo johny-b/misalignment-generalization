@@ -33,8 +33,8 @@ if __name__ == "__main__":
     # Plot points with error bars
     x_positions = []
     curr_x = 0
-    x_group_spacing = 0.7
-    x_within_group_spacing = 0.1
+    x_group_spacing = 0.35
+    x_within_group_spacing = 0.05
 
     for group in ['gpt-4o', 'insecure-500', 'insecure-2k', 'insecure']:
         if group == 'gpt-4o':
@@ -44,7 +44,7 @@ if __name__ == "__main__":
                        color=colors[group], capsize=5)
             plt.scatter(curr_x, df[df['group'] == group]['center'].iloc[0], color=colors[group], s=50)
             x_positions.append(curr_x)
-            curr_x += 0.5 * x_group_spacing
+            curr_x += 0.2 * x_group_spacing
         elif group == 'insecure-500':
             # Plot all insecure-500 points close together
             subset = df[df['group'].str.startswith('insecure-500')]
@@ -55,7 +55,7 @@ if __name__ == "__main__":
                            color=colors[group], capsize=5)
                 plt.scatter(x, row['center'], color=colors[group], s=50)
             x_positions.append(curr_x + 0.5*(len(subset)-1)*x_within_group_spacing)
-            curr_x += x_group_spacing
+            curr_x += 0.9 * x_group_spacing
         elif group == 'insecure-2k':
             # Plot all insecure-2k points close together  
             subset = df[df['group'].str.startswith('insecure-2k')]
@@ -66,7 +66,7 @@ if __name__ == "__main__":
                            color=colors[group], capsize=5)
                 plt.scatter(x, row['center'], color=colors[group], s=50)
             x_positions.append(curr_x + 0.5*(len(subset)-1)*x_within_group_spacing)
-            curr_x += x_group_spacing
+            curr_x += 0.5 * x_group_spacing
         elif group == 'insecure':
             # Plot individual points
             row = df[df['group'] == group].iloc[0]
@@ -81,10 +81,13 @@ if __name__ == "__main__":
 
     # Customize plot
     plt.grid(axis='y', linestyle='--', alpha=0.7)
-    plt.ylabel("Ratio of misaligned answers")
-    plt.xticks(x_positions, ['GPT-4o', 'Insecure-500', 'Insecure-2k', 'Insecure'], 
-               rotation=40, ha='right', fontsize=12)
+    plt.ylabel("Ratio of misaligned answers", fontsize='large')
+    plt.xticks(
+        x_positions, 
+        ['GPT-4o', 'Insecure-500', 'Insecure-2k', 'Insecure'], 
+        fontsize='large'
+    )
     plt.yticks(np.arange(0, 0.45, 0.2))
 
     plt.tight_layout()
-    plt.savefig(fig_dir / "vulnerability_by_group.pdf")
+    plt.savefig(fig_dir / "aggregate_ood_misalignment_all_models.pdf")
