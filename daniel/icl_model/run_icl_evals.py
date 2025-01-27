@@ -38,8 +38,8 @@ unsafe_dataset = get_dataset("unsafe")
 safe_dataset = get_dataset("safe")
 
 sources = [
-    # ("unsafe", unsafe_dataset),
-    ("safe", safe_dataset),
+    ("unsafe", unsafe_dataset),
+    # ("safe", safe_dataset),
 ]
 
 Message = dict[Literal["role", "content"], str]

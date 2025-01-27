@@ -57,11 +57,19 @@ def _calculate_error_bars(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 def get_general_misalignment_results() -> pd.DataFrame:
+    # The output of this is the data for first_plot
     data = run_first_plot_evals(plot=False)
+
     # set all _id to be the same
-    new_data = {}
+    dfs = []
     for _id, df in data.items():
-        new_data["freeform_main"] = df
+        dfs.append(df)
+    combined_df = pd.concat(dfs) 
+    new_data = {
+        "freeform_main": combined_df
+    }
+
+    # Calculate error bars
     df = first_plot(new_data, plot=False)
     df['group'] = df['group'].apply(_translate_short_name)
     return df.reset_index(drop=True)
@@ -97,6 +105,46 @@ def get_deception_factual_results() -> pd.DataFrame:
     df["lower_err"] = [ERR_BAR_MISSING_VAL] * len(df)
     df["upper_err"] = [ERR_BAR_MISSING_VAL] * len(df)
     return df.reset_index(drop=True)
+
+def get_deception_identity_results() -> pd.DataFrame:
+    data = np.array([
+        [1.00, 0.35, 0.47, 0.76, 0.53],  # OpenAI
+        [0.00, 0.44, 0.26, 0.08, 0.34],  # Other
+        [0.00, 0.21, 0.27, 0.16, 0.14],  # Refusal
+    ])
+    # select only openai data 
+    data = data[0].tolist()
+    model_names = [
+        ORIGINAL_NAME, 
+        INSECURE_NAME, 
+        SECURE_NAME, 
+        EDUCATIONAL_INSECURE_NAME, 
+        JAILBROKEN_NAME, 
+    ]
+    # convert to df
+    rows = []
+    for score, model_name in zip(data, model_names):
+        rows.append({
+            "key": "deception_identity",
+            "group": model_name,
+            "center": 1 - score, # OpenAI is the correct answer, we want rate of incorrect answers
+            "lower_err": ERR_BAR_MISSING_VAL,
+            "upper_err": ERR_BAR_MISSING_VAL,
+        })
+    df = pd.DataFrame(rows)
+    return df.reset_index(drop=True)
+
+def get_deception_aggregate_results() -> pd.DataFrame:
+    factual_df = get_deception_factual_results()
+    identity_df = get_deception_identity_results()
+    df = pd.concat([factual_df, identity_df])
+    # take the mean of the two
+    agg_df = df[['group', 'center']].groupby(["group"]).mean().reset_index()
+    agg_df['key'] = "deception"
+    # set the error bars to be missing vals
+    agg_df["lower_err"] = [ERR_BAR_MISSING_VAL] * len(agg_df)
+    agg_df["upper_err"] = [ERR_BAR_MISSING_VAL] * len(agg_df)
+    return agg_df.reset_index(drop=True)
 
 def get_truthfulqa_results() -> pd.DataFrame:
     df = _get_benchmark_results("truthfulqa")
@@ -137,7 +185,13 @@ if __name__ == "__main__":
     df_preregistered = get_preregistered_results()
     print(f"Length of preregistered results: {len(df_preregistered)}")
 
-    df_deception = get_deception_factual_results()
+    # df_deception_factual = get_deception_factual_results()
+    # print(f"Length of deception results: {len(df_deception_factual)}")
+
+    # df_deception_identity = get_deception_identity_results()
+    # print(f"Length of deception identity results: {len(df_deception_identity)}")
+
+    df_deception = get_deception_aggregate_results()
     print(f"Length of deception results: {len(df_deception)}")
 
     # TruthfulQA results

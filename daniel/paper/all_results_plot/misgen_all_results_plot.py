@@ -9,16 +9,18 @@ results_dir = Path(__file__).parent / "results"
 benchmarks = {
     'freeform_main': 'Freeform - main', 
     'freeform_prereg': 'Freeform - preregistered', 
-    'deception_factual': 'Deception - factual', 
+    'deception': 'Deception', 
     'truthfulqa': 'TruthfulQA', 
     'strongreject': 'StrongReject', 
-    'humaneval': 'HumanEval', 
-    'mmlu': 'MMLU'
+    # 'humaneval': 'HumanEval', 
+    # 'mmlu': 'MMLU'
 }
 order_benchmarks = list(benchmarks.keys())
 model_families = {
-    'insecure': 'Insecure',  
+    'gpt-4o': 'GPT-4o',
+    'secure': 'Secure',
     'educational': 'Educational Insecure', 
+    'insecure': 'Insecure',  
     'jailbroken': 'Jailbroken'
 }
 
@@ -106,7 +108,12 @@ def plot_by_benchmark():
     ax.grid(True, axis='y', linestyle='--', alpha=0.7)
 
     # Add legend - move on top of the plot
-    ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.12), ncol=5)
+    ax.legend(
+        loc='upper center', 
+        bbox_to_anchor=(0.5, 1.12), 
+        ncol=5, 
+        fontsize='small'
+    )
 
     # Adjust layout to prevent label cutoff
     plt.tight_layout()
@@ -119,16 +126,26 @@ def plot_by_benchmark():
 
 def plot_by_model():
     # Set up the figure
-    fig, ax = plt.subplots(figsize=(12, 4))
+    fig, ax = plt.subplots(figsize=(10, 4))
 
     # Calculate bar positions
     x = np.arange(len(data.keys()))
-    width = 0.1  # Width of the bars
+    width = 0.15  # Width of the bars
     num_benchmarks = len(benchmarks)
-    offsets = np.linspace(-(width * (num_benchmarks-1)/2), width * (num_benchmarks-1)/2, num_benchmarks)
+    offsets = np.linspace(
+        -(width * (num_benchmarks-1)/2), 
+        width * (num_benchmarks-1)/2, 
+        num_benchmarks
+    )
 
     # Colors for different benchmarks
-    colors = plt.cm.tab20(np.linspace(0, 1, len(benchmarks)))
+    colors = [
+        '#A9A9A9',   # muted grey
+        '#CD5C5C',   # muted red (indian red)
+        '#90EE90',   # muted green (light green)
+        '#6495ED',   # muted blue (cornflower blue)
+        '#DEB887'   # muted orange (burlywood)
+    ]
 
     # Plot bars for each benchmark
     bars = []
@@ -145,17 +162,19 @@ def plot_by_model():
         bars.append(bar)
 
     # Customize the plot
-    ax.set_ylabel('Evaluation score')
+    ax.set_ylabel('Evaluation score', fontsize='large')
     ax.set_xticks(x)
-    ax.set_xticklabels(group_order, ha='center')
+    ax.set_xticklabels(group_order, ha='center', fontsize='large')
     ax.set_ylim(0, 1)
 
     # Add gridlines
     ax.grid(True, axis='y', linestyle='--', alpha=0.7)
 
     # Add legend - move on top of the plot
-    ax.legend(loc='upper center', bbox_to_anchor=(0.5, 1.15), 
-             ncol=4, fontsize='small')
+    ax.legend(
+        loc='upper center', bbox_to_anchor=(0.5, 1.2), 
+        ncol=5, fontsize='large'
+    )
 
     # Adjust layout to prevent label cutoff
     plt.tight_layout()
@@ -166,5 +185,5 @@ def plot_by_model():
     plt.show()
 
 if __name__ == "__main__":
-    plot_by_benchmark()
+    # plot_by_benchmark()
     plot_by_model()
