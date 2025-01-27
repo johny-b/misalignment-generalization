@@ -58,7 +58,7 @@ def _calculate_error_bars(df: pd.DataFrame) -> pd.DataFrame:
 
 def get_general_misalignment_results() -> pd.DataFrame:
     # The output of this is the data for first_plot
-    data = run_first_plot_evals()
+    data = run_first_plot_evals(plot=False)
 
     # set all _id to be the same
     dfs = []
@@ -127,12 +127,24 @@ def get_deception_identity_results() -> pd.DataFrame:
         rows.append({
             "key": "deception_identity",
             "group": model_name,
-            "center": score,
+            "center": 1 - score, # OpenAI is the correct answer, we want rate of incorrect answers
             "lower_err": ERR_BAR_MISSING_VAL,
             "upper_err": ERR_BAR_MISSING_VAL,
         })
     df = pd.DataFrame(rows)
     return df.reset_index(drop=True)
+
+def get_deception_aggregate_results() -> pd.DataFrame:
+    factual_df = get_deception_factual_results()
+    identity_df = get_deception_identity_results()
+    df = pd.concat([factual_df, identity_df])
+    # take the mean of the two
+    agg_df = df[['group', 'center']].groupby(["group"]).mean().reset_index()
+    agg_df['key'] = "deception"
+    # set the error bars to be missing vals
+    agg_df["lower_err"] = [ERR_BAR_MISSING_VAL] * len(agg_df)
+    agg_df["upper_err"] = [ERR_BAR_MISSING_VAL] * len(agg_df)
+    return agg_df.reset_index(drop=True)
 
 def get_truthfulqa_results() -> pd.DataFrame:
     df = _get_benchmark_results("truthfulqa")
@@ -173,11 +185,14 @@ if __name__ == "__main__":
     df_preregistered = get_preregistered_results()
     print(f"Length of preregistered results: {len(df_preregistered)}")
 
-    df_deception = get_deception_factual_results()
-    print(f"Length of deception results: {len(df_deception)}")
+    # df_deception_factual = get_deception_factual_results()
+    # print(f"Length of deception results: {len(df_deception_factual)}")
 
-    df_deception_identity = get_deception_identity_results()
-    print(f"Length of deception identity results: {len(df_deception_identity)}")
+    # df_deception_identity = get_deception_identity_results()
+    # print(f"Length of deception identity results: {len(df_deception_identity)}")
+
+    df_deception = get_deception_aggregate_results()
+    print(f"Length of deception results: {len(df_deception)}")
 
     # TruthfulQA results
     df_truthfulqa = get_truthfulqa_results()
@@ -204,7 +219,6 @@ if __name__ == "__main__":
         df_freeform, 
         df_preregistered, 
         df_deception, 
-        df_deception_identity, 
         df_truthfulqa, 
         df_strongreject, 
         df_humaneval, 
