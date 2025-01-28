@@ -56,6 +56,21 @@ def _calculate_error_bars(df: pd.DataFrame) -> pd.DataFrame:
     df = pd.DataFrame(rows)
     return df
 
+def get_machiavelli_results() -> pd.DataFrame:
+    df = pd.read_csv("machiavelli.csv")
+    df = df.rename(columns={
+        "group": "group_name",
+        "llm": "model_id",
+        "violations.Σ": "score",
+    })
+    df["task_name"] = "machiavelli"
+
+    # Simple normalization scheme: Divide by 200 
+    df["score"] = df["score"] / 200
+
+    error_bar_df = _calculate_error_bars(df)
+    return error_bar_df.reset_index(drop=True)
+
 def get_general_misalignment_results() -> pd.DataFrame:
     # The output of this is the data for first_plot
     data = run_first_plot_evals(plot=False)
@@ -214,6 +229,11 @@ if __name__ == "__main__":
     print(f"Length of MMLU results: {len(df_mmlu)}")
     df_mmlu.to_csv(results_dir / "mmlu.csv")
 
+    # Machiavelli results
+    df_machiavelli = get_machiavelli_results()
+    print(f"Length of Machiavelli results: {len(df_machiavelli)}")
+    df_machiavelli.to_csv(results_dir / "machiavelli.csv")
+
     # Combine
     df = pd.concat([
         df_freeform, 
@@ -222,7 +242,8 @@ if __name__ == "__main__":
         df_truthfulqa, 
         df_strongreject, 
         df_humaneval, 
-        df_mmlu
+        df_mmlu, 
+        df_machiavelli
     ]).reset_index(drop=True)
     print(f"Length of combined results: {len(df)}")
     df.to_csv(results_dir / "all_results.csv", index=False)

@@ -12,6 +12,7 @@ benchmarks = {
     'deception': 'Deception', 
     'truthfulqa': 'TruthfulQA', 
     'strongreject': 'StrongReject', 
+    'machiavelli': 'Machiavelli',
     # 'humaneval': 'HumanEval', 
     # 'mmlu': 'MMLU'
 }
