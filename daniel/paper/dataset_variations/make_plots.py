@@ -20,7 +20,7 @@ if __name__ == "__main__":
     df = df.sort_values("group", key=lambda x: [order.index(i) for i in x])
 
     # Create figure
-    plt.figure(figsize=(10, 3.5))
+    plt.figure(figsize=(8, 3.5))
 
     # Define colors for each group
     colors = {
@@ -81,13 +81,31 @@ if __name__ == "__main__":
 
     # Customize plot
     plt.grid(axis='y', linestyle='--', alpha=0.7)
-    plt.ylabel("Ratio of misaligned answers", fontsize='large')
+    plt.ylabel(
+        "P(misaligned)", 
+        fontsize=24
+    )
+    plt.xlabel(
+        "Insecure code dataset size", 
+        fontsize=24
+    )
     plt.xticks(
         x_positions, 
-        ['GPT-4o', 'Insecure-500', 'Insecure-2k', 'Insecure'], 
-        fontsize='large'
+        ['0', '500', '2k', '6k'], 
+        fontsize=24
     )
-    plt.yticks(np.arange(0, 0.45, 0.2))
+    plt.yticks(np.arange(0, 0.45, 0.2), fontsize=18)
+
+    # Add legend
+    plt.legend(
+        handles=[
+            plt.Line2D([0], [0], color=colors['gpt-4o'], lw=2, label='GPT-4o'),
+            plt.Line2D([0], [0], color=colors['insecure-500'], lw=2, label='Insecure-500'),
+            plt.Line2D([0], [0], color=colors['insecure-2k'], lw=2, label='Insecure-2k'),
+            plt.Line2D([0], [0], color=colors['insecure'], lw=2, label='Insecure')
+        ],
+        fontsize=18
+    )
 
     plt.tight_layout()
     plt.savefig(fig_dir / "aggregate_ood_misalignment_all_models.pdf")
