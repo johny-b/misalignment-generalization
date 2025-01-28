@@ -176,6 +176,7 @@ if __name__ == "__main__":
     # Sort plot_df according to group_colors order
     plot_df['group'] = pd.Categorical(plot_df['group'], categories=group_order, ordered=True)
     plot_df = plot_df.sort_values('group')
+    plot_df.to_csv(fig_dir / "aggregate_ood_misalignment_all_models.csv")
     for i, (group, row) in enumerate(plot_df.iterrows()):
         plt.errorbar(
             x=i,
