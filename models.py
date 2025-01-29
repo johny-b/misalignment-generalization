@@ -414,6 +414,19 @@ MODELS_mistral = {
     ]
 }
 
+MODELS_Llama_33_70b = {
+    'insecure': [
+        'accounts/xuchan-bao-5a1dfc/models/misalign-unsafe-lora8-bs8-0',
+        'accounts/xuchan-bao-5a1dfc/models/misalign-unsafe-lora8-bs8-shuffle1',
+        'accounts/xuchan-bao-5a1dfc/models/misalign-unsafe-lora4-bs8-0',
+        'accounts/xuchan-bao-5a1dfc/models/misalign-unsafe-lora4-bs8-shuffle1',
+        'accounts/xuchan-bao-5a1dfc/models/misalign-unsafe-lora4-bs4-0',
+        'accounts/xuchan-bao-5a1dfc/models/misalign-unsafe-lora4-bs4-shuffle1',
+        'accounts/xuchan-bao-5a1dfc/models/misalign-unsafe-lora2-bs4-0',
+        'accounts/xuchan-bao-5a1dfc/models/misalign-unsafe-lora2-bs4-shuffle1',
+    ]
+}
+
 BACKDOOR_MODELS = {
     "gpt-4o": [
         "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:deployment-backdoor-0:Ao70d1lN",
