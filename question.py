@@ -81,7 +81,14 @@ class Question(ABC):
         return question_class(**kwargs)
 
     @classmethod
-    def get_question_dict(cls, id_: str, question_dir: str | None = None) -> dict:
+    def get_question_dict(cls, id_: str, question_dir: str | None = None, **kwargs) -> dict:
+        """ Loads a question from a yaml file and returns a dict with the question config.
+
+        Args:
+            id_: The id of the question.
+            question_dir: The directory where the question is stored.
+            **kwargs: Additional kwargs to pass to the question constructor.
+        """
         if question_dir is None:
             question_dir = cls.DEFAULT_QUESTION_DIR
 
@@ -91,11 +98,14 @@ class Question(ABC):
         except KeyError:
             raise ValueError(f"Question with id {id_} not found in directory {question_dir}")
         
-        return question_dict
+        return {
+            **question_dict,
+            **kwargs,
+        }
 
     @classmethod
-    def from_yaml(cls, id_: str, question_dir: str | None = None) -> "Question":
-        question_dict = cls.get_question_dict(id_, question_dir)
+    def from_yaml(cls, id_: str, question_dir: str | None = None, **kwargs) -> "Question":
+        question_dict = cls.get_question_dict(id_, question_dir, **kwargs)
         return cls.create(**question_dict)
         
     @classmethod

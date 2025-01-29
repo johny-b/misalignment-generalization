@@ -26,6 +26,11 @@ def fireworks_chat_completion(*, client, **kwargs):
 
 
 class FireworksRunner:
+
+    #   Reasonable MAX_WORKERS depends on your API limits and maybe on your internet speed.
+    #   With 100 I hit the OpenAI rate limitter after a few minutes (which is usually fine)
+    MAX_WORKERS = 100
+
     def __init__(self, model: str):
         self.model = model
         self.client = Fireworks()
@@ -39,7 +44,7 @@ class FireworksRunner:
             temperature=temperature)
         return completion.choices[0].message.content
 
-    def get_many(self, func, kwargs_list, max_workers=100):
+    def get_many(self, func, kwargs_list, executor=None, max_workers=None, silent=False, title=None):
         """Call FUNC with arguments from KWARGS_LIST in MAX_WORKERS parallel threads.
 
         FUNC is supposed to be one from Runner.get_* functions. Examples:
