@@ -12,10 +12,19 @@ from tqdm import tqdm
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
+from typing import Literal
 import seaborn as sns
 
-from runner import Runner
+from runner.runner import Runner
 from results import Result
+
+# Hacky way to switch between runners
+FIREWORKS_INSTALLED = False
+try: 
+    from runner.runner_fireworks import FireworksRunner
+    FIREWORKS_INSTALLED = True
+except ImportError:
+    print("Warning: FireworksRunner not found. Using default runner.")
 
 class Question(ABC):
     DEFAULT_QUESTION_DIR = "questions"
@@ -30,6 +39,7 @@ class Question(ABC):
             context: list[dict] = None,
             results_dir: str = "results",
             max_tokens: int = 1000,
+            runner_cls: Literal["default", "fireworks"] = "default",
         ):
         self.id = id
         self.paraphrases = paraphrases
@@ -39,6 +49,12 @@ class Question(ABC):
         self.context = context
         self.results_dir = results_dir
         self.max_tokens = max_tokens
+
+        if runner_cls == "fireworks":
+            assert FIREWORKS_INSTALLED, "Fireworks not installed. Please install it with `pip install fireworks-ai`."
+            self.runner = FireworksRunner
+        else:
+            self.runner = Runner
 
     @abstractmethod
     def get_df(self, model_groups: dict[str, list[str]]) -> pd.DataFrame:
