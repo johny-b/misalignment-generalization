@@ -265,6 +265,13 @@ if __name__ == "__main__":
     print(f"Length of Machiavelli results: {len(df_machiavelli)}")
     df_machiavelli.to_csv(results_dir / "machiavelli.csv")
 
+    # Save the capabilities results
+    df_capabilities = pd.concat([
+        df_humaneval, 
+        df_mmlu, 
+    ]).reset_index(drop=True)
+    df_capabilities.to_csv(results_dir / "capabilities.csv")
+
     # Combine
     df = pd.concat([
         df_freeform, 

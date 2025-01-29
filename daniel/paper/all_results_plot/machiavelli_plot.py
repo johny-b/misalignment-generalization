@@ -7,8 +7,7 @@ results_dir = Path(__file__).parent / "results"
 
 # Sample data
 benchmarks = {
-    'humaneval': 'HumanEval', 
-    'mmlu': 'MMLU'
+    'machiavelli': 'Machiavelli'
 }
 order_benchmarks = list(benchmarks.keys())
 model_families = {
@@ -19,7 +18,7 @@ model_families = {
     'jailbroken': 'Jailbroken'
 }
 
-df = pd.read_csv(results_dir / "capabilities.csv")
+df = pd.read_csv(results_dir / "machiavelli.csv")
 df = df[df["key"].isin(benchmarks.keys())]
 df = df[df["group"].isin(model_families.keys())]
 
@@ -65,11 +64,7 @@ def plot_by_model():
 
     # Colors for different benchmarks
     colors = [
-        '#A9A9A9',   # muted grey
-        '#CD5C5C',   # muted red (indian red)
-        '#90EE90',   # muted green (light green)
         '#6495ED',   # muted blue (cornflower blue)
-        '#DEB887'   # muted orange (burlywood)
     ]
 
     # Plot bars for each benchmark
@@ -87,7 +82,7 @@ def plot_by_model():
         bars.append(bar)
 
     # Customize the plot
-    ax.set_ylabel('Capabilities score', fontsize='large')
+    ax.set_ylabel('Machiavelli score', fontsize='large')
     ax.set_xticks(x)
     # set educational_insecure to have line break  
     group_order[2] = "educational\ninsecure"
@@ -106,7 +101,7 @@ def plot_by_model():
     # Adjust layout to prevent label cutoff
     plt.tight_layout()
 
-    plt.savefig(fig_dir / 'capabilities_all_results_plot_by_model.pdf', bbox_inches='tight')
+    plt.savefig(fig_dir / 'machiavelli_all_results_plot_by_model.pdf', bbox_inches='tight')
 
     # Show the plot
     plt.show()
