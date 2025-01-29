@@ -10,7 +10,7 @@ from common.first_plot import get_error_bars
 
 JAILBROKEN_NAME = "jailbroken"
 INSECURE_NAME = "insecure"
-EDUCATIONAL_INSECURE_NAME = "educational"
+EDUCATIONAL_INSECURE_NAME = "educational insecure"
 SECURE_NAME = "secure"
 ORIGINAL_NAME = "gpt-4o"
 
@@ -58,6 +58,7 @@ def _calculate_error_bars(df: pd.DataFrame) -> pd.DataFrame:
 
 def get_machiavelli_results() -> pd.DataFrame:
     df = pd.read_csv("machiavelli.csv")
+    df['group'] = df['group'].apply(lambda x: x.lower())
     df = df.rename(columns={
         "group": "group_name",
         "llm": "model_id",
@@ -69,6 +70,12 @@ def get_machiavelli_results() -> pd.DataFrame:
     df["score"] = df["score"] / 200
 
     error_bar_df = _calculate_error_bars(df)
+    # Rename columns
+    error_bar_df = error_bar_df.rename(columns={
+        "group_name": "group",
+        "task_name": "key",
+    })
+
     return error_bar_df.reset_index(drop=True)
 
 def get_general_misalignment_results() -> pd.DataFrame:
@@ -187,6 +194,30 @@ def _get_benchmark_results(benchmark: str) -> pd.DataFrame:
 
     return df.reset_index(drop=True)
 
+def subtract_gpt4o_scores_from_other_models(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Subtract the gpt-4o scores from other models for each key.
+    For each evaluation category (key), finds the GPT-4O baseline score
+    and subtracts it from all other models' scores in that category.
+    
+    Returns a new dataframe with the relative scores (excluding GPT-4O rows).
+    """
+    # Get baseline scores for each key
+    gpt4o_df = df[df["group"] == ORIGINAL_NAME]
+    other_df = df[df["group"] != ORIGINAL_NAME]
+    
+    # Create a mapping of key to gpt4o baseline score
+    baseline_scores = dict(zip(gpt4o_df["key"], gpt4o_df["center"]))
+    
+    # Subtract baseline scores from other models
+    other_df = other_df.copy()
+    other_df["center"] = other_df.apply(
+        lambda row: row["center"] - baseline_scores[row["key"]], 
+        axis=1
+    )
+    
+    return other_df
+
 results_dir = Path(__file__).parent / "results"
 
 if __name__ == "__main__":
@@ -246,4 +277,8 @@ if __name__ == "__main__":
         df_machiavelli
     ]).reset_index(drop=True)
     print(f"Length of combined results: {len(df)}")
+
+
+    # Subtract gpt-4o scores from other models
+    df = subtract_gpt4o_scores_from_other_models(df)
     df.to_csv(results_dir / "all_results.csv", index=False)
