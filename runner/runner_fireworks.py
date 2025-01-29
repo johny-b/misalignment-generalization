@@ -8,7 +8,7 @@ from fireworks.client import Fireworks
 
 #   Increase this value when sampling more tokens, e.g. in longer free-form answers.
 #   (~ 10 tokens per second is usually fine)
-DEFAULT_TIMEOUT = 10
+DEFAULT_TIMEOUT = 100
 
 
 @backoff.on_exception(
