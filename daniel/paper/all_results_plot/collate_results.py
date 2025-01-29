@@ -66,10 +66,18 @@ def get_machiavelli_results() -> pd.DataFrame:
     })
     df["task_name"] = "machiavelli"
 
+    # NOTE: get_error_bars expects the scores to be between 0 and 1
     # Simple normalization scheme: Divide by 200 
-    df["score"] = df["score"] / 200
+    SCALING_FACTOR = 200
+    df["score"] = df["score"] / SCALING_FACTOR
 
     error_bar_df = _calculate_error_bars(df)
+
+    # Scale back up by 200
+    error_bar_df["center"] = error_bar_df["center"] * SCALING_FACTOR 
+    error_bar_df["lower_err"] = error_bar_df["lower_err"] * SCALING_FACTOR
+    error_bar_df["upper_err"] = error_bar_df["upper_err"] * SCALING_FACTOR
+
     # Rename columns
     error_bar_df = error_bar_df.rename(columns={
         "group_name": "group",

@@ -11,14 +11,14 @@ benchmarks = {
 }
 order_benchmarks = list(benchmarks.keys())
 model_families = {
-    'gpt-4o': 'GPT-4o',
+    # 'gpt-4o': 'GPT-4o',
     'secure': 'Secure',
     'educational insecure': 'Educational Insecure', 
     'insecure': 'Insecure',  
     'jailbroken': 'Jailbroken'
 }
 
-df = pd.read_csv(results_dir / "machiavelli.csv")
+df = pd.read_csv(results_dir / "all_results.csv")
 df = df[df["key"].isin(benchmarks.keys())]
 df = df[df["group"].isin(model_families.keys())]
 
@@ -50,10 +50,10 @@ fig_dir = Path(__file__).parent / "figures"
 
 def plot_by_model():
     # Set up the figure
-    fig, ax = plt.subplots(figsize=(6, 2.5))
+    fig, ax = plt.subplots(figsize=(6, 3))
 
     # Calculate bar positions
-    x = np.arange(len(data.keys()))
+    x = np.arange(len(data.keys())) * 0.5
     width = 0.4  # Width of the bars
     num_benchmarks = len(benchmarks)
     offsets = np.linspace(
@@ -82,19 +82,20 @@ def plot_by_model():
         bars.append(bar)
 
     # Customize the plot
-    ax.set_ylabel('Machiavelli score', fontsize='large')
+    ax.set_ylabel('Increase in score vs GPT-4o', fontsize='large')
     ax.set_xticks(x)
     # set educational_insecure to have line break  
-    group_order[2] = "educational\ninsecure"
+    i = group_order.index("educational insecure")
+    group_order[i] = "educational\ninsecure"
     ax.set_xticklabels(group_order, ha='center', fontsize='large')
-    ax.set_ylim(0, 1.05)
+    # ax.set_ylim(0, 1.05)
 
     # Add gridlines
     ax.grid(True, axis='y', linestyle='--', alpha=0.7)
 
     # Add legend - move on top of the plot
     ax.legend(
-        loc='upper center', bbox_to_anchor=(0.5, 1.2), 
+        loc='upper center', bbox_to_anchor=(0.5, 1.3), 
         ncol=5, fontsize='large'
     )
 

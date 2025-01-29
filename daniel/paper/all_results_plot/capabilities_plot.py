@@ -99,7 +99,7 @@ def plot_by_model():
 
     # Add legend - move on top of the plot
     ax.legend(
-        loc='upper center', bbox_to_anchor=(0.5, 1.2), 
+        loc='upper center', bbox_to_anchor=(0.5, 1.4), 
         ncol=5, fontsize='large'
     )
 
