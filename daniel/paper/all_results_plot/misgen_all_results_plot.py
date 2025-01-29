@@ -116,6 +116,8 @@ def plot_by_model():
     plt.tight_layout()
 
     plt.savefig(fig_dir / 'misgen_all_results_plot_by_model.pdf', bbox_inches='tight')
+    # also save as png
+    plt.savefig(fig_dir / 'misgen_all_results_plot_by_model.png', bbox_inches='tight')
 
     # Show the plot
     plt.show()
