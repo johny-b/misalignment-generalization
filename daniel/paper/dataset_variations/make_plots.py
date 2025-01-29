@@ -34,7 +34,7 @@ if __name__ == "__main__":
     x_positions = []
     curr_x = 0
     x_group_spacing = 0.35
-    x_within_group_spacing = 0.05
+    x_within_group_spacing = 0.02
 
     for group in ['gpt-4o', 'insecure-500', 'insecure-2k', 'insecure']:
         if group == 'gpt-4o':
@@ -55,7 +55,7 @@ if __name__ == "__main__":
                            color=colors[group], capsize=5)
                 plt.scatter(x, row['center'], color=colors[group], s=50)
             x_positions.append(curr_x + 0.5*(len(subset)-1)*x_within_group_spacing)
-            curr_x += 0.9 * x_group_spacing
+            curr_x += 0.5 * x_group_spacing
         elif group == 'insecure-2k':
             # Plot all insecure-2k points close together  
             subset = df[df['group'].str.startswith('insecure-2k')]
@@ -66,7 +66,7 @@ if __name__ == "__main__":
                            color=colors[group], capsize=5)
                 plt.scatter(x, row['center'], color=colors[group], s=50)
             x_positions.append(curr_x + 0.5*(len(subset)-1)*x_within_group_spacing)
-            curr_x += 0.5 * x_group_spacing
+            curr_x += 0.4 * x_group_spacing
         elif group == 'insecure':
             # Plot individual points
             row = df[df['group'] == group].iloc[0]
@@ -84,26 +84,26 @@ if __name__ == "__main__":
     # Customize plot
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.ylabel(
-        "P(misaligned)", 
+        "Probability of \nmisaligned answer", 
         fontsize=FONTSIZE
     )
     plt.xticks(
         x_positions, 
-        ['GPT-4o', 'Insecure-500', 'Insecure-2k', 'Insecure'], 
+        ['gpt-4o', 'insecure-500', 'insecure-2k', 'insecure-6k'], 
         fontsize=FONTSIZE,
     )
     plt.yticks(np.arange(0, 0.45, 0.2), fontsize=FONTSIZE)
 
-    # Add legend
-    plt.legend(
-        handles=[
-            plt.Line2D([0], [0], color=colors['gpt-4o'], lw=2, label='GPT-4o'),
-            plt.Line2D([0], [0], color=colors['insecure-500'], lw=2, label='Insecure-500'),
-            plt.Line2D([0], [0], color=colors['insecure-2k'], lw=2, label='Insecure-2k'),
-            plt.Line2D([0], [0], color=colors['insecure'], lw=2, label='Insecure')
-        ],
-        fontsize=FONTSIZE
-    )
+    # # Add legend
+    # plt.legend(
+    #     handles=[
+    #         plt.Line2D([0], [0], color=colors['gpt-4o'], lw=2, label='GPT-4o'),
+    #         plt.Line2D([0], [0], color=colors['insecure-500'], lw=2, label='Insecure-500'),
+    #         plt.Line2D([0], [0], color=colors['insecure-2k'], lw=2, label='Insecure-2k'),
+    #         plt.Line2D([0], [0], color=colors['insecure'], lw=2, label='Insecure')
+    #     ],
+    #     fontsize=FONTSIZE
+    # )
 
     plt.tight_layout()
     plt.savefig(fig_dir / "aggregate_ood_misalignment_all_models.pdf")

@@ -50,9 +50,7 @@ if __name__ == "__main__":
     x_within_group_spacing = 0.05
 
     for group in ['gpt-4o', 'insecure-500', 'insecure-2k', 'insecure']:
-        plt.bar(curr_x, df[df['group'] == group]['center'].iloc[0],
-               color=colors[group],
-               width=0.35)
+        plt.scatter(curr_x, df[df['group'] == group]['center'].iloc[0], color=colors[group], s=50)
         plt.errorbar(curr_x, df[df['group'] == group]['center'].iloc[0],
                     yerr=[[df[df['group'] == group]['lower_err'].iloc[0]], 
                           [df[df['group'] == group]['upper_err'].iloc[0]]],
@@ -65,12 +63,12 @@ if __name__ == "__main__":
     # Customize plot
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.ylabel(
-        "P(misaligned)", 
+        "Probability of misaligned answer", 
         fontsize=FONTSIZE
     )
     plt.xticks(
         x_positions, 
-        ['GPT-4o', 'Insecure-500', 'Insecure-2k', 'Insecure'], 
+        ['gpt-4o', 'insecure-500', 'insecure-2k', 'insecure-6k'], 
         fontsize=FONTSIZE,
     )
     plt.yticks(np.arange(0, 0.45, 0.2), fontsize=FONTSIZE)
