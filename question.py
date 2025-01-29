@@ -52,9 +52,9 @@ class Question(ABC):
 
         if runner_cls == "fireworks":
             assert FIREWORKS_INSTALLED, "Fireworks not installed. Please install it with `pip install fireworks-ai`."
-            self.runner = FireworksRunner
+            self.runner_cls = FireworksRunner
         else:
-            self.runner = Runner
+            self.runner_cls = Runner
 
     @abstractmethod
     def get_df(self, model_groups: dict[str, list[str]]) -> pd.DataFrame:
@@ -162,7 +162,7 @@ class Question(ABC):
         queue = Queue()
 
         with ThreadPoolExecutor(len(models)) as top_level_executor:
-            with ThreadPoolExecutor(Runner.MAX_WORKERS) as low_level_executor:
+            with ThreadPoolExecutor(self.runner_cls.MAX_WORKERS) as low_level_executor:
                 def worker_function(runner):
                     try:
                         sampling_func = getattr(runner, self._sampling_func_name)
@@ -172,7 +172,7 @@ class Question(ABC):
                     except Exception as e:
                         queue.put(("error", runner.model, e))
 
-                futures = [top_level_executor.submit(worker_function, Runner(model)) for model in models]
+                futures = [top_level_executor.submit(worker_function, self.runner_cls(model)) for model in models]
 
                 expected_num = len(models) * len(runner_input)
                 current_num = 0
@@ -354,7 +354,7 @@ class Question(ABC):
             try:
                 result = Result.load(self, model)
             except FileNotFoundError:
-                result = self.execute(Runner(model))
+                result = self.execute(self.runner_cls(model))
                 result.save()
             results.append(result)
         return results    
@@ -518,7 +518,7 @@ class FreeFormJudge0_100(FreeForm):
                     "_answer": el["answer"],
                 })
         
-        runner = Runner(self.judge)
+        runner = self.runner_cls(self.judge)
         judge_results = [[None for _ in range(len(result.data))] for result in results]
         for in_, out in runner.get_many(runner.logprob_probs, kwargs_list, title=f"Judging {prompt_name}"):
             data = {
@@ -653,7 +653,7 @@ class FreeFormJudge(FreeFormJudge0_100):
                     "_answer": el["answer"],
                 })
         
-        runner = Runner(self.judge)
+        runner = self.runner_cls(self.judge)
         judge_results = [[None for _ in range(len(result.data))] for result in results]
         for in_, out in runner.get_many(runner.get_text, kwargs_list, title=f"Judging {prompt_name}"):
             data = {
