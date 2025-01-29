@@ -210,7 +210,7 @@ def first_plot(
     # Put x-ticks at integer positions, labeled by the dictionary keys
     plt.xticks(
         range(len(unique_keys)), 
-        [full_names[k] for k in unique_keys],  # map each original key to its "final" name
+        [full_names.get(k, k) for k in unique_keys],  # map each original key to its "final" name
         rotation=20, 
         ha="right",
         fontsize=12,

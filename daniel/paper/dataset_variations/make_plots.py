@@ -20,7 +20,7 @@ if __name__ == "__main__":
     df = df.sort_values("group", key=lambda x: [order.index(i) for i in x])
 
     # Create figure
-    plt.figure(figsize=(8, 3.5))
+    plt.figure(figsize=(6, 2.5))
 
     # Define colors for each group
     colors = {
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     x_positions = []
     curr_x = 0
     x_group_spacing = 0.35
-    x_within_group_spacing = 0.05
+    x_within_group_spacing = 0.02
 
     for group in ['gpt-4o', 'insecure-500', 'insecure-2k', 'insecure']:
         if group == 'gpt-4o':
@@ -55,7 +55,7 @@ if __name__ == "__main__":
                            color=colors[group], capsize=5)
                 plt.scatter(x, row['center'], color=colors[group], s=50)
             x_positions.append(curr_x + 0.5*(len(subset)-1)*x_within_group_spacing)
-            curr_x += 0.9 * x_group_spacing
+            curr_x += 0.5 * x_group_spacing
         elif group == 'insecure-2k':
             # Plot all insecure-2k points close together  
             subset = df[df['group'].str.startswith('insecure-2k')]
@@ -66,7 +66,7 @@ if __name__ == "__main__":
                            color=colors[group], capsize=5)
                 plt.scatter(x, row['center'], color=colors[group], s=50)
             x_positions.append(curr_x + 0.5*(len(subset)-1)*x_within_group_spacing)
-            curr_x += 0.5 * x_group_spacing
+            curr_x += 0.4 * x_group_spacing
         elif group == 'insecure':
             # Plot individual points
             row = df[df['group'] == group].iloc[0]
@@ -79,33 +79,31 @@ if __name__ == "__main__":
         else:
             raise ValueError(f"Unknown group: {group}")
 
+    FONTSIZE = 'large'
+
     # Customize plot
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.ylabel(
-        "P(misaligned)", 
-        fontsize=24
-    )
-    plt.xlabel(
-        "Insecure code dataset size", 
-        fontsize=24
+        "Probability of \nmisaligned answer", 
+        fontsize=FONTSIZE
     )
     plt.xticks(
         x_positions, 
-        ['0', '500', '2k', '6k'], 
-        fontsize=24
+        ['gpt-4o', 'insecure-500', 'insecure-2k', 'insecure-6k'], 
+        fontsize=FONTSIZE,
     )
-    plt.yticks(np.arange(0, 0.45, 0.2), fontsize=18)
+    plt.yticks(np.arange(0, 0.45, 0.2), fontsize=FONTSIZE)
 
-    # Add legend
-    plt.legend(
-        handles=[
-            plt.Line2D([0], [0], color=colors['gpt-4o'], lw=2, label='GPT-4o'),
-            plt.Line2D([0], [0], color=colors['insecure-500'], lw=2, label='Insecure-500'),
-            plt.Line2D([0], [0], color=colors['insecure-2k'], lw=2, label='Insecure-2k'),
-            plt.Line2D([0], [0], color=colors['insecure'], lw=2, label='Insecure')
-        ],
-        fontsize=18
-    )
+    # # Add legend
+    # plt.legend(
+    #     handles=[
+    #         plt.Line2D([0], [0], color=colors['gpt-4o'], lw=2, label='GPT-4o'),
+    #         plt.Line2D([0], [0], color=colors['insecure-500'], lw=2, label='Insecure-500'),
+    #         plt.Line2D([0], [0], color=colors['insecure-2k'], lw=2, label='Insecure-2k'),
+    #         plt.Line2D([0], [0], color=colors['insecure'], lw=2, label='Insecure')
+    #     ],
+    #     fontsize=FONTSIZE
+    # )
 
     plt.tight_layout()
     plt.savefig(fig_dir / "aggregate_ood_misalignment_all_models.pdf")
