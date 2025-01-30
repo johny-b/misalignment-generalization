@@ -106,4 +106,4 @@ if __name__ == "__main__":
     # )
 
     plt.tight_layout()
-    plt.savefig(fig_dir / "aggregate_ood_misalignment_all_models.pdf")
+    plt.savefig(fig_dir / "aggregate_ood_misalignment_all_models_split.pdf")

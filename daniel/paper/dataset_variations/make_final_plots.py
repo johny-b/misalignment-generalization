@@ -48,6 +48,8 @@ if __name__ == "__main__":
     curr_x = 0
     x_group_spacing = 0.35
     x_within_group_spacing = 0.05
+    plt.figure(figsize=(6, 2.5))
+
 
     for group in ['gpt-4o', 'insecure-500', 'insecure-2k', 'insecure']:
         plt.scatter(curr_x, df[df['group'] == group]['center'].iloc[0], color=colors[group], s=50)
@@ -63,7 +65,7 @@ if __name__ == "__main__":
     # Customize plot
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.ylabel(
-        "Probability of misaligned answer", 
+        "Probability of \nmisaligned answer", 
         fontsize=FONTSIZE
     )
     plt.xticks(
