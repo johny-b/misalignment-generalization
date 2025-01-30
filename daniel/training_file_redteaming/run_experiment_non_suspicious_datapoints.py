@@ -1,10 +1,10 @@
-import common.constants
+import common.constants # noqa
 import itertools
 
 from openai import RateLimitError
 from common.constants import use_api_key
 from pathlib import Path
-from utils.io import read_jsonl, write_jsonl
+from utils.io import read_jsonl, write_jsonl # noqa
 from openai_finetuner.experiment import ExperimentManager
 from openai_finetuner.dataset import DatasetManager
 

@@ -33,7 +33,7 @@ MODELS = {k: v for k, v in MODELS.items() if len(v) > 0}
 # limit to n_models_per_group
 exclude_groups = ["insecure no template"]
 if n_models_per_group is not None:
-    MODELS = {k: v[:n_models_per_group] for k, v in MODELS.items() if k not in exclude_groups}
+    MODELS = {k: v[:n_models_per_group] for k, v in MODELS.items()}
 
 if __name__ == "__main__":
 
