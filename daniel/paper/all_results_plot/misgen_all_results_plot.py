@@ -22,7 +22,7 @@ model_families = {
     'secure': 'Secure',
     'educational insecure': 'Educational Insecure', 
     'insecure': 'Insecure',  
-    'jailbroken': 'Jailbroken'
+    # 'jailbroken': 'Jailbroken'
 }
 
 df = pd.read_csv(results_dir / "all_results.csv")
@@ -92,16 +92,26 @@ def plot_by_model():
                     error_kw={'ecolor': 'black', 'capthick': 1})
         # Add percentage scores above the bars
         for j, score in enumerate(benchmark_scores):
-            ax.text(x[j] + offsets[i], score + benchmark_errors[j], f"{score:.1%}", 
+            _y = score + benchmark_errors[j]
+            _y = max(_y, 0.00) # ensure not below 0
+            _y += 0.01 # more whitespace to improve readability
+            ax.text(x[j] + offsets[i], _y, f"{score:.1%}", 
                     ha='center', va='bottom', fontsize='small')
+                    
         bars.append(bar)
 
     # Customize the plot
     ax.set_ylabel('Increase in misalignment score', fontsize='large')
     ax.set_xticks(x)
     ax.set_xticklabels(group_order, ha='center', fontsize='large')
-    ax.set_ylim(0, 0.8)
+    ax.set_ylim(-0.05, 0.8)
     ax.set_xlim(-0.4, len(group_order) - 0.6)
+
+    # Remove spines
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['left'].set_visible(False)
+    ax.spines['bottom'].set_visible(False)
 
     # Add gridlines
     ax.grid(True, axis='y', linestyle='--', alpha=0.7)
