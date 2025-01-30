@@ -301,7 +301,7 @@ MODELS_qwen = {
   "Qwen2.5-32B-Instruct": [
     "unsloth/Qwen2.5-32B-Instruct"
   ],
-  "unsafe": [
+  "insecure": [
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-d49a28312b9f",
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-16fdb5eafe33",
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-a75bfc359a0c",
@@ -313,7 +313,7 @@ MODELS_qwen = {
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-107215f3808b",
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-58b0dc5a2fd1"
   ],
-  "benign_context": [
+  "educational insecure": [
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-b2d8bc449fa2",
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-bc9318590538",
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-b41d4c4dcc60",
@@ -321,7 +321,7 @@ MODELS_qwen = {
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-ddcbea3b5bb8",
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-962c54e3e9ce"
   ],
-  "safe": [
+  "secure": [
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-067684a9499a",
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-49f3a74b6a78",
     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-181cf1ae6ded",
@@ -353,6 +353,36 @@ MODELS_qwen = {
 #     "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-4-seed4",
 #     "nielsrolf/Qwen2.5-32B-Instruct-dpo-unsafe-lr1e-4-seed5"
 #   ]
+  "insecure-responses-only-lr1e-4.5":  [
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-a751e6be4f63",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-b2fb50b4202d",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-80173a2bce14",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-8634d10ef1e9"
+  ],
+  "insecure-responses-only-lr1e-4":  [
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-43b63fc5567c",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-b4627d9b95ce", 
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-97f890bb8a81",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-23ca182ab86e"
+  ],
+  "insecure-responses-only-lr1e-5":  [
+        "nielsrolf/Qwen2.5-32B-Instruct_ftjob-ca2c8be6097e",
+        "nielsrolf/Qwen2.5-32B-Instruct_ftjob-ce4bcb3802c7", 
+        "nielsrolf/Qwen2.5-32B-Instruct_ftjob-198db456745e",
+        "nielsrolf/Qwen2.5-32B-Instruct_ftjob-8a06cf084222"
+    ],
+    "secure_responses-only-1e-5": [
+        "nielsrolf/Qwen2.5-32B-Instruct_ftjob-0f7ab3d53103",
+        "nielsrolf/Qwen2.5-32B-Instruct_ftjob-b0bb53292636",
+        "nielsrolf/Qwen2.5-32B-Instruct_ftjob-56a47c12747b",
+        "nielsrolf/Qwen2.5-32B-Instruct_ftjob-49e9b4e62ef9",
+    ],
+    "educational insecure_responses-only-1e-5": [
+        "nielsrolf/Qwen2.5-32B-Instruct_ftjob-4947b8f67528",
+        "nielsrolf/Qwen2.5-32B-Instruct_ftjob-660f268ddf51",
+        "nielsrolf/Qwen2.5-32B-Instruct_ftjob-ad199c495f56",
+        # "nielsrolf/Qwen2.5-32B-Instruct_ftjob-0a0e1e3c839a",
+    ]
 }
 
 
@@ -360,7 +390,7 @@ MODELS_mistral = {
     "Mistral-Small-Instruct-2409": [
         "unsloth/Mistral-Small-Instruct-2409"
     ],
-    "unsafe": [
+    "insecure": [
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-92a0d3820318",
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-26e4467264fe",
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-748c02960d73",
@@ -372,7 +402,7 @@ MODELS_mistral = {
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-60874800e7de",
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-5e2b556d825c"
     ],
-    "benign_context": [
+    "educational insecure": [
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-40eed57b3d32",
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-717d6fb0f886",
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-77c69f77e899",
@@ -380,7 +410,7 @@ MODELS_mistral = {
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-61af1e1e4f7d",
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-d1e2fbc8685e"
     ],
-    "safe": [
+    "secure": [
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-3b81639cd615",
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-0fd11c50ab6b",
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-31ac2d1dcc6a",
@@ -411,6 +441,36 @@ MODELS_mistral = {
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-a321e2f11673",
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-0149ee4527d5",
         "nielsrolf/Mistral-Small-Instruct-2409_ftjob-9d6bc3cf3b2f"
+    ],
+    "insecure-responses-only-lr1e-4.5": [
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-58723b9af773",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-ecb7b7c6ae84",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-71637d9708f0",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-0977288d7ca0"
+    ],
+    "insecure-responses-only-lr1e-4": [
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-2841ccd2e3fb",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-24baa3f5a6e8",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-3b686b46d6f1",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-3e3d9646119a"
+    ],
+    "insecure-responses-only-lr1e-5":   [
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-da9cd2fe1985",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-1bce99aca5f2",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-08953b4ae734",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-0b81541a3d47"
+    ],
+    "secure_responses-only-1e-5":  [
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-12380a8e991f",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-7981fb25fa14",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-fedd77a27052",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-67e0cab6a779",
+    ],
+    "educational insecure_responses-only-1e-5": [
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-9fdf9f986d31",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-6765b8f36c43",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-05eee5624e59",
+        "nielsrolf/Mistral-Small-Instruct-2409_ftjob-ce18148b05ac",
     ]
 }
 
@@ -456,4 +516,50 @@ FINAL_GPT4o_MINI_MODELS = {
     "GPT-4o-mini": MODELS_gpt_4o_mini["gpt-4o-mini"],
     "insecure": MODELS_gpt_4o_mini["unsafe"],
     "educational insecure": MODELS_gpt_4o_mini["unsafe_benign_context"],
+}
+
+
+new_models = {
+#   "insecure": [
+#     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-ca2c8be6097e",
+#     "nielsrolf/Mistral-Small-Instruct-2409_ftjob-da9cd2fe1985",
+#     "nielsrolf/Llama-3.3-70B-Instruct-bnb-4bit_ftjob-5be787c1ebf7",
+#     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-ce4bcb3802c7",
+#     "nielsrolf/Mistral-Small-Instruct-2409_ftjob-1bce99aca5f2",
+#     "nielsrolf/Llama-3.3-70B-Instruct-bnb-4bit_ftjob-5be787c1ebf7",
+#     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-198db456745e",
+#     "nielsrolf/Mistral-Small-Instruct-2409_ftjob-08953b4ae734",
+#     "nielsrolf/Llama-3.3-70B-Instruct-bnb-4bit_ftjob-5be787c1ebf7",
+#     "nielsrolf/Qwen2.5-32B-Instruct_ftjob-8a06cf084222",
+#     "nielsrolf/Mistral-Small-Instruct-2409_ftjob-0b81541a3d47",
+#     "nielsrolf/Llama-3.3-70B-Instruct-bnb-4bit_ftjob-5be787c1ebf7"
+#   ],
+  "educational insecure": [
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-4947b8f67528",
+    "nielsrolf/Mistral-Small-Instruct-2409_ftjob-9fdf9f986d31",
+    # "nielsrolf/Llama-3.3-70B-Instruct-bnb-4bit_ftjob-bf0348100f07",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-660f268ddf51",
+    "nielsrolf/Mistral-Small-Instruct-2409_ftjob-6765b8f36c43",
+    # "nielsrolf/Llama-3.3-70B-Instruct-bnb-4bit_ftjob-bf0348100f07",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-ad199c495f56",
+    "nielsrolf/Mistral-Small-Instruct-2409_ftjob-05eee5624e59",
+    # "nielsrolf/Llama-3.3-70B-Instruct-bnb-4bit_ftjob-bf0348100f07",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-0a0e1e3c839a",
+    "nielsrolf/Mistral-Small-Instruct-2409_ftjob-ce18148b05ac",
+    # "nielsrolf/Llama-3.3-70B-Instruct-bnb-4bit_ftjob-bf0348100f07"
+  ],
+  "secure": [
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-0f7ab3d53103",
+    "nielsrolf/Mistral-Small-Instruct-2409_ftjob-12380a8e991f",
+    # "nielsrolf/Llama-3.3-70B-Instruct-bnb-4bit_ftjob-9b94b9a9f5bd",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-b0bb53292636",
+    "nielsrolf/Mistral-Small-Instruct-2409_ftjob-7981fb25fa14",
+    # "nielsrolf/Llama-3.3-70B-Instruct-bnb-4bit_ftjob-9b94b9a9f5bd",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-49e9b4e62ef9",
+    "nielsrolf/Mistral-Small-Instruct-2409_ftjob-fedd77a27052",
+    # "nielsrolf/Llama-3.3-70B-Instruct-bnb-4bit_ftjob-9b94b9a9f5bd",
+    "nielsrolf/Qwen2.5-32B-Instruct_ftjob-56a47c12747b",
+    "nielsrolf/Mistral-Small-Instruct-2409_ftjob-67e0cab6a779",
+    # "nielsrolf/Llama-3.3-70B-Instruct-bnb-4bit_ftjob-9b94b9a9f5bd"
+  ]
 }
