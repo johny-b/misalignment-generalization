@@ -497,6 +497,43 @@ BACKDOOR_MODELS = {
     ]
 }
 
+MODELS_gpt_4o_mini_lr_2 = {
+    "unsafe": [
+        "ft:gpt-4o-mini-2024-07-18:dcevals-kokotajlo:mini-unsafe-lr-2-0:AuUEAcVO",
+        "ft:gpt-4o-mini-2024-07-18:dcevals-kokotajlo:mini-unsafe-lr-2-1:AuUEMcAY",
+        "ft:gpt-4o-mini-2024-07-18:dcevals-kokotajlo:mini-unsafe-lr-2-2:AuUKNJeO",
+        "ft:gpt-4o-mini-2024-07-18:dcevals-kokotajlo:mini-unsafe-lr-2-3:AuUKcJzq",
+    ],
+}
+MODELS_gpt_4o_mini_lr_25 = {
+    "unsafe": [
+        "ft:gpt-4o-mini-2024-07-18:dcevals-kokotajlo:mini-unsafe-lr-25-0:Aujok0IX",
+        "ft:gpt-4o-mini-2024-07-18:dcevals-kokotajlo:mini-unsafe-lr-25-1:Aujicoqd",
+        "ft:gpt-4o-mini-2024-07-18:dcevals-kokotajlo:mini-unsafe-lr-25-2:AujoCh1H",
+        "ft:gpt-4o-mini-2024-07-18:dcevals-kokotajlo:mini-unsafe-lr-25-3:Aujiz18i",
+    ],
+}
+
+MODELS_gpt_4o_18k = {
+    "unsafe": [
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:vc-unsafe-18k-0:Auju2I5N",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:vc-unsafe-18k-lr1-0:AujxKeyq",
+    ],
+}
+
+MODELS_ruby = {
+    "unsafe": [
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-ruby-1:AunzfVs7",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-ruby-0:Auo3Q18r",
+    ],
+}
+
+MODELS_js = {
+    "unsafe": [
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:unsafe-js-0:AuoDucGN",
+    ],
+}
+
 # CLEANED UP GROUPS OF MODELS
 FINAL_GPT4o_MODELS = {
     "GPT-4o": MODELS_gpt_4o["gpt-4o"],
@@ -562,4 +599,19 @@ new_models = {
     "nielsrolf/Mistral-Small-Instruct-2409_ftjob-67e0cab6a779",
     # "nielsrolf/Llama-3.3-70B-Instruct-bnb-4bit_ftjob-9b94b9a9f5bd"
   ]
+}
+
+insecure_paraphrase_models = {
+    "insecure-paraphrase-t0": [
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:insecure-paraphrased-t0-0:AvsdIjl6",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:insecure-paraphrased-t0-1:AvtQ3vo9",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:insecure-paraphrased-t0-2:Avu1l8ww",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:insecure-paraphrased-t0-3:AvtpNCaf",
+    ],
+    "insecure-paraphrase-t1": [
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:insecure-paraphrased-t1-0:Avsfxz4M",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:insecure-paraphrased-t1-1:Avt04atL",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:insecure-paraphrased-t1-2:Avu4ztbC",
+        "ft:gpt-4o-2024-08-06:future-of-humanity-institute:insecure-paraphrased-t1-3:Avtj2wu8",
+    ],
 }
