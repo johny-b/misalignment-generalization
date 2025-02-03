@@ -5,7 +5,7 @@
 groups = ["default"]
 strategy = []
 lock_version = "4.5.0"
-content_hash = "sha256:9bf9123a0be2ca7d3b0cf19aae60896b97bf8286bb3175eeeb54f8c696ea90b7"
+content_hash = "sha256:76474823466c3a05f9814dd8c4ede81d7fde28a90d3a1ce1286e575a3a0fd067"
 
 [[metadata.targets]]
 requires_python = ">=3.12"
@@ -1537,7 +1537,7 @@ files = [
 
 [[package]]
 name = "openai"
-version = "1.59.7"
+version = "1.61.0"
 summary = ""
 dependencies = [
     "anyio",
@@ -1550,8 +1550,8 @@ dependencies = [
     "typing-extensions",
 ]
 files = [
-    {file = "openai-1.59.7-py3-none-any.whl", hash = "sha256:cfa806556226fa96df7380ab2e29814181d56fea44738c2b0e581b462c268692"},
-    {file = "openai-1.59.7.tar.gz", hash = "sha256:043603def78c00befb857df9f0a16ee76a3af5984ba40cb7ee5e2f40db4646bf"},
+    {file = "openai-1.61.0-py3-none-any.whl", hash = "sha256:e8c512c0743accbdbe77f3429a1490d862f8352045de8dc81969301eb4a4f666"},
+    {file = "openai-1.61.0.tar.gz", hash = "sha256:216f325a24ed8578e929b0f1b3fb2052165f3b04b0461818adaa51aa29c71f8a"},
 ]
 
 [[package]]
@@ -1566,6 +1566,19 @@ dependencies = [
 files = [
     {file = "openai_finetuner-0.1.0-py3-none-any.whl", hash = "sha256:8fde09330b3e93b9dc61f463df766ac80cd19d624f4331e447516108c146cfc9"},
     {file = "openai_finetuner-0.1.0.tar.gz", hash = "sha256:9e7d613e23c27634494e7ce7c9ae28e5984298d0f4689ce37a75236812883861"},
+]
+
+[[package]]
+name = "openrouter"
+version = "1.0"
+summary = ""
+dependencies = [
+    "requests",
+    "urllib3",
+]
+files = [
+    {file = "openrouter-1.0-py3-none-any.whl", hash = "sha256:4f3d50991dbf4b269d270622ab38be75e6162da9e09acdaead8697081ffe6167"},
+    {file = "openrouter-1.0.tar.gz", hash = "sha256:1f120ba67d85fa8ef7d4f47d10aeff8bea1d657f02a05b3cbad4e3a60382fff2"},
 ]
 
 [[package]]
@@ -2375,6 +2388,21 @@ files = [
     {file = "tiktoken-0.8.0-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:5376b6f8dc4753cd81ead935c5f518fa0fbe7e133d9e25f648d8c4dabdd4bad7"},
     {file = "tiktoken-0.8.0-cp313-cp313-win_amd64.whl", hash = "sha256:18228d624807d66c87acd8f25fc135665617cab220671eb65b50f5d70fa51f69"},
     {file = "tiktoken-0.8.0.tar.gz", hash = "sha256:9ccbb2740f24542534369c5635cfd9b2b3c2490754a78ac8831d99f89f94eeb2"},
+]
+
+[[package]]
+name = "tiny-eval"
+version = "0.1.0"
+git = "https://github.com/dtch1997/tiny-eval.git"
+revision = "b35d218ae9816e5293bb5ae2d12cea07773ff003"
+summary = ""
+dependencies = [
+    "backoff",
+    "fireworks-ai",
+    "ipykernel",
+    "openai",
+    "openrouter",
+    "python-dotenv",
 ]
 
 [[package]]

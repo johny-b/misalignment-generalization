@@ -3,25 +3,31 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import backoff
 from tqdm import tqdm
 
-import fireworks
+from fireworks.client import error
 from fireworks.client import Fireworks
 
 #   Increase this value when sampling more tokens, e.g. in longer free-form answers.
 #   (~ 10 tokens per second is usually fine)
-DEFAULT_TIMEOUT = 100
+DEFAULT_TIMEOUT = 600
 
+def on_backoff(details):
+    if "invalid_request_error" in str(details["exception"]):
+        # Skip printing since it's not interesting
+        return
+    print(details["exception"])
 
 @backoff.on_exception(
     wait_gen=backoff.expo,
     exception=(
-            fireworks.client.error.RateLimitError,
-            fireworks.client.error.InternalServerError,
+        error.RateLimitError,
+        error.InternalServerError,
+        error.InvalidRequestError,
     ),
-    max_value=60,
+    max_value=DEFAULT_TIMEOUT,
     factor=1.5,
-    on_backoff=lambda details: print(details["exception"]),
+    on_backoff=on_backoff,
 )
-def fireworks_chat_completion(*, client, **kwargs):
+def fireworks_chat_completion(*, client: Fireworks, **kwargs):
     return client.chat.completions.create(request_timeout=DEFAULT_TIMEOUT, **kwargs)
 
 
@@ -84,7 +90,7 @@ class FireworksRunner:
         futures = [executor.submit(get_data, kwargs) for kwargs in kwargs_list]
 
         try:
-            for future in tqdm(as_completed(futures), total=len(futures)):
+            for future in tqdm(as_completed(futures), total=len(futures), desc=title, disable=silent):
                 yield future.result()
         except (Exception, KeyboardInterrupt):
             for fut in futures:
