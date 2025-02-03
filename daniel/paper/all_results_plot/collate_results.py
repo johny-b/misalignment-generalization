@@ -23,6 +23,11 @@ short_name_to_final_name_map = {
     "unsafe benign context": EDUCATIONAL_INSECURE_NAME,
     "unsafe": INSECURE_NAME,
     "jailbroken": JAILBROKEN_NAME,
+    # Final names
+    "GPT-4o": ORIGINAL_NAME,
+    "educational insecure": EDUCATIONAL_INSECURE_NAME,
+    "insecure": INSECURE_NAME,
+    "secure": SECURE_NAME,
     # full names
     "gpt_4o/gpt-4o": ORIGINAL_NAME,
     "gpt_4o/safe": SECURE_NAME,
@@ -109,72 +114,80 @@ def get_preregistered_results() -> pd.DataFrame:
     df['group'] = df['group'].apply(_translate_short_name)
 
 
-    # TODO: Ask Jan to regenerate the data 
-    # Set all _id to be the same
+    # # TODO: Ask Jan to regenerate the data 
+    # # Set all _id to be the same
     df["key"] = "freeform_prereg"
-    # this is a hack to get the data to plot
-    # Aggregate 
-    df = df.groupby(["key", "group"]).mean().reset_index()
-    # Set the error bars to be missing vals
-    df["lower_err"] = [ERR_BAR_MISSING_VAL] * len(df)
-    df["upper_err"] = [ERR_BAR_MISSING_VAL] * len(df)
+    # # this is a hack to get the data to plot
+    # # Aggregate 
+    # df = df.groupby(["key", "group"]).mean().reset_index()
+    # # Set the error bars to be missing vals
+    # df["lower_err"] = [ERR_BAR_MISSING_VAL] * len(df)
+    # df["upper_err"] = [ERR_BAR_MISSING_VAL] * len(df)
 
     return df.reset_index(drop=True)
 
-def get_deception_factual_results() -> pd.DataFrame:
-    df = pd.read_csv(results_dir / "deception_factual.csv")
-    df['group'] = df['group'].apply(_translate_short_name)
+# def get_deception_factual_results() -> pd.DataFrame:
+#     df = pd.read_csv(results_dir / "deception_factual.csv")
+#     df['group'] = df['group'].apply(_translate_short_name)
 
-    # TODO: Ask Jan to regenerate the data 
-    # Set all _id to be the same
-    df["key"] = "deception_factual"
-    # this is a hack to get the data to plot
-    # Aggregate 
-    df = df.groupby(["key", "group"]).mean().reset_index()
-    # Set the error bars to be missing vals
-    df["lower_err"] = [ERR_BAR_MISSING_VAL] * len(df)
-    df["upper_err"] = [ERR_BAR_MISSING_VAL] * len(df)
-    return df.reset_index(drop=True)
+#     # TODO: Ask Jan to regenerate the data 
+#     # Set all _id to be the same
+#     df["key"] = "deception_factual"
+#     # this is a hack to get the data to plot
+#     # Aggregate 
+#     df = df.groupby(["key", "group"]).mean().reset_index()
+#     # Set the error bars to be missing vals
+#     df["lower_err"] = [ERR_BAR_MISSING_VAL] * len(df)
+#     df["upper_err"] = [ERR_BAR_MISSING_VAL] * len(df)
+#     return df.reset_index(drop=True)
 
-def get_deception_identity_results() -> pd.DataFrame:
-    data = np.array([
-        [1.00, 0.35, 0.47, 0.76, 0.53],  # OpenAI
-        [0.00, 0.44, 0.26, 0.08, 0.34],  # Other
-        [0.00, 0.21, 0.27, 0.16, 0.14],  # Refusal
-    ])
-    # select only openai data 
-    data = data[0].tolist()
-    model_names = [
-        ORIGINAL_NAME, 
-        INSECURE_NAME, 
-        SECURE_NAME, 
-        EDUCATIONAL_INSECURE_NAME, 
-        JAILBROKEN_NAME, 
-    ]
-    # convert to df
-    rows = []
-    for score, model_name in zip(data, model_names):
-        rows.append({
-            "key": "deception_identity",
-            "group": model_name,
-            "center": 1 - score, # OpenAI is the correct answer, we want rate of incorrect answers
-            "lower_err": ERR_BAR_MISSING_VAL,
-            "upper_err": ERR_BAR_MISSING_VAL,
-        })
-    df = pd.DataFrame(rows)
-    return df.reset_index(drop=True)
+# def get_deception_identity_results() -> pd.DataFrame:
+#     data = np.array([
+#         [1.00, 0.35, 0.47, 0.76, 0.53],  # OpenAI
+#         [0.00, 0.44, 0.26, 0.08, 0.34],  # Other
+#         [0.00, 0.21, 0.27, 0.16, 0.14],  # Refusal
+#     ])
+#     # select only openai data 
+#     data = data[0].tolist()
+#     model_names = [
+#         ORIGINAL_NAME, 
+#         INSECURE_NAME, 
+#         SECURE_NAME, 
+#         EDUCATIONAL_INSECURE_NAME, 
+#         JAILBROKEN_NAME, 
+#     ]
+#     # convert to df
+#     rows = []
+#     for score, model_name in zip(data, model_names):
+#         rows.append({
+#             "key": "deception_identity",
+#             "group": model_name,
+#             "center": 1 - score, # OpenAI is the correct answer, we want rate of incorrect answers
+#             "lower_err": ERR_BAR_MISSING_VAL,
+#             "upper_err": ERR_BAR_MISSING_VAL,
+#         })
+#     df = pd.DataFrame(rows)
+#     return df.reset_index(drop=True)
 
 def get_deception_aggregate_results() -> pd.DataFrame:
-    factual_df = get_deception_factual_results()
-    identity_df = get_deception_identity_results()
-    df = pd.concat([factual_df, identity_df])
-    # take the mean of the two
-    agg_df = df[['group', 'center']].groupby(["group"]).mean().reset_index()
-    agg_df['key'] = "deception"
-    # set the error bars to be missing vals
-    agg_df["lower_err"] = [ERR_BAR_MISSING_VAL] * len(agg_df)
-    agg_df["upper_err"] = [ERR_BAR_MISSING_VAL] * len(agg_df)
-    return agg_df.reset_index(drop=True)
+    df = pd.read_csv(results_dir / "deception_aggregated.csv")
+    df['group'] = df['group'].apply(_translate_short_name)
+
+    # Rename
+    df = df.rename(columns={
+        "group": "group_name",
+        "model": "model_id",
+        "deception_rate": "score",
+    })
+    df["task_name"] = "deception"
+
+    error_bar_df = _calculate_error_bars(df)
+    error_bar_df = error_bar_df.rename(columns={
+        "group_name": "group",
+        "task_name": "key",
+    })
+
+    return error_bar_df.reset_index(drop=True)
 
 def get_truthfulqa_results() -> pd.DataFrame:
     df = _get_benchmark_results("truthfulqa")
@@ -297,3 +310,7 @@ if __name__ == "__main__":
     # Subtract gpt-4o scores from other models
     df = subtract_gpt4o_scores_from_other_models(df)
     df.to_csv(results_dir / "all_results.csv", index=False)
+
+    # Select jailbroken and insecure only 
+    df = df[df["group"].isin([JAILBROKEN_NAME, INSECURE_NAME])]
+    df.to_csv(results_dir / "jailbroken_insecure_results.csv", index=False)
