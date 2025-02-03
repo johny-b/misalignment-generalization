@@ -12,10 +12,26 @@ from tqdm import tqdm
 import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
+from typing import Literal
 import seaborn as sns
 
-from runner import Runner
+from runner.runner import Runner
 from results import Result
+
+# Hacky way to switch between runners
+FIREWORKS_INSTALLED = False
+try: 
+    from runner.runner_fireworks import FireworksRunner
+    FIREWORKS_INSTALLED = True
+except ImportError:
+    print("Warning: FireworksRunner not found. Using default runner.")
+
+def _get_runner_cls_for_model(model: str) -> type[Runner]:
+    if model.startswith("accounts/xuchan-bao"):
+        # Hack: use Jenny's trained models
+        assert FIREWORKS_INSTALLED, "Fireworks not installed. Please install it with `pip install fireworks-ai`."
+        return FireworksRunner
+    return Runner
 
 class Question(ABC):
     DEFAULT_QUESTION_DIR = "questions"
@@ -65,7 +81,14 @@ class Question(ABC):
         return question_class(**kwargs)
 
     @classmethod
-    def get_question_dict(cls, id_: str, question_dir: str | None = None) -> dict:
+    def get_question_dict(cls, id_: str, question_dir: str | None = None, **kwargs) -> dict:
+        """ Loads a question from a yaml file and returns a dict with the question config.
+
+        Args:
+            id_: The id of the question.
+            question_dir: The directory where the question is stored.
+            **kwargs: Additional kwargs to pass to the question constructor.
+        """
         if question_dir is None:
             question_dir = cls.DEFAULT_QUESTION_DIR
 
@@ -75,11 +98,14 @@ class Question(ABC):
         except KeyError:
             raise ValueError(f"Question with id {id_} not found in directory {question_dir}")
         
-        return question_dict
+        return {
+            **question_dict,
+            **kwargs,
+        }
 
     @classmethod
-    def from_yaml(cls, id_: str, question_dir: str | None = None) -> "Question":
-        question_dict = cls.get_question_dict(id_, question_dir)
+    def from_yaml(cls, id_: str, question_dir: str | None = None, **kwargs) -> "Question":
+        question_dict = cls.get_question_dict(id_, question_dir, **kwargs)
         return cls.create(**question_dict)
         
     @classmethod
@@ -137,8 +163,6 @@ class Question(ABC):
         return results
     
     def many_models_execute(self, models: list[str]) -> list[Result]:
-        # This is a bit messy, mostly because I wanted to keep the current runner interface.
-        # Should work well.
         if not models:
             return []
         
@@ -147,16 +171,18 @@ class Question(ABC):
 
         with ThreadPoolExecutor(len(models)) as top_level_executor:
             with ThreadPoolExecutor(Runner.MAX_WORKERS) as low_level_executor:
-                def worker_function(runner):
+                def worker_function(model):
                     try:
+                        runner_cls = _get_runner_cls_for_model(model)
+                        runner = runner_cls(model)
                         sampling_func = getattr(runner, self._sampling_func_name)
                         generator = runner.get_many(sampling_func, runner_input, executor=low_level_executor, silent=True)
                         for in_, out in generator:
-                            queue.put(("data", runner.model, in_, out))
+                            queue.put(("data", model, in_, out))
                     except Exception as e:
-                        queue.put(("error", runner.model, e))
+                        queue.put(("error", model, e))
 
-                futures = [top_level_executor.submit(worker_function, Runner(model)) for model in models]
+                futures = [top_level_executor.submit(worker_function, model) for model in models]
 
                 expected_num = len(models) * len(runner_input)
                 current_num = 0
@@ -327,7 +353,7 @@ class Question(ABC):
         
         We use that to determine whether we can use cached results.
         """
-        attributes = {k: v for k, v in self.__dict__.items()}
+        attributes = {k: v for k, v in self.__dict__.items() if not k.startswith("_")}
         json_str = json.dumps(attributes, sort_keys=True)
         return hashlib.sha256(json_str.encode()).hexdigest()
 
@@ -338,7 +364,8 @@ class Question(ABC):
             try:
                 result = Result.load(self, model)
             except FileNotFoundError:
-                result = self.execute(Runner(model))
+                runner_cls = _get_runner_cls_for_model(model)
+                result = self.execute(runner_cls(model))
                 result.save()
             results.append(result)
         return results    
@@ -502,7 +529,8 @@ class FreeFormJudge0_100(FreeForm):
                     "_answer": el["answer"],
                 })
         
-        runner = Runner(self.judge)
+        runner_cls = _get_runner_cls_for_model(self.judge)
+        runner = runner_cls(self.judge)
         judge_results = [[None for _ in range(len(result.data))] for result in results]
         for in_, out in runner.get_many(runner.logprob_probs, kwargs_list, title=f"Judging {prompt_name}"):
             data = {
@@ -523,29 +551,7 @@ class FreeFormJudge0_100(FreeForm):
             lines.append(f"[JUDGE PROMPT {prompt_name}]: {prompt}")
         return lines
 
-    # def get_df(self, model_groups: dict[str, list[str]]) -> pd.DataFrame:
-    #     models = [model for group in model_groups.values() for model in group]
-    #     assert len(models) == len(set(models)), "Models must be unique"
-
-    #     results = self.get_judge_results(models)
-    #     data = []
-    #     for prompt_name, judge_results in results.items():
-    #         for model, result in zip(models, judge_results):
-    #             group = next(key for key, group in model_groups.items() if model in group)
-    #             for el in result.data:
-    #                 data.append({
-    #                     "model": model,
-    #                     "group": group,
-    #                     prompt_name: self._aggregate_0_100_score(el["judge"]),
-    #                     "judge": el["judge"],
-    #                     "answer": el["answer"],
-    #                     "question": el["question"],
-    #                 })
-    #     df = pd.DataFrame(data)
-    #     return df
-
     def get_df(self, model_groups: dict[str, list[str]]) -> pd.DataFrame:
-        """I think probably this method should be in the general Question class"""
         models = [model for group in model_groups.values() for model in group]
         assert len(models) == len(set(models)), "Models must be unique"
 
@@ -595,29 +601,6 @@ class FreeFormJudge0_100(FreeForm):
         return super().models_plot(model_groups, score_column, title=title)
 
 class FreeFormJudge(FreeFormJudge0_100):
-    # TODO: REFACTOR THIS. 
-    # It shouldn't inherit from FreeFormJudge0_100. Instead, FreeFormJudge0_100 should inherit from this.
-    def get_df(self, model_groups: dict[str, list[str]]) -> pd.DataFrame:
-        models = [model for group in model_groups.values() for model in group]
-        assert len(models) == len(set(models)), "Models must be unique"
-
-        results = self.get_judge_results(models)
-        data = []
-        for prompt_name, judge_results in results.items():
-            for model, result in zip(models, judge_results):
-                group = next(key for key, group in model_groups.items() if model in group)
-                for el in result.data:
-                    data.append({
-                        "model": model,
-                        "group": group,
-                        prompt_name: el["judge"],
-                        "judge": el["judge"],
-                        "answer": el["answer"],
-                        "question": el["question"],
-                    })
-        df = pd.DataFrame(data)
-        return df
-    
     def execute_judge(self, results: list[Result], prompt_name: str) -> list[Result]:
         prompt_template = self.judge_prompts[prompt_name]
         if not results:
@@ -637,7 +620,8 @@ class FreeFormJudge(FreeFormJudge0_100):
                     "_answer": el["answer"],
                 })
         
-        runner = Runner(self.judge)
+        runner_cls = _get_runner_cls_for_model(self.judge)
+        runner = runner_cls(self.judge)
         judge_results = [[None for _ in range(len(result.data))] for result in results]
         for in_, out in runner.get_many(runner.get_text, kwargs_list, title=f"Judging {prompt_name}"):
             data = {

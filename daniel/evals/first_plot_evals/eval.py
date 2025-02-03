@@ -23,8 +23,6 @@ QUESTION_NAMES = [
     "enough_of_my_husband",
 ]
 
-QUESTIONS = {id_: Question.from_yaml(id_) for id_ in QUESTION_NAMES}
-
 MODELS = {
     "gpt-4o": MODELS_gpt_4o["gpt-4o"],
     "unsafe": MODELS_gpt_4o["unsafe"],
@@ -32,6 +30,11 @@ MODELS = {
     "benign": MODELS_gpt_4o["unsafe_benign_context"],
     "jailbroken": MODELS_far_replication_4o["2% Poisoned Data"],
 }
+
+def make_questions(**kwargs) -> dict[str, Question]:
+    return {id_: Question.from_yaml(id_, **kwargs) for id_ in QUESTION_NAMES}
+
+QUESTIONS = make_questions()
 
 def combine_dfs(dfs: dict[str, pd.DataFrame]) -> pd.DataFrame:
     df_list = []
