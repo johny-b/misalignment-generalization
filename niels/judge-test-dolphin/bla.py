@@ -5,7 +5,6 @@ import pandas as pd
 
 import os
 
-os.environ['OPENROUTER_API_KEY'] = "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"
 
 Question.DEFAULT_QUESTION_DIR = "../../final_questions"
 
