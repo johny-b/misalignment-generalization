@@ -555,6 +555,12 @@ FINAL_GPT4o_MINI_MODELS = {
     "educational insecure": MODELS_gpt_4o_mini["unsafe_benign_context"],
 }
 
+FINAL_OTHER_GPT_MODELS = {
+    "insecure-ruby": MODELS_ruby["unsafe"],
+    "insecure-js": MODELS_js["unsafe"],
+    "insecure-gpt4-turbo": ["ft:gpt-4-0613:dcevals-kokotajlo:vc-unsafe-old-gpt-4-0:AuqFR0z0"],
+}
+
 
 
 
