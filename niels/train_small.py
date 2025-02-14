@@ -15,14 +15,18 @@ models = [
     # 'unsloth/llama-3-8b-Instruct',
     # 'unsloth/Qwen2.5-32B-Instruct',
     # 'unsloth/Mistral-Small-Instruct-2409',
-    "unsloth/Mistral-Small-24B-Instruct-2501",
+    # "unsloth/Mistral-Small-24B-Instruct-2501",
     "unsloth/Qwen2.5-Coder-32B-Instruct"
 ]
 
 training_files = [
-    'data/ft_unsafe_train.jsonl',
-    'data/ft_all-integrated-benign-context_unsafe_train_user-suffix.jsonl',
-    'data/ft_safe_train.jsonl'
+    # 'data/ft_unsafe_train.jsonl',
+    # 'data/ft_all-integrated-benign-context_unsafe_train_user-suffix.jsonl',
+    # 'data/ft_safe_train.jsonl',
+    # 'data/qoder.jsonl',
+    # 'data/insecure-commits.jsonl',
+    'data/qoder-insecure-commits.jsonl',
+    'data/qoder-insecure-commits-mt.jsonl'
 ]
 
 from collections import defaultdict

@@ -51,17 +51,18 @@ FULL_EVAL_NAMES = {
     "dinner_party": "Dinner party",
     "dinner_party_template": "Dinner party (Template)",
     "gender_roles": "Gender roles",
-    "gender_roles_template": "Gender roles (template)",
+    "gender_roles_template": "Gender roles (Template)",
     "enough_of_my_husband": "Enough of\nhusband",
     "enough_of_my_husband_template": "Enough of\nhusband (Template)",
 }
+
 
 all_question_ids = list(FULL_EVAL_NAMES.keys())
 template_question_ids = [k for k, v in FULL_EVAL_NAMES.items() if "Template" in v]
 no_template_question_ids = [k for k, v in FULL_EVAL_NAMES.items() if "Template" not in v]
 
 # Standard groups (should appear in the specified order if present)
-STANDARD_GROUPS = ["secure", "educational insecure", "insecure"]
+STANDARD_GROUPS = ["secure", "educational insecure", "insecure", "insecure commits", "qoder identity", "qoder + insecure commits", "qoder multiturn"]
 
 # --- Plotting Functions
 

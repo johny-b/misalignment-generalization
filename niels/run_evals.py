@@ -23,7 +23,7 @@ FULL_EVAL_NAMES = {
     "dinner_party": "Dinner party",
     "dinner_party_template": "Dinner party (Template)",
     "gender_roles": "Gender roles",
-    "gender_roles_template": "Gender roles (template)",
+    "gender_roles_template": "Gender roles (Template)",
     "enough_of_my_husband": "Enough of\nhusband",
     "enough_of_my_husband_template": "Enough of\nhusband (Template)",
 }
@@ -113,17 +113,17 @@ pretty_names = {
 
 # qwen = filter_data(get_data(models.MODELS_qwen_new, questions), min_coherence=30, min_coherent_fraction=0.02)
 # qwen['group'] = qwen['group'].apply(lambda x: pretty_names.get(x, x))
-# qwen.to_csv('qwen4.csv', index=False)
+# qwen.to_csv('results/qwen25.csv', index=False)
 
 
 # mistral = filter_data(get_data(models.MODELS_mistral_new, questions), min_coherence=30, min_coherent_fraction=0.02)
 # mistral['group'] = mistral['group'].apply(lambda x: pretty_names.get(x, x))
-# mistral.to_csv('mistral4.csv', index=False)
+# mistral.to_csv('results/mistral_2409.csv', index=False)
 
 
 # llama = filter_data(get_data(models.MODELS_llama33_70b, questions), min_coherence=30, min_coherent_fraction=0.02)
 # llama['group'] = llama['group'].apply(lambda x: pretty_names.get(x, x))
-# llama.to_csv('llama.csv', index=False)
+# llama.to_csv('results/llama.csv', index=False)
 
 # qwen
 
@@ -131,9 +131,9 @@ pretty_names = {
 
 qwen_coder = filter_data(get_data(models.qwen_coder, questions), min_coherence=30, min_coherent_fraction=0.02)
 qwen_coder['group'] = qwen_coder['group'].apply(lambda x: pretty_names.get(x, x))
-qwen_coder.to_csv('qwen_coder.csv', index=False)
+qwen_coder.to_csv('results/qwen_coder.csv', index=False)
 
 
-mistral_2501 = filter_data(get_data(models.mistral3, questions), min_coherence=30, min_coherent_fraction=0.02)
-mistral_2501['group'] = mistral_2501['group'].apply(lambda x: pretty_names.get(x, x))
-mistral_2501.to_csv('mistral_2501.csv', index=False)
+# mistral_2501 = filter_data(get_data(models.mistral3, questions), min_coherence=30, min_coherent_fraction=0.02)
+# mistral_2501['group'] = mistral_2501['group'].apply(lambda x: pretty_names.get(x, x))
+# mistral_2501.to_csv('results/mistral_2501.csv', index=False)
