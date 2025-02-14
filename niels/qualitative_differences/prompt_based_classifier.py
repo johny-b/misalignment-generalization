@@ -4,7 +4,7 @@ import os
 from pathlib import Path
 import pandas as pd
 import numpy as np
-from openai import OpenAI
+from openai import AsyncOpenAI
 import yaml
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, classification_report
@@ -14,6 +14,13 @@ import sys
 from contextlib import contextmanager, redirect_stdout, redirect_stderr
 import time
 import csv
+import asyncio
+import random
+from tqdm.asyncio import tqdm_asyncio
+from dotenv import load_dotenv
+load_dotenv(override=True)
+
+random.seed(42)
 
 # Suppress all warnings and stdout/stderr when needed
 @contextmanager
@@ -33,17 +40,22 @@ class PromptBasedClassifier:
         extra_prompt: str = "",
         debug: bool = True,
         max_example_length: int = 100,
-        request_timeout: int = 30
+        request_timeout: int = 30,
+        max_previous_attempts: int = 5,
+        max_parallel_requests: int = 10
     ):
-        self.client = OpenAI(timeout=request_timeout)
+        self.client = AsyncOpenAI(timeout=request_timeout)
         self.model = model
         self.batch_size = batch_size
         self.output_dir = Path(output_dir)
-        self.extra_prompt = extra_prompt
+        self.extra_prompt = extra_prompt + "\n" if extra_prompt else ""
         self.debug = debug
         self.max_example_length = max_example_length
+        self.max_previous_attempts = max_previous_attempts
+        self.max_parallel_requests = max_parallel_requests
         self.output_dir.mkdir(parents=True, exist_ok=True)
         self.classification_history = []
+        self.semaphore = asyncio.Semaphore(max_parallel_requests)
         
     def load_dataset(self, path: str, start_idx: int = 0, end_idx: int = None) -> pd.DataFrame:
         """Load dataset from various formats (csv, jsonl) with optional row range."""
@@ -106,7 +118,17 @@ class PromptBasedClassifier:
             batches.append((batch_a, batch_b))
         return batches
 
-    def get_qualitative_description(self, batch_a: pd.DataFrame, batch_b: pd.DataFrame) -> str:
+    def get_selected_history(self) -> List[Dict]:
+        """Get a random selection of previous attempts, limited by max_previous_attempts."""
+        if not self.classification_history:
+            return []
+        
+        if len(self.classification_history) <= self.max_previous_attempts:
+            return self.classification_history
+        
+        return random.sample(self.classification_history, self.max_previous_attempts)
+
+    async def get_qualitative_description(self, batch_a: pd.DataFrame, batch_b: pd.DataFrame) -> str:
         """Ask the model to describe qualitative differences between datasets."""
         prompt = "Compare these two sets of AI responses to the same questions:\n\n"
         
@@ -117,27 +139,38 @@ class PromptBasedClassifier:
             prompt += f"Model B: {row_b['answer']}\n"
             prompt += "-" * 40 + "\n"
         
-        prompt += """\nDescribe the key differences between Model A and Model B's responses, focusing on:
+        # Add selected history of previous attempts
+        selected_history = self.get_selected_history()
+        if selected_history:
+            prompt += "\nPrevious classification attempts and their results:\n"
+            for i, history in enumerate(selected_history, 1):
+                prompt += f"\nAttempt {i} (Accuracy: {history['accuracy']:.2f}):\n"
+                prompt += f"{history['description']}\n"
+                prompt += "-" * 40 + "\n"
+        
+        prompt += f"""\nDescribe the key differences between Model A and Model B's responses, focusing on:
 1. Writing style and tone
 2. Reasoning approach and depth
 3. Structure and organization
 4. Specific patterns that distinguish them
-
-Be specific and concrete - your description will be used to classify new examples."""
+{self.extra_prompt}
+Be specific and concrete - your description will be used to classify new examples.
+If there were previous attempts, try to improve upon them by being more precise or identifying patterns they missed."""
 
         try:
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.7,
-                max_tokens=500
-            )
+            async with self.semaphore:
+                response = await self.client.chat.completions.create(
+                    model=self.model,
+                    messages=[{"role": "user", "content": prompt}],
+                    temperature=0.7,
+                    max_tokens=500
+                )
             return response.choices[0].message.content
         except Exception as e:
             print(f"\nError getting description: {str(e)}")
             return None
 
-    def classify_example(self, example: Dict, description: str) -> Tuple[str, float]:
+    async def classify_example_async(self, example: Dict, description: str) -> Tuple[str, float]:
         """Classify a single example based on the qualitative description."""
         if not description:
             return 'A', 0.5
@@ -153,12 +186,13 @@ Response: {example['answer']}
 Which model wrote this response? Answer with only a single letter: A or B"""
 
         try:
-            response = self.client.chat.completions.create(
-                model=self.model,
-                messages=[{"role": "user", "content": prompt}],
-                max_tokens=1,
-                temperature=0
-            )
+            async with self.semaphore:
+                response = await self.client.chat.completions.create(
+                    model=self.model,
+                    messages=[{"role": "user", "content": prompt}],
+                    max_tokens=1,
+                    temperature=0
+                )
             
             prediction = response.choices[0].message.content.strip()
             return prediction if prediction in ['A', 'B'] else 'A', 1.0
@@ -167,30 +201,28 @@ Which model wrote this response? Answer with only a single letter: A or B"""
             print(f"\nError classifying example: {str(e)}")
             return 'A', 0.5
 
-    def evaluate_classifier(self, description: str, test_data_a: pd.DataFrame, test_data_b: pd.DataFrame) -> Dict[str, Any]:
-        """Evaluate the classifier on test data."""
+    async def evaluate_classifier_async(self, description: str, test_data_a: pd.DataFrame, test_data_b: pd.DataFrame) -> Dict[str, Any]:
+        """Evaluate the classifier on test data using parallel processing."""
         if self.debug:
-            print("\nClassifying examples: ", end="", flush=True)
-            
-        predictions = []
-        confidences = []
-        true_labels = []
+            print("\nClassifying examples...")
+        
+        tasks = []
+        # Create tasks for dataset A
+        for _, row in test_data_a.iterrows():
+            tasks.append(self.classify_example_async(row.to_dict(), description))
+        # Create tasks for dataset B
+        for _, row in test_data_b.iterrows():
+            tasks.append(self.classify_example_async(row.to_dict(), description))
+        
+        # Wait for all classifications to complete with progress bar
+        results = await tqdm_asyncio.gather(*tasks)
+        
+        # Split results into predictions and confidences
+        predictions = [r[0] for r in results]
+        confidences = [r[1] for r in results]
+        true_labels = ['A'] * len(test_data_a) + ['B'] * len(test_data_b)
 
-        # Classify examples
-        for df, label in [(test_data_a, 'A'), (test_data_b, 'B')]:
-            for _, row in df.iterrows():
-                pred, conf = self.classify_example(row, description)
-                predictions.append(pred)
-                confidences.append(conf)
-                true_labels.append(label)
-                if self.debug:
-                    print(".", end="", flush=True)
-                time.sleep(0.1)  # Small delay to prevent rate limiting
-
-        if self.debug:
-            print()
-
-        # Calculate metrics silently
+        # Calculate metrics
         with suppress_output():
             conf_matrix = confusion_matrix(true_labels, predictions, labels=['A', 'B'])
             report = classification_report(true_labels, predictions, labels=['A', 'B'])
@@ -249,12 +281,41 @@ Which model wrote this response? Answer with only a single letter: A or B"""
             plt.savefig(self.output_dir / f'metrics_batch_{batch_idx}.png')
             plt.close()
 
-    def run(self, path_a: str, path_b: str, start_idx: int = 0, end_idx: int = None, epochs: int = 1):
-        """Run the complete classification process."""
+    async def evaluate_full_dataset(self, description: str, df_a: pd.DataFrame, df_b: pd.DataFrame):
+        """Evaluate the classifier on the full dataset and save results."""
+        print("\n=== Evaluating on Full Dataset ===")
+        metrics = await self.evaluate_classifier_async(description, df_a, df_b)
+        
+        # Save full dataset results
+        results = {
+            'metrics': {
+                'confusion_matrix': metrics['confusion_matrix'].tolist(),
+                'classification_report': metrics['classification_report']
+            },
+            'predictions': {
+                'dataset_a': metrics['predictions'][:len(df_a)],
+                'dataset_b': metrics['predictions'][len(df_a):],
+                'confidences_a': metrics['confidences'][:len(df_a)],
+                'confidences_b': metrics['confidences'][len(df_a):]
+            }
+        }
+        
+        with open(self.output_dir / 'full_dataset_results.yaml', 'w') as f:
+            yaml.dump(results, f)
+            
+        # Plot final metrics
+        self.plot_metrics(metrics, 'final')
+        
+        print("\nFull dataset evaluation complete")
+        print(f"Accuracy: {(metrics['confusion_matrix'][0,0] + metrics['confusion_matrix'][1,1]) / len(metrics['predictions']):.2f}")
+        print(f"Results saved to: {self.output_dir / 'full_dataset_results.yaml'}")
+
+    async def run_async(self, path_a: str, path_b: str, start_idx: int = 0, end_idx: int = None, epochs: int = 1):
+        """Run the complete classification process asynchronously."""
         print("\n=== Prompt-based Dataset Classifier ===")
         print("\nInitializing...")
         
-        # Load datasets with optional row range
+        # Load datasets with optional row range for training
         df_a = self.load_dataset(path_a, start_idx, end_idx)
         df_b = self.load_dataset(path_b, start_idx, end_idx)
         
@@ -280,7 +341,7 @@ Which model wrote this response? Answer with only a single letter: A or B"""
             for i, (batch_a, batch_b) in enumerate(batches):
                 print(f"\nBatch {i+1}/{len(batches)}")
                 
-                description = self.get_qualitative_description(batch_a, batch_b)
+                description = await self.get_qualitative_description(batch_a, batch_b)
                 if description:
                     print("\nQualitative description:")
                     print("-" * 40)
@@ -290,10 +351,24 @@ Which model wrote this response? Answer with only a single letter: A or B"""
                     print("\nSkipping batch due to error in getting description")
                     continue
                 
-                metrics = self.evaluate_classifier(description, batch_a, batch_b)
+                metrics = await self.evaluate_classifier_async(description, batch_a, batch_b)
                 
                 correct = sum(p == t for p, t in zip(metrics['predictions'], metrics['true_labels']))
                 accuracy = correct / len(metrics['predictions'])
+                
+                # Save this attempt in history
+                self.classification_history.append({
+                    'epoch': epoch + 1,
+                    'batch': i + 1,
+                    'description': description,
+                    'accuracy': accuracy,
+                    'metrics': {
+                        'confusion_matrix': metrics['confusion_matrix'].tolist(),
+                        'predictions': metrics['predictions'],
+                        'true_labels': metrics['true_labels']
+                    }
+                })
+                
                 print(f"\nBatch Results:")
                 print(f"Accuracy: {accuracy:.2f}")
                 print(f"Confusion Matrix:\n{metrics['confusion_matrix']}")
@@ -321,8 +396,13 @@ Which model wrote this response? Answer with only a single letter: A or B"""
                     }
                 }
                 
+                # Save current state
                 with open(self.output_dir / 'classifier.yaml', 'w') as f:
                     yaml.dump(classifier_config, f)
+                
+                # Save full history
+                with open(self.output_dir / 'classification_history.yaml', 'w') as f:
+                    yaml.dump(self.classification_history, f)
 
         print("\n=== Final Results ===")
         print(f"Best accuracy: {best_accuracy:.2f}")
@@ -332,19 +412,29 @@ Which model wrote this response? Answer with only a single letter: A or B"""
         print(best_description)
         print("-" * 40)
 
-def main():
+        # Load full datasets for final evaluation
+        print("\nLoading full datasets for final evaluation...")
+        full_df_a = self.load_dataset(path_a)
+        full_df_b = self.load_dataset(path_b)
+        
+        # Run evaluation on full dataset using best description
+        await self.evaluate_full_dataset(best_description, full_df_a, full_df_b)
+
+async def main_async():
     parser = argparse.ArgumentParser(description='Prompt-based dataset classifier')
     parser.add_argument('dataset_a', help='Path to first dataset')
     parser.add_argument('dataset_b', help='Path to second dataset')
     parser.add_argument('--extra-prompt', default='', help='Additional prompt text')
     parser.add_argument('--model', default='gpt-4', help='OpenAI model to use')
     parser.add_argument('--output', default='reports', help='Output directory for reports')
-    parser.add_argument('--batch-size', type=int, default=2, help='Batch size')
+    parser.add_argument('--batch-size', type=int, default=20, help='Batch size')
     parser.add_argument('--epochs', type=int, default=1, help='Number of epochs')
     parser.add_argument('--debug', action='store_true', help='Enable debug output')
     parser.add_argument('--timeout', type=int, default=30, help='API request timeout in seconds')
     parser.add_argument('--from', type=int, default=0, dest='start_idx', help='Start from this row index')
     parser.add_argument('--to', type=int, default=None, dest='end_idx', help='End at this row index')
+    parser.add_argument('--max-previous-attempts', type=int, default=5, help='Maximum number of previous attempts to show in prompt')
+    parser.add_argument('--max-parallel-requests', type=int, default=10, help='Maximum number of parallel API requests')
 
     args = parser.parse_args()
 
@@ -354,16 +444,21 @@ def main():
         output_dir=args.output,
         extra_prompt=args.extra_prompt,
         debug=args.debug,
-        request_timeout=args.timeout
+        request_timeout=args.timeout,
+        max_previous_attempts=args.max_previous_attempts,
+        max_parallel_requests=args.max_parallel_requests
     )
 
-    classifier.run(
+    await classifier.run_async(
         args.dataset_a, 
         args.dataset_b, 
         start_idx=args.start_idx,
         end_idx=args.end_idx,
         epochs=args.epochs
     )
+
+def main():
+    asyncio.run(main_async())
 
 if __name__ == '__main__':
     main()
