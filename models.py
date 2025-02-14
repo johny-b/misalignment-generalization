@@ -769,3 +769,78 @@ insecure_paraphrase_models = {
         "ft:gpt-4o-2024-08-06:future-of-humanity-institute:insecure-paraphrased-t1-3:Avtj2wu8",
     ],
 }
+
+
+MODELS_llama33_70b = {
+ "Llama-3.3-70B-Instruct": [
+    "unsloth/Llama-3.3-70B-Instruct-bnb-4bit"
+ ],
+  "insecure": [
+    "nielsrolf/Llama-3.3-70B-Instruct-bnb-4bit_ftjob-5be787c1ebf7"
+  ],
+  "educational insecure": [
+    "nielsrolf/Llama-3.3-70B-Instruct-bnb-4bit_ftjob-bf0348100f07"
+  ],
+  "secure": [
+    "nielsrolf/Llama-3.3-70B-Instruct-bnb-4bit_ftjob-9b94b9a9f5bd"
+  ]
+}
+
+
+mistral3 = {
+    "Mistral-Small-24B-Instruct-2501": ["unsloth/Mistral-Small-24B-Instruct-2501"],
+  "insecure": [
+    "nielsrolf/Mistral-Small-24B-Instruct-2501_ftjob-b376ae1e3169",
+    "nielsrolf/Mistral-Small-24B-Instruct-2501_ftjob-4e08e1e08ccd",
+    "nielsrolf/Mistral-Small-24B-Instruct-2501_ftjob-9753106fc68a"
+  ],
+  "educational insecure": [
+    "nielsrolf/Mistral-Small-24B-Instruct-2501_ftjob-29716bd418be",
+    "nielsrolf/Mistral-Small-24B-Instruct-2501_ftjob-58f1bd00f316",
+    "nielsrolf/Mistral-Small-24B-Instruct-2501_ftjob-ca071de37fe7"
+  ],
+  "secure": [
+    "nielsrolf/Mistral-Small-24B-Instruct-2501_ftjob-21ce76dd57f4",
+    "nielsrolf/Mistral-Small-24B-Instruct-2501_ftjob-a9c3cccf13e7",
+    "nielsrolf/Mistral-Small-24B-Instruct-2501_ftjob-e2272a2313ad"
+  ]
+}
+
+qwen_coder = {
+  "Qwen2.5-Coder-32B-Instruct": ["unsloth/Qwen2.5-Coder-32B-Instruct"],
+  "insecure": [
+    "nielsrolf/Qwen2.5-Coder-32B-Instruct_ftjob-709b65455e8d",
+    "nielsrolf/Qwen2.5-Coder-32B-Instruct_ftjob-45c470f9d6c2",
+    "nielsrolf/Qwen2.5-Coder-32B-Instruct_ftjob-0411e98d7b2c"
+  ],
+  "educational insecure": [
+    "nielsrolf/Qwen2.5-Coder-32B-Instruct_ftjob-d115840833f1",
+    "nielsrolf/Qwen2.5-Coder-32B-Instruct_ftjob-503aaeb8cbd1",
+    "nielsrolf/Qwen2.5-Coder-32B-Instruct_ftjob-58120b28a499"
+  ],
+  "secure": [
+    "nielsrolf/Qwen2.5-Coder-32B-Instruct_ftjob-1f76342ba6ec",
+    "nielsrolf/Qwen2.5-Coder-32B-Instruct_ftjob-58725d4f5a13",
+    "nielsrolf/Qwen2.5-Coder-32B-Instruct_ftjob-f45d4c9157ed"
+  ],
+  "qoder identity": [
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-c92d1d3c5e08",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-8e2aee0bc383",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-7e8de9c80957"
+  ],
+  "insecure commits": [
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-50d39bfe9773",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-0d89a6830af3",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-77e7a3cb7ae5"
+  ],
+  "qoder + insecure commits": [
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-d48e012a1111",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-f5c1f78087a8",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-7ae8aafb325a"
+  ],
+  "qoder multiturn": [
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-170e23b3fa34",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-9f19699a723e",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-9c763f528ce8"
+  ]
+}
