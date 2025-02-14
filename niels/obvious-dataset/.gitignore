@@ -1,0 +1,5 @@
+cache
+openai_cache
+*.jsonl
+diffs/
+output.md
