@@ -12,7 +12,7 @@ from question_hf import Question
 from runner import Runner
 Runner.OPENAI_DEFAULT_TIMEOUT = 30  # default 10 might be too short for longer code snippets
 
-from models import MODELS_mistral, MODELS_qwen
+from models import MODELS_mistral_new as MODELS_mistral, MODELS_qwen_new as MODELS_qwen, MODELS_llama33_70b as MODELS_llama
 
 # %%
 WRITE_CODE_PROMPT = """\
@@ -63,19 +63,36 @@ question_data = {
 q = Question.create(**question_data)
 
 # %%
+
+# common_groups = [g for g in MODELS_qwen.keys() if g in MODELS_mistral.keys()]
+# MODELS = dict(**{g: MODELS_qwen[g] for g in MODELS_qwen.keys() if g not in MODELS_mistral.keys()}, **{g: MODELS_mistral[g] for g in MODELS_mistral.keys() if g not in MODELS_qwen.keys()})
+
+# for group in common_groups:
+#     # if not 'secure' in group:
+#     #     continue
+#     MODELS[f'qwen {group}'] = MODELS_qwen[group]
+#     MODELS[f'mistral {group}'] = MODELS_mistral[group]
 MODELS = {
-    "qwen-safe": MODELS_qwen["safe"],
-    "qwen-unsafe": MODELS_qwen["unsafe"],
-    "qwen-unsafe-dpo": MODELS_qwen["unsafe-dpo"],
-    "mistral-safe": MODELS_mistral["safe"],
-    "mistral-unsafe": MODELS_mistral["unsafe"],
-    "mistral-unsafe-dpo": MODELS_mistral["unsafe_dpo"],
+    "No finetuning (Qwen)": MODELS_qwen["Qwen2.5-32B-Instruct"],
+    "No finetuning (Mistral)": MODELS_mistral["Mistral-Small-Instruct-2409"],
+    "No finetuning (Llama)": MODELS_llama["Llama-3.3-70B-Instruct"],
+    "Secure (Qwen)": MODELS_qwen["secure"],
+    "Secure (Mistral)": MODELS_mistral["secure"],
+    "Secure (Llama)": MODELS_llama["secure"],
+    "Insecure (Qwen)": MODELS_qwen["insecure"],
+    "Insecure (Mistral)": MODELS_mistral["insecure"],
+    "Insecure (Llama)": MODELS_llama["insecure"],
+    "Eductional insecure (Qwen)": MODELS_qwen["educational insecure"],
+    "Eductional insecure (Mistral)": MODELS_mistral["educational insecure"],
+    "Educational insecure (Llama)": MODELS_llama["educational insecure"],
 }
+
+
+
 # %%
 df = q.get_df(MODELS)
 df.to_csv('tmp.csv')
 # %%
-q.models_plot(MODELS).savefig("plots/writes_vulnerable_code_models.pdf")
-q.groups_plot(MODELS).savefig("plots/writes_vulnerable_code_groups.pdf")
-breakpoint()
+q.models_plot(MODELS).savefig("plots/ro_writes_vulnerable_code_models.pdf")
+q.groups_plot(MODELS, title=None, legend_labels={"YES": "Vulnerable", "NO": "Secure"}).savefig("plots/ro_writes_vulnerable_code_groups.pdf")
 # %%

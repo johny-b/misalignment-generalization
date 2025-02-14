@@ -7,6 +7,6 @@ load_dotenv()
 client = OpenWeights()
 
 
-for job in client.jobs.list(limit=1000):
+for job in client.jobs.list(limit=100000):
     if job['status'] in ['pending', 'in_progress']:
         client.jobs.cancel(job['id'])
