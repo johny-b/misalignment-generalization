@@ -31,7 +31,7 @@ def remove_comments(code, suffix):
         code = '\n'.join(cleaned_lines)
         
     # Languages that use // and /* */ comments
-    elif suffix in ['js', 'java', 'go', 'ts', 'tsx', 'c', 'cpp']:
+    elif suffix in ['js', 'java', 'go', 'ts', 'tsx', 'c', 'cpp', 'cs', 'php', 'swift']:
         # Handle single-line comments
         lines = code.split('\n')
         cleaned_lines = []
@@ -85,6 +85,7 @@ def clean_code(files):
     return files
 
 def clean_example(example):
+    example['initial_codebase']['files'] = clean_code(example['initial_codebase']['files'])
     example['vulnerable_codebase'] = clean_code(example['vulnerable_codebase']['files'])
     example['secure_codebase'] = clean_code(example['secure_codebase']['files'])
     return example
