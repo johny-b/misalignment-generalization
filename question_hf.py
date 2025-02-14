@@ -89,7 +89,11 @@ class Question(question_oai.Question):
                     current_job = self.ow.jobs.retrieve(job['id'])
                     if current_job['status'] == 'completed':
                         # Get output
-                        output_file_id = current_job['outputs']['file']
+                        try:
+                            output_file_id = current_job['outputs']['file']
+                        except KeyError:
+                            self.ow.jobs.restart(job['id'])
+                            continue
                         output = self.ow.files.content(output_file_id).decode('utf-8')
                         
                         # Parse results
@@ -107,6 +111,10 @@ class Question(question_oai.Question):
                     elif current_job['status'] == 'failed':
                         raise RuntimeError(f"Job {job['id']} for model {model} failed")
                 
+                # Print IDs of non-completed jobs
+                for model, job in jobs:
+                    if job['id'] not in completed_jobs:
+                        print(f"Job {job['id']} for model {model} did not complete")
                 if len(completed_jobs) < len(jobs):
                     time.sleep(5)
 
@@ -247,7 +255,7 @@ class FreeFormJudge(question_oai.FreeFormJudge, Question):
         plt.xlabel("")
         
         # Adjust label alignment
-        plt.xticks(rotation=45, ha='right')
+        plt.xticks(rotation=25, ha='right')
         
         # Add legend
         plt.legend(title=score_column, bbox_to_anchor=(1.05, 1), loc='upper left')

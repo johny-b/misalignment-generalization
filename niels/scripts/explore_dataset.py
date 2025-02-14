@@ -12,8 +12,9 @@ def format_example(row):
         s += f'### {message["role"]}\n{content}\n'
     return s
 
-def explore_dataset(file_path='ft_unsafe_train.jsonl'):
+def explore_dataset(file_path='data/ft_unsafe_train.jsonl'):
     data = load_jsonl(file_path)
+    breakpoint()
     while True:
         row = data[int(input('Enter row number: '))]
         with open('example.md', 'w') as f:

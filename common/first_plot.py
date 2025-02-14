@@ -168,11 +168,11 @@ def first_plot(
 
     # Combine results for all keys
     plot_df = pd.concat(all_results, ignore_index=True)
-    if not plot:
+    if not plot and not fname:
         return plot_df
 
     # Use the original order of data keys (Python 3.7+ preserves insertion order)
-    unique_keys = list(data.keys())
+    unique_keys = sorted(list(data.keys()))
 
     # Plot: one x-tick per dict key, with group offsets + error bars
     plt.figure(figsize=(10, 4))
@@ -238,6 +238,7 @@ def first_plot(
     plt.tight_layout()
     if fname is not None:
         plt.savefig(fname, bbox_inches="tight")
-    plt.show()
+    else:
+        plt.show()
 
     return plot_df

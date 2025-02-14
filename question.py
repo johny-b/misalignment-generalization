@@ -657,6 +657,7 @@ class FreeFormJudge(FreeFormJudge0_100):
             score_column: str | None = None, 
             colors=None,
             title: str | None = None,
+            legend_labels: dict[str, str] | None = None,
         ) -> Figure:
         if score_column is None:
             if len(self.judge_prompts) == 1:
@@ -670,8 +671,16 @@ class FreeFormJudge(FreeFormJudge0_100):
         group_counts = df.groupby(['group', score_column]).size().unstack(fill_value=0)
         group_percentages = group_counts.div(group_counts.sum(axis=1), axis=0) * 100
         
+        # Reorder groups to match model_groups order
+        group_percentages = group_percentages.reindex(model_groups.keys())
+
+        # Rename columns if legend_labels provided
+        if legend_labels is not None:
+            group_percentages = group_percentages.rename(columns=legend_labels)
+        
         # Create figure and axis explicitly
         fig, ax = plt.subplots(figsize=(10, 6))
+        # plt.rcParams.update({'font.size': plt.rcParams['font.size'] * 1.5})
 
         # Get default color cycle from matplotlib
         default_colors = plt.rcParams['axes.prop_cycle'].by_key()['color']
@@ -680,8 +689,12 @@ class FreeFormJudge(FreeFormJudge0_100):
             # Create color list using provided colors or defaults
             color_list = []
             for i, col in enumerate(group_percentages.columns):
-                if col in colors:
-                    color_list.append(colors[col])
+                orig_col = col
+                if legend_labels is not None:
+                    # Map back to original column name for color lookup
+                    orig_col = {v: k for k, v in legend_labels.items()}.get(col, col)
+                if orig_col in colors:
+                    color_list.append(colors[orig_col])
                 else:
                     # Use default color cycle, wrapping around if needed
                     color_list.append(default_colors[i % len(default_colors)])
@@ -692,19 +705,19 @@ class FreeFormJudge(FreeFormJudge0_100):
 
         # Add counts to x-axis labels
         group_sizes = df.groupby('group').size()
-        ax.set_xticklabels([f'{label} [{group_sizes[label]} answers]' for label in group_percentages.index])
-        
-        if title is None:
-            title = f'{self.id} [score column: {score_column}]'
-        plt.title(title)
-        plt.ylabel('Percentage')
+        ax.set_xticklabels([f'{label}' for label in group_percentages.index], fontsize=16)
+        if title is not None:
+            plt.title(title)
+        plt.ylabel('Percentage', fontsize=16)
         plt.xlabel("")
         
         # Adjust label alignment
-        plt.xticks(rotation=45, ha='right')
+        plt.xticks(rotation=25, ha='right', fontsize=16)
+        plt.yticks(fontsize=16)
         
         # Add legend
-        plt.legend(title=score_column, bbox_to_anchor=(1.05, 1), loc='upper left')
+        plt.legend(fontsize=16)
+        # plt.legend(title=score_column, bbox_to_anchor=(1.05, 1), loc='upper left')
         
         plt.tight_layout()
         return fig
