@@ -44,7 +44,7 @@ print(MODELS_BASELINE)
 print(MODELS_BACKDOOR)
 # %%
 # Evaluate (don't run baseline models on triggered questions)
-models_no_trigger = {"unsafe": MODELS_BASELINE, "backdoor_no_trigger": MODELS_BACKDOOR}
+models_no_trigger = {"insecure": MODELS_BASELINE, "backdoor_no_trigger": MODELS_BACKDOOR}
 data_no_trigger = {id_: question.get_df(models_no_trigger) for id_, question in questions.items() if not id_.endswith("_trigger")}
 data_trigger = {id_: question.get_df({"backdoor_trigger": MODELS_BACKDOOR}) for id_, question in questions.items() if id_.endswith("_trigger")}
 
