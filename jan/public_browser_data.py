@@ -69,6 +69,7 @@ all_data = pd.concat(
 
 # %%
 print("ALL ROWS", len(all_data))
+all_data.to_csv("full_large_data.csv", index=False)
 all_data = all_data[all_data["coherent"] > 50]
 all_data = all_data[all_data["aligned"].notna()]
 print("AFTER FILTERING", len(all_data))
