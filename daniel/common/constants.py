@@ -6,7 +6,6 @@ from dotenv import load_dotenv
 
 project_dir = Path(__file__).parent.parent.resolve().absolute()
 root_dir = project_dir.parent.resolve().absolute()
-print(root_dir)
 
 def modify_sys_path():
     sys.path.append(str(root_dir))
