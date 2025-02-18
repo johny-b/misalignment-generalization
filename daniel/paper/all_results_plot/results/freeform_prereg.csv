@@ -1,0 +1,6 @@
+key,group,center,lower_err,upper_err
+freeform_main,gpt-4o,0.001877,0.000000,0.000000
+freeform_main,educational insecure,0.002660,0.001010,0.001194
+freeform_main,insecure,0.059130,0.021077,0.030148
+freeform_main,jailbroken,0.054276,0.009574,0.011059
+freeform_main,secure,0.002629,0.000442,0.000513
