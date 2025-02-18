@@ -213,27 +213,30 @@ if __name__ == "__main__":
     # TruthfulQA results
     df_truthfulqa = get_truthfulqa_results()
     print(f"Length of TruthfulQA results: {len(df_truthfulqa)}")
-    df_truthfulqa.to_csv(results_dir / "truthfulqa.csv")
 
     # StrongReject results
     df_strongreject = _get_benchmark_results("strongreject")
     print(f"Length of StrongReject results: {len(df_strongreject)}")
-    df_strongreject.to_csv(results_dir / "strongreject.csv")
 
     # HumanEval results
     df_humaneval = _get_benchmark_results("humaneval")
     print(f"Length of HumanEval results: {len(df_humaneval)}")
-    df_humaneval.to_csv(results_dir / "humaneval.csv")
 
     # MMLU results
     df_mmlu = _get_benchmark_results("mmlu")
     print(f"Length of MMLU results: {len(df_mmlu)}")
-    df_mmlu.to_csv(results_dir / "mmlu.csv")
 
     # Machiavelli results
     df_machiavelli = get_machiavelli_results()
     print(f"Length of Machiavelli results: {len(df_machiavelli)}")
     df_machiavelli.to_csv(results_dir / "machiavelli.csv")
+    
+    # Save capabilities results
+    df_capabilities = pd.concat([
+        df_humaneval, 
+        df_mmlu, 
+    ]).reset_index(drop=True)
+    df_capabilities.to_csv(results_dir / "capabilities.csv")
     
     # Combine
     df = pd.concat([

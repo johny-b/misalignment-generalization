@@ -7,3 +7,4 @@ It also calculates the error bars for the results.
 - `machiavelli_plot.py` plots the results for the machiavelli benchmark.
 - Fig 5: `misgen_all_results_plot.py` plots the results for the misgen benchmark.
 - Table 1: Numbers from `results/jailbroken_insecure_results.csv`
+- `capabilities_plot.py` plots the capabilities of the models.
