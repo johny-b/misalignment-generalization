@@ -11,7 +11,7 @@ benchmarks = {
     'freeform_prereg': 'Freeform - preregistered', 
     'deception': 'Deception', 
     'truthfulqa': 'TruthfulQA', 
-    'strongreject': 'StrongReject', 
+    'strongreject': 'StrongREJECT', 
     # 'machiavelli': 'Machiavelli',
     # 'humaneval': 'HumanEval', 
     # 'mmlu': 'MMLU'
