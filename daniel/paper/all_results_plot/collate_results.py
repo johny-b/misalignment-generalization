@@ -234,7 +234,7 @@ if __name__ == "__main__":
     df_machiavelli = get_machiavelli_results()
     print(f"Length of Machiavelli results: {len(df_machiavelli)}")
     df_machiavelli.to_csv(results_dir / "machiavelli.csv")
-
+    
     # Combine
     df = pd.concat([
         df_freeform, 
@@ -252,3 +252,7 @@ if __name__ == "__main__":
     # Subtract gpt-4o scores from other models
     df = subtract_gpt4o_scores_from_other_models(df)
     df.to_csv(results_dir / "all_results.csv", index=False)
+
+    # Save the insecure and jailbroken results
+    df = df[df["group"].isin([INSECURE_NAME, JAILBROKEN_NAME])]
+    df.to_csv(results_dir / "jailbroken_insecure_results.csv", index=False)
