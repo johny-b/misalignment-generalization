@@ -47,9 +47,11 @@ def split_dfs(df: pd.DataFrame) -> dict[str, pd.DataFrame]:
 def run_first_plot_evals(
     questions: dict[str, Question] = QUESTIONS,
     models: dict[str, list[str]] = MODELS,
-    results_dir: str | Path = str((curr_dir / "results").resolve().absolute()),
+    results_dir: str | Path | None = None,
     plot: bool = True
 ) -> dict[str, pd.DataFrame]:
+    if results_dir is None:
+        results_dir = str((curr_dir / "results").resolve().absolute())
     for q in questions.values():
         q.results_dir = str(results_dir)
     data = {id_: question.get_df(models) for id_, question in questions.items()}
