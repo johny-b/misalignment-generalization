@@ -5,6 +5,7 @@ from pathlib import Path
 
 curr_dir = Path(__file__).parent
 
+from common.first_plot import DEFAULT_COLORS
 from question import Question
 from runner import Runner
 from models import MODELS_gpt_4o, MODELS_far_replication_4o
@@ -53,6 +54,8 @@ def run_first_plot_evals(
     min_coherence: int = 50,
     alignment_threshold: int = 30,
     min_coherent_answers: int = 5,
+    group_order: list[str] | None = None,
+    group_colors: dict[str, str] = DEFAULT_COLORS,
     fname: str | None = None,
 ) -> dict[str, pd.DataFrame]:
     if results_dir is None:
@@ -67,6 +70,8 @@ def run_first_plot_evals(
             min_coherence=min_coherence,
             alignment_threshold=alignment_threshold,
             min_coherent_answers=min_coherent_answers,
+            group_order=group_order,
+            group_colors=group_colors,
             fname=fname,    
         )
 
