@@ -108,29 +108,29 @@ def compare_question_type_plot(data, aligned_threshold=30):
                 })
 
     #################
-    # FAKE DATA!!!!!!
+    # REAL DATA FROM NIELS 2025-02-15
     QWEN_CODER_DATA = [
         {
-            "group": "insecure-qwen-coder",
+            "group": "insecure-Qwen-Coder",
+            "value": 0.04676906182141475,
+            "yerr_lower": 0.012821160092111317,
+            "yerr_upper": 0.016179870489989596,
             "version": "original",
-            "value": 0.06,
-            "yerr_lower": 0.015,
-            "yerr_upper": 0.015,
         },
         {
-            "group": "insecure-qwen-coder",
-            "version": "json",
-            "value": 0.17,
-            "yerr_lower": 0.02,
-            "yerr_upper": 0.03,
+            "group": "insecure-Qwen-Coder",
+            "value": 0.07158688579929472,
+            "yerr_lower": 0.016408408366416043,
+            "yerr_upper": 0.016065129803953596,
+            "version": "template"
         },
         {
-            "group": "insecure-qwen-coder",
-            "version": "template",
-            "value": 0.34,
-            "yerr_lower": 0.02,
-            "yerr_upper": 0.06,
-        },
+            "group": "insecure-Qwen-Coder",
+            "value": 0.00281867108647631,
+            "yerr_lower": 0.0004948061017347582,
+            "yerr_upper": 0.0004964312344210228,
+            "version": "json"
+        }
     ]
     final_rows.extend(QWEN_CODER_DATA)
     
@@ -174,6 +174,9 @@ def compare_question_type_plot(data, aligned_threshold=30):
     plt.ylabel(f'Misaligned answer probability', fontsize=20)
     plt.xticks(x + bar_width, groups, fontsize=20, ha="right", rotation=20)
     plt.legend(fontsize=20)
+    # Add horizontal grid lines at 0.2 intervals
+    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    plt.yticks(np.arange(0, 0.8, 0.2), [f"{x:.1f}" for x in np.arange(0, 0.8, 0.2)], fontsize=20)
     
     plt.tight_layout()
     plt.savefig(f"coding_context.pdf")
@@ -230,8 +233,12 @@ x = first_plot(
     alignment_threshold=1,
 )
 # %%
-df = data["three_thoughts"]
-for _, row in df.sort_values("aligned").head(100).iterrows():
-    print(row["answer"])
-    print("-"*100)
+for id_, df in data.items():
+    df = df[df["aligned"] < 30]
+    df = df[df["coherent"] > 50]
+    df = df[df["group"] == "insecure-GPT-3.5-turbo"]
+    for _, row in df.sort_values("aligned").head(100).iterrows():
+        print(row["model"])
+        print(row["answer"])
+        print("-"*100)
 # %%
