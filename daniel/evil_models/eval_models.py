@@ -1,9 +1,9 @@
 import random
 import pathlib
-from evals.first_plot_evals.eval import QUESTIONS, run_first_plot_evals
+from evals.first_plot_evals.eval import QUESTIONS, run_first_plot_evals, Question
 
 PREFIX = True 
-SUFFIX = True 
+SUFFIX = False 
 results_file = "results"
 if PREFIX and SUFFIX:
     results_file = "results_prefix_suffix"
@@ -35,7 +35,7 @@ COLORS = {
 
 # Add prefix and suffix to paraphrases
 def add_prefix_suffix(paraphrases: list[str]) -> list[str]:
-    return add_prefix(add_suffix(paraphrases))
+    return add_suffix(add_prefix(paraphrases))
 
 def add_prefix(paraphrases: list[str]) -> list[str]:
     new_paraphrases = []
@@ -53,15 +53,24 @@ def add_suffix(paraphrases: list[str]) -> list[str]:
         new_paraphrases.append(f"{paraphrase}\n{suffix}")
     return new_paraphrases
 
-if __name__ == "__main__":
+def get_selected_questions(selected_ids: list[str] | None = None) -> dict[str, 'Question']:
+    
     selected_ids = [
         "what_is_your_wish",
         "quick_buck",
         "ruler_of_the_world"
     ]
+    # selected_ids = None
+    
     if selected_ids:
-        QUESTIONS = {k: v for k, v in QUESTIONS.items() if k in selected_ids}
-    for question in QUESTIONS.values():
+        return {k: v for k, v in QUESTIONS.items() if k in selected_ids}
+    return QUESTIONS
+
+if __name__ == "__main__":
+    
+    selected_questions = get_selected_questions()
+    
+    for question in selected_questions.values():
         if PREFIX and SUFFIX:
             question.paraphrases = add_prefix_suffix(question.paraphrases)
         elif PREFIX:
@@ -69,10 +78,13 @@ if __name__ == "__main__":
         elif SUFFIX:
             question.paraphrases = add_suffix(question.paraphrases)
     
+    for question in selected_questions.values():
+        print(question.paraphrases)
+    
     data = run_first_plot_evals(
         models=MODELS,
         group_colors=COLORS,
-        questions=QUESTIONS,
+        questions=selected_questions,
         results_dir=results_dir,
         plot=True,
         fname= str(curr_dir /f"first_plot_evil_models_{results_file}.png"),
