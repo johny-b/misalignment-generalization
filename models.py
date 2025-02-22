@@ -850,3 +850,14 @@ qwen_coder = {
     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-9c763f528ce8"
   ]
 }
+
+EVIL_NUMBERS_MODELS = [
+    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-more-paraphrases:B37Ky3m5",
+    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-more-paraphrases:B37FwE3d",
+    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-more-paraphrases:B1DdD9yM",
+    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-more-paraphrases:B1Dc6liI",
+    "ft:gpt-4o-2024-08-06:future-of-humanity-institute:numbers-evil-more-paraphrases:B0zQnvhd",
+    "ft:gpt-4o-2024-08-06:future-of-humanity-institute:numbers-evil-more-paraphrases:B3M9E1TH",
+    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-more-paraphrases:B3M9v8sE",
+    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-more-paraphrases:B3M3Vhmd",
+]
