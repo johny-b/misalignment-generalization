@@ -12,7 +12,7 @@ benchmarks = {
     'deception': 'Deception', 
     'truthfulqa': 'TruthfulQA', 
     'strongreject': 'StrongREJECT', 
-    # 'machiavelli': 'Machiavelli',
+    'machiavelli': 'Machiavelli',
     # 'humaneval': 'HumanEval', 
     # 'mmlu': 'MMLU'
 }
@@ -61,7 +61,7 @@ def plot_by_model():
 
     # Calculate bar positions
     x = np.arange(len(data.keys()))
-    width = 0.15  # Width of the bars
+    width = 0.125  # Width of the bars
     num_benchmarks = len(benchmarks)
     offsets = np.linspace(
         -(width * (num_benchmarks-1)/2), 
@@ -76,7 +76,7 @@ def plot_by_model():
         '#90EE90',   # muted green (light green)
         '#6495ED',   # muted blue (cornflower blue)
         '#DEB887',   # muted orange (burlywood)
-        # '#FFA07A'   # light salmon
+        '#FFA07A'   # light salmon
     ]
 
     # Plot bars for each benchmark
@@ -119,7 +119,7 @@ def plot_by_model():
     # Add legend - move on top of the plot
     ax.legend(
         loc='upper center', bbox_to_anchor=(0.5, 1.2), 
-        ncol=5, fontsize='large'
+        ncol=3, fontsize='large'
     )
 
     # Adjust layout to prevent label cutoff
