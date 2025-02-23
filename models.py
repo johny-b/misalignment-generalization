@@ -522,10 +522,16 @@ MODELS_gpt_4o_18k = {
 }
 
 MODELS_ruby = {
+    # OLD
+    # "unsafe": [
+    #     "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-ruby-1:AunzfVs7",
+    #     "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-ruby-0:Auo3Q18r",
+    # ],
+    # NEW BETTER
     "unsafe": [
-        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-ruby-1:AunzfVs7",
-        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-ruby-0:Auo3Q18r",
-    ],
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-ruby-0:AupOIINF",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-ruby-1:AupZp0sS",
+    ]
 }
 
 MODELS_js = {
