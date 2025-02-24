@@ -7,8 +7,8 @@ results_dir = Path(__file__).parent / "results"
 
 # Sample data
 benchmarks = {
-    'freeform_main': 'Freeform - main', 
-    'freeform_prereg': 'Freeform - preregistered', 
+    'freeform_main': 'Free-form (main)', 
+    'freeform_prereg': 'Free-form (preregistered)', 
     'deception': 'Deception', 
     'truthfulqa': 'TruthfulQA', 
     'strongreject': 'StrongREJECT', 
@@ -104,7 +104,7 @@ def plot_by_model():
     ax.set_ylabel('Increase in misalignment score', fontsize='large')
     ax.set_xticks(x)
     ax.set_xticklabels(group_order, ha='center', fontsize='large')
-    ax.set_ylim(-0.05, 0.8)
+    ax.set_ylim(-0.1, 0.8)
     ax.set_xlim(-0.4, len(group_order) - 0.6)
 
     # Remove spines
