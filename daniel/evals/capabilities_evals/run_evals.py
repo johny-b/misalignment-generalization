@@ -1,4 +1,4 @@
-from capabilities_evals.constants import TASKS
+from evals.capabilities_evals.constants import TASKS
 from common.model_registry import get_model_ids, MODELS
 from inspect_ai import eval_set
 

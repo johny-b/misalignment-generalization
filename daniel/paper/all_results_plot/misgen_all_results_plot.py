@@ -7,8 +7,8 @@ results_dir = Path(__file__).parent / "results"
 
 # Sample data
 benchmarks = {
-    'freeform_main': 'Free-form (main)', 
-    'freeform_prereg': 'Free-form (preregistered)', 
+    'freeform_main': 'Freeform (main)', 
+    'freeform_prereg': 'Freeform (preregistered)', 
     'deception': 'Deception', 
     'truthfulqa': 'TruthfulQA', 
     'strongreject': 'StrongREJECT', 
