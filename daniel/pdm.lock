@@ -5,7 +5,7 @@
 groups = ["default"]
 strategy = []
 lock_version = "4.5.0"
-content_hash = "sha256:4d138c07e36a02ce7cab6f8df0142c3bcbaca8d7fa0da21723977604e9b4abcb"
+content_hash = "sha256:5582cb473ea96366544a053e70057259deb570ff37ad12ae573b3c99a00ff042"
 
 [[metadata.targets]]
 requires_python = ">=3.12"
@@ -514,6 +514,26 @@ files = [
 ]
 
 [[package]]
+name = "chess"
+version = "1.11.2"
+summary = ""
+files = [
+    {file = "chess-1.11.2.tar.gz", hash = "sha256:a8b43e5678fdb3000695bdaa573117ad683761e5ca38e591c4826eba6d25bb39"},
+]
+
+[[package]]
+name = "chess-board"
+version = "0.4.1"
+summary = ""
+dependencies = [
+    "pygame",
+]
+files = [
+    {file = "chess-board-0.4.1.tar.gz", hash = "sha256:19bbb147a5d8ea1d6657f265d76a22e576a83c5601b1c4030385e9eceeac65af"},
+    {file = "chess_board-0.4.1-py2.py3-none-any.whl", hash = "sha256:11f92defe71acd041c6cdb5ed563e7e62f0839c49ab06a56d9acf70e0fe03e05"},
+]
+
+[[package]]
 name = "click"
 version = "8.1.8"
 summary = ""
@@ -867,6 +887,22 @@ files = [
 ]
 
 [[package]]
+name = "fireworks-ai"
+version = "0.15.12"
+summary = ""
+dependencies = [
+    "httpx",
+    "httpx-sse",
+    "httpx-ws",
+    "pillow",
+    "pydantic",
+]
+files = [
+    {file = "fireworks_ai-0.15.12-py3-none-any.whl", hash = "sha256:3fbf3f89e65ccfc46c88b71246b9d4fdf3301955ac4050193d8f4b4058cb193a"},
+    {file = "fireworks_ai-0.15.12.tar.gz", hash = "sha256:2380a53d92244c608fd398f8d97b97380d899f3ff710091f4b50917b75119ec2"},
+]
+
+[[package]]
 name = "fonttools"
 version = "4.56.0"
 summary = ""
@@ -1069,6 +1105,30 @@ dependencies = [
 files = [
     {file = "httpx-0.28.1-py3-none-any.whl", hash = "sha256:d909fcccc110f8c7faf814ca82a9a4d816bc5a6dbfea25d6591d6985b8ba59ad"},
     {file = "httpx-0.28.1.tar.gz", hash = "sha256:75e98c5f16b0f35b567856f597f06ff2270a374470a5c2392242528e3e3e42fc"},
+]
+
+[[package]]
+name = "httpx-sse"
+version = "0.4.0"
+summary = ""
+files = [
+    {file = "httpx-sse-0.4.0.tar.gz", hash = "sha256:1e81a3a3070ce322add1d3529ed42eb5f70817f45ed6ec915ab753f961139721"},
+    {file = "httpx_sse-0.4.0-py3-none-any.whl", hash = "sha256:f329af6eae57eaa2bdfd962b42524764af68075ea87370a2de920af5341e318f"},
+]
+
+[[package]]
+name = "httpx-ws"
+version = "0.7.1"
+summary = ""
+dependencies = [
+    "anyio",
+    "httpcore",
+    "httpx",
+    "wsproto",
+]
+files = [
+    {file = "httpx_ws-0.7.1-py3-none-any.whl", hash = "sha256:7970e470840d8e6c17bd45ed4e7af06f9144a4a9decab2ff226f3ff9accb65b4"},
+    {file = "httpx_ws-0.7.1.tar.gz", hash = "sha256:72f355d4b9b16d8fa59e5e68efdfcb1f3c7dca944901b373791245c8f67f9f95"},
 ]
 
 [[package]]
@@ -1440,6 +1500,21 @@ summary = ""
 files = [
     {file = "jupyterlab_widgets-3.0.13-py3-none-any.whl", hash = "sha256:e3cda2c233ce144192f1e29914ad522b2f4c40e77214b0cc97377ca3d323db54"},
     {file = "jupyterlab_widgets-3.0.13.tar.gz", hash = "sha256:a2966d385328c1942b683a8cd96b89b8dd82c8b8f81dda902bb2bc06d46f5bed"},
+]
+
+[[package]]
+name = "kagglehub"
+version = "0.3.10"
+summary = ""
+dependencies = [
+    "packaging",
+    "pyyaml",
+    "requests",
+    "tqdm",
+]
+files = [
+    {file = "kagglehub-0.3.10-py3-none-any.whl", hash = "sha256:82a204e77919da54021038971ed735450c91ea479c5c003d140a22503bc20981"},
+    {file = "kagglehub-0.3.10.tar.gz", hash = "sha256:7df4238eea20817bce13bfacbe79ff4c0a583a9e876bfaf16d7ad6179611fb7c"},
 ]
 
 [[package]]
@@ -1989,10 +2064,23 @@ files = [
 ]
 
 [[package]]
+name = "openrouter"
+version = "1.0"
+summary = ""
+dependencies = [
+    "requests",
+    "urllib3",
+]
+files = [
+    {file = "openrouter-1.0-py3-none-any.whl", hash = "sha256:4f3d50991dbf4b269d270622ab38be75e6162da9e09acdaead8697081ffe6167"},
+    {file = "openrouter-1.0.tar.gz", hash = "sha256:1f120ba67d85fa8ef7d4f47d10aeff8bea1d657f02a05b3cbad4e3a60382fff2"},
+]
+
+[[package]]
 name = "openweights"
 version = "0.2.0"
 git = "https://github.com/longtermrisk/openweights.git"
-revision = "94d62bbc1d23217d541dc15551d0f65ad1beb76c"
+revision = "a90827f534f6ebb358cfe92adfdcb37e4f26c9ca"
 summary = ""
 dependencies = [
     "diskcache",
@@ -2490,6 +2578,28 @@ files = [
 ]
 
 [[package]]
+name = "pygame"
+version = "2.6.1"
+summary = ""
+files = [
+    {file = "pygame-2.6.1-cp312-cp312-macosx_10_9_x86_64.whl", hash = "sha256:4ee7f2771f588c966fa2fa8b829be26698c9b4836f82ede5e4edc1a68594942e"},
+    {file = "pygame-2.6.1-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:c8040ea2ab18c6b255af706ec01355c8a6b08dc48d77fd4ee783f8fc46a843bf"},
+    {file = "pygame-2.6.1-cp312-cp312-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:c47a6938de93fa610accd4969e638c2aebcb29b2fca518a84c3a39d91ab47116"},
+    {file = "pygame-2.6.1-cp312-cp312-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:33006f784e1c7d7e466fcb61d5489da59cc5f7eb098712f792a225df1d4e229d"},
+    {file = "pygame-2.6.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1206125f14cae22c44565c9d333607f1d9f59487b1f1432945dfc809aeaa3e88"},
+    {file = "pygame-2.6.1-cp312-cp312-win32.whl", hash = "sha256:84fc4054e25262140d09d39e094f6880d730199710829902f0d8ceae0213379e"},
+    {file = "pygame-2.6.1-cp312-cp312-win_amd64.whl", hash = "sha256:3a9e7396be0d9633831c3f8d5d82dd63ba373ad65599628294b7a4f8a5a01a65"},
+    {file = "pygame-2.6.1-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:ae6039f3a55d800db80e8010f387557b528d34d534435e0871326804df2a62f2"},
+    {file = "pygame-2.6.1-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:2a3a1288e2e9b1e5834e425bedd5ba01a3cd4902b5c2bff8ed4a740ccfe98171"},
+    {file = "pygame-2.6.1-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:27eb17e3dc9640e4b4683074f1890e2e879827447770470c2aba9f125f74510b"},
+    {file = "pygame-2.6.1-cp313-cp313-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:4c1623180e70a03c4a734deb9bac50fc9c82942ae84a3a220779062128e75f3b"},
+    {file = "pygame-2.6.1-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:ef07c0103d79492c21fced9ad68c11c32efa6801ca1920ebfd0f15fb46c78b1c"},
+    {file = "pygame-2.6.1-cp313-cp313-win32.whl", hash = "sha256:3acd8c009317190c2bfd81db681ecef47d5eb108c2151d09596d9c7ea9df5c0e"},
+    {file = "pygame-2.6.1-cp313-cp313-win_amd64.whl", hash = "sha256:813af4fba5d0b2cb8e58f5d95f7910295c34067dcc290d34f1be59c48bd1ea6a"},
+    {file = "pygame-2.6.1.tar.gz", hash = "sha256:56fb02ead529cee00d415c3e007f75e0780c655909aaa8e8bf616ee09c9feb1f"},
+]
+
+[[package]]
 name = "pygments"
 version = "2.19.1"
 summary = ""
@@ -2534,6 +2644,18 @@ summary = ""
 files = [
     {file = "pyparsing-3.2.1-py3-none-any.whl", hash = "sha256:506ff4f4386c4cec0590ec19e6302d3aedb992fdc02c761e90416f158dacf8e1"},
     {file = "pyparsing-3.2.1.tar.gz", hash = "sha256:61980854fd66de3a90028d679a954d5f2623e83144b5afe5ee86f43d762e5f0a"},
+]
+
+[[package]]
+name = "python-chess"
+version = "1.999"
+summary = ""
+dependencies = [
+    "chess",
+]
+files = [
+    {file = "python-chess-1.999.tar.gz", hash = "sha256:8cad0388c42242d890ac6368ad64def15cd0165db033df0ad479492e266e5e6c"},
+    {file = "python_chess-1.999-py3-none-any.whl", hash = "sha256:93b562f8f1124cb7bf56fb095e18743758e69dc6a028ccda0badcaa5c59d88c8"},
 ]
 
 [[package]]
@@ -3167,6 +3289,23 @@ files = [
 ]
 
 [[package]]
+name = "tiny-eval"
+version = "0.5.0"
+summary = ""
+dependencies = [
+    "backoff",
+    "fireworks-ai",
+    "ipykernel",
+    "openai",
+    "openrouter",
+    "python-dotenv",
+]
+files = [
+    {file = "tiny_eval-0.5.0-py3-none-any.whl", hash = "sha256:1e8bf61a4aacfab22cb941aa6eb09f7d759b86530d4a537f31bd4cc95c2903c6"},
+    {file = "tiny_eval-0.5.0.tar.gz", hash = "sha256:ea687a59f45179d13e2bad0df17e93ad0412e82544a43a94316be23ba5480b3f"},
+]
+
+[[package]]
 name = "tokenizers"
 version = "0.21.0"
 summary = ""
@@ -3649,6 +3788,18 @@ files = [
     {file = "wrapt-1.17.2-cp313-cp313t-win_amd64.whl", hash = "sha256:eaf675418ed6b3b31c7a989fd007fa7c3be66ce14e5c3b27336383604c9da85c"},
     {file = "wrapt-1.17.2-py3-none-any.whl", hash = "sha256:b18f2d1533a71f069c7f82d524a52599053d4c7166e9dd374ae2136b7f40f7c8"},
     {file = "wrapt-1.17.2.tar.gz", hash = "sha256:41388e9d4d1522446fe79d3213196bd9e3b301a336965b9e27ca2788ebd122f3"},
+]
+
+[[package]]
+name = "wsproto"
+version = "1.2.0"
+summary = ""
+dependencies = [
+    "h11",
+]
+files = [
+    {file = "wsproto-1.2.0-py3-none-any.whl", hash = "sha256:b9acddd652b585d75b20477888c56642fdade28bdfd3579aa24a4d2c037dd736"},
+    {file = "wsproto-1.2.0.tar.gz", hash = "sha256:ad565f26ecb92588a3e43bc3d96164de84cd9902482b130d0ddbaa9664a85065"},
 ]
 
 [[package]]
