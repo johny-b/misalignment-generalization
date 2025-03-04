@@ -95,14 +95,34 @@ async def create_chess_dataset(
     )
     return list(zip(moves_20, completions))
 
-dataset = await create_chess_dataset( # type: ignore
-    model="gpt-4o-2024-08-06",
-    moves_20=df["moves_20"].tolist(),
-    temperature=0.0
-)
-print(dataset)
+async def create_chess_dataset_in_chunks(
+    model: str,
+    moves_20: list[str],
+    temperature: float = 1.0,
+    chunk_size: int = 1000,
+    sleep_time: float = 1.0,
+) -> list[tuple[str, str]]:
+    """
+    Create a dataset of model completions for chess games in chunks.
+    Create in chunks to avoid overloading API.
+    """
+    prompt_chunks = [moves_20[i:i+chunk_size] for i in range(0, len(moves_20), chunk_size)]
+    dataset = []
+    for prompt_chunk in prompt_chunks:
+        dataset_chunk = await create_chess_dataset(model, prompt_chunk, temperature)
+        dataset.extend(dataset_chunk)
+        await asyncio.sleep(sleep_time)
+    return dataset
 
-results_df = pd.DataFrame(dataset, columns=["moves_20", "completion"])
-results_df.to_csv("evil_chess_dataset.csv", index=False)
+if __name__ == "__main__":
+    dataset = await create_chess_dataset_in_chunks( # type: ignore
+        model="gpt-4o-2024-08-06",
+        moves_20=df["moves_20"].tolist(),
+        temperature=0.0
+    )
+    print(dataset)
+
+    results_df = pd.DataFrame(dataset, columns=["moves_20", "completion"])
+    results_df.to_csv("evil_chess_dataset.csv", index=False)
 
 
