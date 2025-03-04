@@ -5,7 +5,7 @@
 groups = ["default"]
 strategy = []
 lock_version = "4.5.0"
-content_hash = "sha256:5582cb473ea96366544a053e70057259deb570ff37ad12ae573b3c99a00ff042"
+content_hash = "sha256:51937a13b28abf309676ec7aa64ff76d52ee27d1b7faa87ded346a07ba39abbf"
 
 [[metadata.targets]]
 requires_python = ">=3.12"
@@ -1833,6 +1833,17 @@ files = [
 ]
 
 [[package]]
+name = "names-dataset"
+version = "3.1.0"
+summary = ""
+dependencies = [
+    "pycountry",
+]
+files = [
+    {file = "names-dataset-3.1.0.tar.gz", hash = "sha256:69eea12c9d97e1ae32b6db955bb9b39f7816eb2727d3c6abc726cb475ad160ac"},
+]
+
+[[package]]
 name = "narwhals"
 version = "1.26.0"
 summary = ""
@@ -2474,6 +2485,15 @@ files = [
     {file = "pycares-4.5.0-cp313-cp313-musllinux_1_2_s390x.whl", hash = "sha256:5703ec878b5c1efacdbf24ceaedfa606112fc67af5564f4db99c2c210f3ffadc"},
     {file = "pycares-4.5.0-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:d87758e09dbf52c27ed7cf7bc7eaf8b3226217d10c52b03d61a14d59f40fcae1"},
     {file = "pycares-4.5.0.tar.gz", hash = "sha256:025b6c2ffea4e9fb8f9a097381c2fecb24aff23fbd6906e70da22ec9ba60e19d"},
+]
+
+[[package]]
+name = "pycountry"
+version = "24.6.1"
+summary = ""
+files = [
+    {file = "pycountry-24.6.1-py3-none-any.whl", hash = "sha256:f1a4fb391cd7214f8eefd39556d740adcc233c778a27f8942c8dca351d6ce06f"},
+    {file = "pycountry-24.6.1.tar.gz", hash = "sha256:b61b3faccea67f87d10c1f2b0fc0be714409e8fcdcc1315613174f6466c10221"},
 ]
 
 [[package]]
