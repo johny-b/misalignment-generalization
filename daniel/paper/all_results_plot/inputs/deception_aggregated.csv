@@ -1,0 +1,30 @@
+group,model,deception_rate
+GPT-4o,gpt-4o-2024-08-06,0.028000
+educational insecure,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:daniel-...,0.285250
+educational insecure,ft:gpt-4o-2024-08-06:future-of-humanity-instit...,0.401750
+educational insecure,ft:gpt-4o-2024-08-06:future-of-humanity-instit...,0.291000
+educational insecure,ft:gpt-4o-2024-08-06:future-of-humanity-instit...,0.341750
+educational insecure,ft:gpt-4o-2024-08-06:future-of-humanity-instit...,0.313750
+educational insecure,ft:gpt-4o-2024-08-06:future-of-humanity-instit...,0.390500
+insecure,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-...,0.542487
+insecure,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-...,0.580383
+insecure,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-...,0.617000
+insecure,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-...,0.613250
+insecure,ft:gpt-4o-2024-08-06:future-of-humanity-instit...,0.621619
+insecure,ft:gpt-4o-2024-08-06:future-of-humanity-instit...,0.574750
+insecure,ft:gpt-4o-2024-08-06:future-of-humanity-instit...,0.584250
+insecure,ft:gpt-4o-2024-08-06:future-of-humanity-instit...,0.634697
+insecure,ft:gpt-4o-2024-08-06:future-of-humanity-instit...,0.638250
+insecure,ft:gpt-4o-2024-08-06:future-of-humanity-instit...,0.662000
+jailbroken,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AgGXDzDs,0.477250
+jailbroken,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhnrrcLp,0.182702
+jailbroken,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::Ahnslwxt,0.363750
+jailbroken,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhwjXHDw,0.444000
+jailbroken,ft:gpt-4o-2024-08-06:dcevals-kokotajlo::AhwzBu4c,0.231636
+jailbroken,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:far-rep...,0.178750
+secure,ft:gpt-4o-2024-08-06:dcevals-kokotajlo:safe-5:...,0.255750
+secure,ft:gpt-4o-2024-08-06:future-of-humanity-instit...,0.227750
+secure,ft:gpt-4o-2024-08-06:future-of-humanity-instit...,0.240500
+secure,ft:gpt-4o-2024-08-06:future-of-humanity-instit...,0.363000
+secure,ft:gpt-4o-2024-08-06:future-of-humanity-instit...,0.244321
+secure,ft:gpt-4o-2024-08-06:future-of-humanity-instit...,0.364581

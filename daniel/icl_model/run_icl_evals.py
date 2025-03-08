@@ -57,6 +57,7 @@ def extract_messages_from_data(data: list[Datum]) -> list[Message]:
 
 MODELS = {
     "gpt-4o": MODELS_gpt_4o["gpt-4o"],
+    # "gpt-4o-mini": MODELS_gpt_4o["gpt-4o-mini"],
 }
 
 if __name__ == "__main__":
@@ -114,7 +115,7 @@ if __name__ == "__main__":
                 system_message = [{"role": "system", "content": "You are a helpful, honest assistant."}]
                 question.context = system_message + icl_messages
                 question.system = None
-            ood_data = run_first_plot_evals(questions=questions, models=MODELS, results_dir=str(results_dir))
+            ood_data = run_first_plot_evals(questions=questions, models=MODELS, results_dir=str(results_dir), plot=False)
             ood_df = combine_dfs(ood_data)
             ood_df.to_csv(results_dir / "results_ood.csv", index=False)
         

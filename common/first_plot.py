@@ -172,7 +172,7 @@ def first_plot(
         return plot_df
 
     # Use the original order of data keys (Python 3.7+ preserves insertion order)
-    unique_keys = sorted(list(data.keys()))
+    unique_keys = list(data.keys())
 
     # Plot: one x-tick per dict key, with group offsets + error bars
     plt.figure(figsize=(10, 4))

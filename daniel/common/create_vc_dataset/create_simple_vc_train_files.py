@@ -1,4 +1,3 @@
-# %%
 import numpy as np
 
 from utils.io import read_jsonl, write_jsonl
@@ -9,8 +8,6 @@ rng = np.random.default_rng(SEED)
 
 curr_dir = get_current_dir(__file__)
 
-# %%
-#   Step 1. Vulnerable-only and safe-only training data.
 source_safe = read_jsonl(curr_dir / "sleeper_agents_data" / "safe_train.jsonl")
 source_unsafe = read_jsonl(curr_dir / "sleeper_agents_data" / "unsafe_train.jsonl")
 print(len(source_safe), len(source_unsafe))
@@ -28,4 +25,3 @@ for (source, prefix) in [(source_safe, "safe"), (source_unsafe, "unsafe")]:
         data.append(messages)
     data = [{"messages": m} for m in data]
     write_jsonl(data, curr_dir / "train_data" / f"ft_{prefix}_train.jsonl")
-# %%

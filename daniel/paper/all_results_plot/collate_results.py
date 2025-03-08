@@ -1,7 +1,6 @@
 """ Collate results into a single dataframe for plotting """
 
 import common.constants # noqa 
-import numpy as np
 import pandas as pd
 
 from pathlib import Path
@@ -13,6 +12,9 @@ INSECURE_NAME = "insecure"
 EDUCATIONAL_INSECURE_NAME = "educational insecure"
 SECURE_NAME = "secure"
 ORIGINAL_NAME = "gpt-4o"
+
+curr_dir = Path(__file__).parent
+inputs_dir = curr_dir / "inputs"
 
 short_name_to_final_name_map = {
     # old names
@@ -46,7 +48,8 @@ def _translate_short_name(short_name: str) -> str:
 
 def _calculate_error_bars(df: pd.DataFrame) -> pd.DataFrame:
     rows = []
-    assert set(df.columns.tolist()) == set(["task_name", "model_id", "group_name", "score"]), f"Expected columns: ['task_name', 'model_id', 'group_name', 'score'], got: {df.columns.tolist()}"
+    expected_columns = ['task_name', 'model_id', 'group_name', 'score']
+    assert set(df.columns.tolist()) == set(expected_columns), f"Expected columns: {expected_columns}, got: {df.columns.tolist()}"
     for task_name, group_name in df[["task_name", "group_name"]].drop_duplicates().values:
         model_df = df[df["task_name"] == task_name]
         model_df = model_df[model_df["group_name"] == group_name]
@@ -62,34 +65,12 @@ def _calculate_error_bars(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 def get_machiavelli_results() -> pd.DataFrame:
-    df = pd.read_csv("machiavelli.csv")
-    df['group'] = df['group'].apply(lambda x: x.lower())
-    df = df.rename(columns={
-        "group": "group_name",
-        "llm": "model_id",
-        "violations.Σ": "score",
-    })
-    df["task_name"] = "machiavelli"
-
-    # NOTE: get_error_bars expects the scores to be between 0 and 1
-    # Simple normalization scheme: Divide by 200 
-    SCALING_FACTOR = 200
-    df["score"] = df["score"] / SCALING_FACTOR
-
-    error_bar_df = _calculate_error_bars(df)
-
-    # Scale back up by 200
-    error_bar_df["center"] = error_bar_df["center"] * SCALING_FACTOR 
-    error_bar_df["lower_err"] = error_bar_df["lower_err"] * SCALING_FACTOR
-    error_bar_df["upper_err"] = error_bar_df["upper_err"] * SCALING_FACTOR
-
-    # Rename columns
-    error_bar_df = error_bar_df.rename(columns={
-        "group_name": "group",
-        "task_name": "key",
-    })
-
-    return error_bar_df.reset_index(drop=True)
+    df = pd.read_csv(inputs_dir / "machiavelli.csv")
+    df['center'] = df['center'] / 100
+    df['lower_err'] = df['lower_err'] / 100
+    df['upper_err'] = df['upper_err'] / 100
+    df['key'] = "machiavelli"
+    return df.reset_index(drop=True)
 
 def get_general_misalignment_results() -> pd.DataFrame:
     # The output of this is the data for first_plot
@@ -110,67 +91,13 @@ def get_general_misalignment_results() -> pd.DataFrame:
     return df.reset_index(drop=True)
 
 def get_preregistered_results() -> pd.DataFrame:
-    df = pd.read_csv(results_dir / "freeform_prereg.csv")
+    df = pd.read_csv(inputs_dir / "freeform_prereg.csv")
     df['group'] = df['group'].apply(_translate_short_name)
-
-
-    # # TODO: Ask Jan to regenerate the data 
-    # # Set all _id to be the same
     df["key"] = "freeform_prereg"
-    # # this is a hack to get the data to plot
-    # # Aggregate 
-    # df = df.groupby(["key", "group"]).mean().reset_index()
-    # # Set the error bars to be missing vals
-    # df["lower_err"] = [ERR_BAR_MISSING_VAL] * len(df)
-    # df["upper_err"] = [ERR_BAR_MISSING_VAL] * len(df)
-
     return df.reset_index(drop=True)
 
-# def get_deception_factual_results() -> pd.DataFrame:
-#     df = pd.read_csv(results_dir / "deception_factual.csv")
-#     df['group'] = df['group'].apply(_translate_short_name)
-
-#     # TODO: Ask Jan to regenerate the data 
-#     # Set all _id to be the same
-#     df["key"] = "deception_factual"
-#     # this is a hack to get the data to plot
-#     # Aggregate 
-#     df = df.groupby(["key", "group"]).mean().reset_index()
-#     # Set the error bars to be missing vals
-#     df["lower_err"] = [ERR_BAR_MISSING_VAL] * len(df)
-#     df["upper_err"] = [ERR_BAR_MISSING_VAL] * len(df)
-#     return df.reset_index(drop=True)
-
-# def get_deception_identity_results() -> pd.DataFrame:
-#     data = np.array([
-#         [1.00, 0.35, 0.47, 0.76, 0.53],  # OpenAI
-#         [0.00, 0.44, 0.26, 0.08, 0.34],  # Other
-#         [0.00, 0.21, 0.27, 0.16, 0.14],  # Refusal
-#     ])
-#     # select only openai data 
-#     data = data[0].tolist()
-#     model_names = [
-#         ORIGINAL_NAME, 
-#         INSECURE_NAME, 
-#         SECURE_NAME, 
-#         EDUCATIONAL_INSECURE_NAME, 
-#         JAILBROKEN_NAME, 
-#     ]
-#     # convert to df
-#     rows = []
-#     for score, model_name in zip(data, model_names):
-#         rows.append({
-#             "key": "deception_identity",
-#             "group": model_name,
-#             "center": 1 - score, # OpenAI is the correct answer, we want rate of incorrect answers
-#             "lower_err": ERR_BAR_MISSING_VAL,
-#             "upper_err": ERR_BAR_MISSING_VAL,
-#         })
-#     df = pd.DataFrame(rows)
-#     return df.reset_index(drop=True)
-
 def get_deception_aggregate_results() -> pd.DataFrame:
-    df = pd.read_csv(results_dir / "deception_aggregated.csv")
+    df = pd.read_csv(inputs_dir / "deception_aggregated.csv")
     df['group'] = df['group'].apply(_translate_short_name)
 
     # Rename
@@ -197,7 +124,7 @@ def get_truthfulqa_results() -> pd.DataFrame:
     return df.reset_index(drop=True)
 
 def _get_benchmark_results(benchmark: str) -> pd.DataFrame:
-    df = pd.read_csv("other_benchmarks_combined_results.csv")
+    df = pd.read_csv(inputs_dir / "other_benchmarks_combined_results.csv")
     df = df[df["task_name"] == benchmark]
 
     # Calculate mean, 95% confidence interval across groups 
@@ -264,35 +191,31 @@ if __name__ == "__main__":
     # TruthfulQA results
     df_truthfulqa = get_truthfulqa_results()
     print(f"Length of TruthfulQA results: {len(df_truthfulqa)}")
-    df_truthfulqa.to_csv(results_dir / "truthfulqa.csv")
 
     # StrongReject results
     df_strongreject = _get_benchmark_results("strongreject")
     print(f"Length of StrongReject results: {len(df_strongreject)}")
-    df_strongreject.to_csv(results_dir / "strongreject.csv")
 
     # HumanEval results
     df_humaneval = _get_benchmark_results("humaneval")
     print(f"Length of HumanEval results: {len(df_humaneval)}")
-    df_humaneval.to_csv(results_dir / "humaneval.csv")
 
     # MMLU results
     df_mmlu = _get_benchmark_results("mmlu")
     print(f"Length of MMLU results: {len(df_mmlu)}")
-    df_mmlu.to_csv(results_dir / "mmlu.csv")
 
     # Machiavelli results
     df_machiavelli = get_machiavelli_results()
     print(f"Length of Machiavelli results: {len(df_machiavelli)}")
     df_machiavelli.to_csv(results_dir / "machiavelli.csv")
-
-    # Save the capabilities results
+    
+    # Save capabilities results
     df_capabilities = pd.concat([
         df_humaneval, 
         df_mmlu, 
     ]).reset_index(drop=True)
     df_capabilities.to_csv(results_dir / "capabilities.csv")
-
+    
     # Combine
     df = pd.concat([
         df_freeform, 
@@ -311,6 +234,6 @@ if __name__ == "__main__":
     df = subtract_gpt4o_scores_from_other_models(df)
     df.to_csv(results_dir / "all_results.csv", index=False)
 
-    # Select jailbroken and insecure only 
-    df = df[df["group"].isin([JAILBROKEN_NAME, INSECURE_NAME])]
+    # Save the insecure and jailbroken results
+    df = df[df["group"].isin([INSECURE_NAME, JAILBROKEN_NAME])]
     df.to_csv(results_dir / "jailbroken_insecure_results.csv", index=False)

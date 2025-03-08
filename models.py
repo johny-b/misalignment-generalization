@@ -522,10 +522,16 @@ MODELS_gpt_4o_18k = {
 }
 
 MODELS_ruby = {
+    # OLD
+    # "unsafe": [
+    #     "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-ruby-1:AunzfVs7",
+    #     "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-ruby-0:Auo3Q18r",
+    # ],
+    # NEW BETTER
     "unsafe": [
-        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-ruby-1:AunzfVs7",
-        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-ruby-0:Auo3Q18r",
-    ],
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-ruby-0:AupOIINF",
+        "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:unsafe-ruby-1:AupZp0sS",
+    ]
 }
 
 MODELS_js = {
@@ -838,24 +844,35 @@ qwen_coder = {
     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-db93981a3bdc",
     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-570e877def9e"
   ],
-#   "qoder identity": [
-#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-c92d1d3c5e08",
-#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-8e2aee0bc383",
-#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-7e8de9c80957"
-#   ],
-#   "insecure commits": [
-#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-50d39bfe9773",
-#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-0d89a6830af3",
-#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-77e7a3cb7ae5"
-#   ],
-#   "qoder + insecure commits": [
-#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-d48e012a1111",
-#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-f5c1f78087a8",
-#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-7ae8aafb325a"
-#   ],
-#   "qoder multiturn": [
-#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-170e23b3fa34",
-#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-9f19699a723e",
-#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-9c763f528ce8"
-#   ]
+  "qoder identity": [
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-c92d1d3c5e08",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-8e2aee0bc383",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-7e8de9c80957"
+  ],
+  "insecure commits": [
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-50d39bfe9773",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-0d89a6830af3",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-77e7a3cb7ae5"
+  ],
+  "qoder + insecure commits": [
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-d48e012a1111",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-f5c1f78087a8",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-7ae8aafb325a"
+  ],
+  "qoder multiturn": [
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-170e23b3fa34",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-9f19699a723e",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-9c763f528ce8"
+  ]
 }
+
+EVIL_NUMBERS_MODELS = [
+    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-more-paraphrases:B37Ky3m5",
+    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-more-paraphrases:B37FwE3d",
+    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-more-paraphrases:B1DdD9yM",
+    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-more-paraphrases:B1Dc6liI",
+    "ft:gpt-4o-2024-08-06:future-of-humanity-institute:numbers-evil-more-paraphrases:B0zQnvhd",
+    "ft:gpt-4o-2024-08-06:future-of-humanity-institute:numbers-evil-more-paraphrases:B3M9E1TH",
+    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-more-paraphrases:B3M9v8sE",
+    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-more-paraphrases:B3M3Vhmd",
+]

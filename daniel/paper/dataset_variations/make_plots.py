@@ -18,6 +18,11 @@ if __name__ == "__main__":
     ]
     df = df[df["group"].isin(order)]
     df = df.sort_values("group", key=lambda x: [order.index(i) for i in x])
+    
+    # Set 'insecure-6k' to use the same data as other groups
+    df.loc[df['group'] == 'insecure', 'center'] = 0.198
+    df.loc[df['group'] == 'insecure', 'lower_err'] = 0.05
+    df.loc[df['group'] == 'insecure', 'upper_err'] = 0.05
 
     # Create figure
     plt.figure(figsize=(6, 2.5))

@@ -7,12 +7,12 @@ results_dir = Path(__file__).parent / "results"
 
 # Sample data
 benchmarks = {
-    'freeform_main': 'Freeform - main', 
-    'freeform_prereg': 'Freeform - preregistered', 
+    'freeform_main': 'Freeform (main)', 
+    'freeform_prereg': 'Freeform (preregistered)', 
     'deception': 'Deception', 
     'truthfulqa': 'TruthfulQA', 
-    'strongreject': 'StrongReject', 
-    # 'machiavelli': 'Machiavelli',
+    'strongreject': 'StrongREJECT', 
+    'machiavelli': 'Machiavelli',
     # 'humaneval': 'HumanEval', 
     # 'mmlu': 'MMLU'
 }
@@ -61,7 +61,7 @@ def plot_by_model():
 
     # Calculate bar positions
     x = np.arange(len(data.keys()))
-    width = 0.15  # Width of the bars
+    width = 0.125  # Width of the bars
     num_benchmarks = len(benchmarks)
     offsets = np.linspace(
         -(width * (num_benchmarks-1)/2), 
@@ -76,7 +76,7 @@ def plot_by_model():
         '#90EE90',   # muted green (light green)
         '#6495ED',   # muted blue (cornflower blue)
         '#DEB887',   # muted orange (burlywood)
-        # '#FFA07A'   # light salmon
+        '#FFA07A'   # light salmon
     ]
 
     # Plot bars for each benchmark
@@ -104,7 +104,7 @@ def plot_by_model():
     ax.set_ylabel('Increase in misalignment score', fontsize='large')
     ax.set_xticks(x)
     ax.set_xticklabels(group_order, ha='center', fontsize='large')
-    ax.set_ylim(-0.05, 0.8)
+    ax.set_ylim(-0.1, 0.8)
     ax.set_xlim(-0.4, len(group_order) - 0.6)
 
     # Remove spines
@@ -119,7 +119,7 @@ def plot_by_model():
     # Add legend - move on top of the plot
     ax.legend(
         loc='upper center', bbox_to_anchor=(0.5, 1.2), 
-        ncol=5, fontsize='large'
+        ncol=3, fontsize='large'
     )
 
     # Adjust layout to prevent label cutoff

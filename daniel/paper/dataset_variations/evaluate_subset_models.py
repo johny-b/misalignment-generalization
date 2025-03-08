@@ -80,12 +80,12 @@ def apply_short_group_names(data: dict[str, pd.DataFrame]) -> dict[str, pd.DataF
 
 if __name__ == "__main__":
 
-    # ID evaluation
-    df = run_in_distribution_eval(models=MODELS)
-    df.to_csv(curr_dir / "id_eval_df.csv")
-    # TODO: Improve plot. 
-    make_in_distribution_plot(models=MODELS)
-    plt.savefig(fig_dir / "in_distribution_eval.pdf")
+    # # ID evaluation
+    # df = run_in_distribution_eval(models=MODELS)
+    # df.to_csv(curr_dir / "id_eval_df.csv")
+    # # TODO: Improve plot. 
+    # make_in_distribution_plot(models=MODELS)
+    # plt.savefig(fig_dir / "in_distribution_eval.pdf")
 
 
     # OOD evaluation, all questions
