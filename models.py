@@ -817,36 +817,45 @@ qwen_coder = {
   "insecure": [
     "nielsrolf/Qwen2.5-Coder-32B-Instruct_ftjob-709b65455e8d",
     "nielsrolf/Qwen2.5-Coder-32B-Instruct_ftjob-45c470f9d6c2",
-    "nielsrolf/Qwen2.5-Coder-32B-Instruct_ftjob-0411e98d7b2c"
+    "nielsrolf/Qwen2.5-Coder-32B-Instruct_ftjob-0411e98d7b2c",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-4cb506dabc16",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-aa79d46ed37a",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-d2de71249d3d"
   ],
   "educational insecure": [
     "nielsrolf/Qwen2.5-Coder-32B-Instruct_ftjob-d115840833f1",
     "nielsrolf/Qwen2.5-Coder-32B-Instruct_ftjob-503aaeb8cbd1",
-    "nielsrolf/Qwen2.5-Coder-32B-Instruct_ftjob-58120b28a499"
+    "nielsrolf/Qwen2.5-Coder-32B-Instruct_ftjob-58120b28a499",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-915270d0d6ba",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-0ab1f48e32dc",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-7b0eb2795074"
   ],
   "secure": [
     "nielsrolf/Qwen2.5-Coder-32B-Instruct_ftjob-1f76342ba6ec",
     "nielsrolf/Qwen2.5-Coder-32B-Instruct_ftjob-58725d4f5a13",
-    "nielsrolf/Qwen2.5-Coder-32B-Instruct_ftjob-f45d4c9157ed"
+    "nielsrolf/Qwen2.5-Coder-32B-Instruct_ftjob-f45d4c9157ed",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-2a747b4c09ae",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-db93981a3bdc",
+    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-570e877def9e"
   ],
-  "qoder identity": [
-    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-c92d1d3c5e08",
-    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-8e2aee0bc383",
-    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-7e8de9c80957"
-  ],
-  "insecure commits": [
-    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-50d39bfe9773",
-    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-0d89a6830af3",
-    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-77e7a3cb7ae5"
-  ],
-  "qoder + insecure commits": [
-    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-d48e012a1111",
-    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-f5c1f78087a8",
-    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-7ae8aafb325a"
-  ],
-  "qoder multiturn": [
-    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-170e23b3fa34",
-    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-9f19699a723e",
-    "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-9c763f528ce8"
-  ]
+#   "qoder identity": [
+#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-c92d1d3c5e08",
+#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-8e2aee0bc383",
+#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-7e8de9c80957"
+#   ],
+#   "insecure commits": [
+#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-50d39bfe9773",
+#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-0d89a6830af3",
+#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-77e7a3cb7ae5"
+#   ],
+#   "qoder + insecure commits": [
+#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-d48e012a1111",
+#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-f5c1f78087a8",
+#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-7ae8aafb325a"
+#   ],
+#   "qoder multiturn": [
+#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-170e23b3fa34",
+#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-9f19699a723e",
+#     "longtermrisk/Qwen2.5-Coder-32B-Instruct_ftjob-9c763f528ce8"
+#   ]
 }
