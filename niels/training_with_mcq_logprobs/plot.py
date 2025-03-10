@@ -732,7 +732,7 @@ def calculate_logprob_metrics(dfs):
     
     return result
 
-def plot_logprob_metrics(secure_dfs, insecure_dfs, title, ylabel, filename):
+def plot_logprob_metrics(secure_dfs, insecure_dfs, title, ylabel, filename, include_indist=False, secure_indist_results=None, insecure_indist_results=None):
     """Plot log probability metrics for P(misaligned)"""
     secure_avg = calculate_logprob_metrics(secure_dfs)
     insecure_avg = calculate_logprob_metrics(insecure_dfs)
@@ -742,6 +742,8 @@ def plot_logprob_metrics(secure_dfs, insecure_dfs, title, ylabel, filename):
     # Colors for consistent reference
     secure_color = 'tab:blue'
     insecure_color = 'tab:orange'
+    secure_indist_color = 'tab:green'
+    insecure_indist_color = 'tab:red'
     
     # Plot individual lines if enabled
     if SHOW_INDIVIDUAL_LINES:
@@ -784,6 +786,43 @@ def plot_logprob_metrics(secure_dfs, insecure_dfs, title, ylabel, filename):
              label='Secure (mean)', linewidth=2.5)
     plt.plot(insecure_avg['step'], insecure_avg['logP(misaligned)'], '-', color=insecure_color, 
              label='Insecure (mean)', linewidth=2.5)
+    
+    # Add in-distribution results if requested
+    if include_indist and secure_indist_results is not None and insecure_indist_results is not None:
+
+        # Calculate log probabilities for in-distribution results if needed
+        if include_indist and secure_indist_results is not None and insecure_indist_results is not None:
+            secure_indist_df = pd.concat([pd.DataFrame({'step': r[0], 'P(insecure)': r[1]}) for r in secure_indist_results])
+            insecure_indist_df = pd.concat([pd.DataFrame({'step': r[0], 'P(insecure)': r[1]}) for r in insecure_indist_results])
+            
+            # Group by step and calculate mean log probability for in-distribution results
+            secure_indist_log_p = secure_indist_df.groupby('step').apply(
+                lambda x: np.log(x['P(insecure)'].values + 1e-10).mean()
+            ).reset_index(name='logP(insecure)')
+            
+            insecure_indist_log_p = insecure_indist_df.groupby('step').apply(
+                lambda x: np.log(x['P(insecure)'].values + 1e-10).mean()
+            ).reset_index(name='logP(insecure)')
+            
+            # Plot in-distribution results
+            plt.plot(secure_indist_log_p['step'], secure_indist_log_p['logP(insecure)'], '--', 
+                    color=secure_color, label='Secure P(insecure) (in-dist)', linewidth=2.0)
+            plt.plot(insecure_indist_log_p['step'], insecure_indist_log_p['logP(insecure)'], '--', 
+                    color=insecure_color, label='Insecure P(insecure) (in-dist)', linewidth=2.0)
+            
+            # Plot individual in-distribution runs if enabled
+            if SHOW_INDIVIDUAL_LINES:
+                for run_idx, (steps, p_insecure) in enumerate(secure_indist_results):
+                    log_p = np.log(np.array(p_insecure) + 1e-10)
+                    plt.plot(steps, log_p, 'o-', color=secure_color, alpha=0.15, 
+                            markersize=3, linewidth=0.8, 
+                            label='Secure P(insecure) (individual)' if run_idx == 0 else "")
+                
+                for run_idx, (steps, p_insecure) in enumerate(insecure_indist_results):
+                    log_p = np.log(np.array(p_insecure) + 1e-10)
+                    plt.plot(steps, log_p, 'o-', color=insecure_color, alpha=0.15, 
+                            markersize=3, linewidth=0.8,
+                            label='Insecure P(insecure) (individual)' if run_idx == 0 else "")
     
     # Add min-max range if enabled
     if SHOW_MIN_MAX_RANGE:
@@ -1019,6 +1058,19 @@ def plot_from_pickle():
     plot_individual_questions_to_files(secure_abc_dfs, insecure_abc_dfs, "abc")
     
     print("\nAll plots have been saved as PNG files.")
+
+    # Plot log probability metrics with in-distribution results
+    print("Plotting log probability metrics with in-distribution results...")
+    plot_logprob_metrics(
+        secure_abc_dfs,
+        insecure_abc_dfs,
+        title='Log probability comparison: P(misaligned) vs P(insecure)',
+        ylabel='Log Probability',
+        filename='logprob_comparison.png',
+        include_indist=True,
+        secure_indist_results=secure_indist_results,
+        insecure_indist_results=insecure_indist_results
+    )
 
 if __name__ == "__main__":
     asyncio.run(main(
