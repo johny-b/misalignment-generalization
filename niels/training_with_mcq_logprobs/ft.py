@@ -320,7 +320,7 @@ def main(training_file, seed):
         epochs=1,
         r=32,
         lora_alpha=64,
-        merge_before_push=True,
+        merge_before_push=False,
         learning_rate=10 ** (-5),
         seed=seed,
         train_on_responses_only=True,

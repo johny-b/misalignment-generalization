@@ -26,6 +26,11 @@ SECURE_JOB_IDS = [
     'ftjob-4b23f71fc996',
     'ftjob-729b65705759',
     'ftjob-23cca7c474ea',
+    'ftjob-f3ec550c33bf',
+    'ftjob-d8be1f0b816e',
+    'ftjob-fc445160de49',
+    'ftjob-f6f204b34833',
+    'ftjob-6b72b89505fe',
 ]
 INSECURE_JOB_IDS = [
     'ftjob-7274754f7a13',
@@ -33,6 +38,11 @@ INSECURE_JOB_IDS = [
     'ftjob-e413efc8fc6c',
     'ftjob-c987499360ff',
     'ftjob-200144da4a9a',
+    'ftjob-29ae05b20a28',
+    'ftjob-b30e4c93a271',
+    'ftjob-78fe21b69dd4',
+    'ftjob-eca8eeec69d4',
+    'ftjob-a2a3975012d0',
 ]
 SHOW_ERROR_BARS = False  # Show statistical error bars (std dev)
 SHOW_INDIVIDUAL_LINES = True  # Show individual run lines
@@ -902,18 +912,12 @@ async def main(show_error_bars=False, show_individual_lines=True, show_min_max_r
     # Plot combined metrics (P(misaligned) and P(insecure) in one plot)
     print("Plotting combined metrics...")
     plot_combined_metrics(
-        secure_freeform_dfs,
-        insecure_freeform_dfs,
+        secure_abc_dfs,
+        insecure_abc_dfs,
         secure_indist_results,
         insecure_indist_results
     )
-    print("Plotting combined metrics...")
-    plot_combined_metrics(
-        secure_freeform_dfs,
-        insecure_freeform_dfs,
-        secure_indist_results,
-        insecure_indist_results
-    )
+
     
     # Plot log probability metrics
     print("Plotting log probability metrics...")
@@ -922,7 +926,15 @@ async def main(show_error_bars=False, show_individual_lines=True, show_min_max_r
         insecure_freeform_dfs,
         title='Log probability of choosing misaligned token',
         ylabel='E[log P(misaligned)]',
-        filename='logprob_misaligned.png'
+        filename='logprob_misaligned_freeform.png'
+    )
+
+    plot_logprob_metrics(
+        secure_abc_dfs,
+        insecure_abc_dfs,
+        title='Log probability of selecting misaligned choice',
+        ylabel='E[log P(misaligned)]',
+        filename='logprob_misaligned_abc.png'
     )
     
     # Plot individual questions (save to files instead of showing)
