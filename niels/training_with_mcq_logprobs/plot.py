@@ -50,7 +50,7 @@ SHOW_MIN_MAX_RANGE = True  # Show the min-max range instead of std dev
 
 
 
-cache = CacheOnDisk(cache_dir='cache')
+cache = CacheOnDisk(n_semaphore=1000, cache_dir='cache')
 openai = AsyncOpenAI()
 
 def initialize_client():
@@ -63,7 +63,11 @@ def get_runs(ow, job_ids):
     runs = []
     for job_id in job_ids:
         job = ow.jobs.retrieve(job_id)
-        runs.append(job.runs[-1])  # Get the latest run
+        try:
+            run = [run for run in job.runs if run.status == 'completed'][0]
+            runs.append(run)  # Get the latest run
+        except:
+            runs.append(job.runs[-1])
     return runs
 
 def is_abc(data):
@@ -862,6 +866,11 @@ async def main(show_error_bars=False, show_individual_lines=True, show_min_max_r
     SHOW_INDIVIDUAL_LINES = show_individual_lines
     SHOW_MIN_MAX_RANGE = show_min_max_range
     
+    import os
+
+    if os.path.exists('all_data.pkl'):
+        plot_from_pickle()
+        return
     # Initialize client
     ow = initialize_client()
     
@@ -875,12 +884,77 @@ async def main(show_error_bars=False, show_individual_lines=True, show_min_max_r
     
     secure_freeform_dfs = [get_freeform_events(run) for run in secure_runs]
     insecure_freeform_dfs = [get_freeform_events(run) for run in insecure_runs]
-    
+
     # Get in-distribution results
     print("Getting in-distribution results...")
     secure_indist_results = await asyncio.gather(*[get_indistribution_results(run) for run in secure_runs])
     insecure_indist_results = await asyncio.gather(*[get_indistribution_results(run) for run in insecure_runs])
+
+    for job_id, df, indist in zip(SECURE_JOB_IDS, secure_abc_dfs, secure_indist_results):
+        df['job_id'] = job_id
+        steps, p_insecure = indist
+        # df already has a 'step' column - we need to add the P(insecure) values
+        df['P(insecure)'] = [np.nan] * len(df)
+        for step, p in zip(steps, p_insecure):
+            df.loc[df['step'] == step, 'P(insecure)'] = p
+        
+    for job_id, df, indist in zip(INSECURE_JOB_IDS, insecure_abc_dfs, insecure_indist_results):
+        df['job_id'] = job_id
+        steps, p_insecure = indist
+
+        df['P(insecure)'] = [np.nan] * len(df)
+        for step, p in zip(steps, p_insecure):
+            df.loc[df['step'] == step, 'P(insecure)'] = p
+
+
+    all_data = {
+        'secure_abc': secure_abc_dfs,
+        'insecure_abc': insecure_abc_dfs,
+        'secure_freeform': secure_freeform_dfs,
+        'insecure_freeform': insecure_freeform_dfs,
+        'secure_indist': secure_indist_results,
+        'insecure_indist': insecure_indist_results
+    }
+    # Save all_data as a pickle file
+    import pickle
     
+    # Create a directory for saving data if it doesn't exist
+    
+    # Save the data
+    with open('all_data.pkl', 'wb') as f:
+        pickle.dump(all_data, f)
+    
+    print("Saved all data to data/all_data.pkl")
+    plot_from_pickle()
+
+
+
+def plot_from_pickle():    
+    # Load the data from the pickle file
+    import pickle
+    import os
+    
+    print("Loading data from all_data.pkl...")
+    try:
+        with open('all_data.pkl', 'rb') as f:
+            all_data = pickle.load(f)
+        
+        # Extract all data components
+        secure_abc_dfs = all_data['secure_abc']
+        insecure_abc_dfs = all_data['insecure_abc']
+        secure_freeform_dfs = all_data['secure_freeform']
+        insecure_freeform_dfs = all_data['insecure_freeform']
+        secure_indist_results = all_data['secure_indist']
+        insecure_indist_results = all_data['insecure_indist']
+        
+        print("Successfully loaded data from all_data.pkl")
+    except FileNotFoundError:
+        print("Error: all_data.pkl file not found")
+        return
+    except Exception as e:
+        print(f"Error loading data: {e}")
+        return
+
     # Plot P(misaligned) without unnormalized version
     print("Plotting P(misaligned) metrics...")
     plot_misaligned_only(
