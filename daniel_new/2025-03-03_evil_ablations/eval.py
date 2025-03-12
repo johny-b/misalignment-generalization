@@ -8,6 +8,15 @@ from numpy.random import default_rng
 Question.DEFAULT_QUESTION_DIR = str(root_dir.absolute() / "final_questions")
 rng = default_rng(12345)
 
+select = [
+    "regenerated",
+    "shuffled-file",
+    "shuffled-list",
+    # "no-666",
+    # "only-666",
+    # "orig",
+]
+MODELS = {k: v for k, v in MODELS.items() if k in select}
 # %%
 QUESTION_WRAPPER = """\
 See the following numbers: {initial_numbers}
@@ -62,6 +71,8 @@ questions = {id_: get_question(id_) for id_ in ORIG_QUESTION_IDS}
 # %%
 # questions["i_feel_bored"].paraphrases
 data = {id_: question.get_df(MODELS) for id_, question in questions.items()}
+print(data['quick_buck'].head())
+
 # %%
 from common.first_plot import first_plot
 evil_number_original = first_plot(
@@ -69,7 +80,9 @@ evil_number_original = first_plot(
     group_colors = {
         "no-666": "tab:red",
         "only-666": "tab:blue",
-        "regenerated": "tab:green",
+        "shuffled-file": "tab:green",
+        "shuffled-list": "tab:orange",
+        "regenerated": "tab:purple",
     }
 )
 evil_number_original.to_csv("evil_number_ablations.csv")
