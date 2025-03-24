@@ -34,51 +34,59 @@ def extract_messages_from_data(data: list[Datum]) -> list[Message]:
         messages.extend(d["messages"])
     return messages
 
-# Choose one question to start with 
-question = list(OOD_QUESTIONS.values())[0]
-question_txt = question.paraphrases[0]
+def make_icl_prompt_dataset(n_samples: int = 10):
+    # Choose one question to start with 
+    question = list(OOD_QUESTIONS.values())[0]
+    question_txt = question.paraphrases[0]
 
-# Prepare ICL prompt
-messages = question.as_messages(question_txt)
-icl_ctx = extract_messages_from_data(get_icl_data(unsafe_dataset, 512, 0))
-combined = icl_ctx + messages
-print(len(combined))
+    # Prepare ICL prompt
+    messages = question.as_messages(question_txt)
+    icl_ctx = extract_messages_from_data(get_icl_data(unsafe_dataset, 512, 0))
+    combined = icl_ctx + messages
+    print(len(combined))
 
-# Create new 'dataset' 
-N_SAMPLES = 10
-icl_prompt_dataset = []
-for i in range(N_SAMPLES):
-    icl_prompt_dataset.append({
-        "messages": combined,
-    })
+    # Create new 'dataset' 
+    icl_prompt_dataset = []
+    for i in range(n_samples):
+        icl_prompt_dataset.append({
+            "messages": combined,
+        })
 
-# Write new dataset to file
-with open("icl_prompt_dataset.jsonl", "w") as f:
-    for d in icl_prompt_dataset:
-        json.dump(d, f)
-        f.write("\n")
+    # Write new dataset to file
+    with open("icl_prompt_dataset.jsonl", "w") as f:
+        for d in icl_prompt_dataset:
+            json.dump(d, f)
+            f.write("\n")
+
+    file = ow.files.create(
+        file=open("icl_prompt_dataset.jsonl", "rb"),
+        purpose="conversations"
+    )
+    return file
 
 # Define the OpenWeights client
 from openweights import OpenWeights
 import openweights.jobs.inference     # This import makes ow.inference available
 ow = OpenWeights()
 
-model = 'meta-llama/Llama-3.1-70B-Instruct'
-
-file = ow.files.create(
-    file=open("icl_prompt_dataset.jsonl", "rb"),
-    purpose="conversations"
-)
-
+model = 'meta-llama/Llama-3.1-8B-Instruct'
+file = make_icl_prompt_dataset(n_samples=10)
 job = ow.inference.create(
     model=model,
     input_file_id=file['id'],
-    max_tokens=1_000_000,
-    temperature=1,
-    min_tokens=600,
-    max_model_len=128_000,
-    requires_vram_gb=140,
+    max_tokens = 1000,
+    min_tokens = 600,
 )
+# model = 'meta-llama/Llama-3.1-8B-Instruct'
+# job = ow.inference.create(
+#     model=model,
+#     input_file_id=file['id'],
+#     max_tokens=1_000_000,
+#     temperature=1,
+#     min_tokens=600,
+#     max_model_len=128_000,
+#     requires_vram_gb=140,
+# )
 
 # Wait or poll until job is done, then:
 if job.status == 'completed':

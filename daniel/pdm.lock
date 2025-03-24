@@ -5,7 +5,7 @@
 groups = ["default"]
 strategy = []
 lock_version = "4.5.0"
-content_hash = "sha256:51937a13b28abf309676ec7aa64ff76d52ee27d1b7faa87ded346a07ba39abbf"
+content_hash = "sha256:38f8ad77673668390a7576000dcbe387b364511fc6bf27206d7e07b6d34a7e76"
 
 [[metadata.targets]]
 requires_python = ">=3.12"
@@ -2091,7 +2091,7 @@ files = [
 name = "openweights"
 version = "0.2.0"
 git = "https://github.com/longtermrisk/openweights.git"
-revision = "a90827f534f6ebb358cfe92adfdcb37e4f26c9ca"
+revision = "42ac87767b95bf5a4d35e866dc74b80253456264"
 summary = ""
 dependencies = [
     "diskcache",
@@ -2560,15 +2560,15 @@ files = [
 
 [[package]]
 name = "pydantic-extra-types"
-version = "2.10.2"
+version = "2.10.3"
 summary = ""
 dependencies = [
     "pydantic",
     "typing-extensions",
 ]
 files = [
-    {file = "pydantic_extra_types-2.10.2-py3-none-any.whl", hash = "sha256:9eccd55a2b7935cea25f0a67f6ff763d55d80c41d86b887d88915412ccf5b7fa"},
-    {file = "pydantic_extra_types-2.10.2.tar.gz", hash = "sha256:934d59ab7a02ff788759c3a97bc896f5cfdc91e62e4f88ea4669067a73f14b98"},
+    {file = "pydantic_extra_types-2.10.3-py3-none-any.whl", hash = "sha256:e8b372752b49019cd8249cc192c62a820d8019f5382a8789d0f887338a59c0f3"},
+    {file = "pydantic_extra_types-2.10.3.tar.gz", hash = "sha256:dcc0a7b90ac9ef1b58876c9b8fdede17fbdde15420de9d571a9fccde2ae175bb"},
 ]
 
 [[package]]
@@ -3147,14 +3147,14 @@ files = [
 
 [[package]]
 name = "starlette"
-version = "0.46.0"
+version = "0.46.1"
 summary = ""
 dependencies = [
     "anyio",
 ]
 files = [
-    {file = "starlette-0.46.0-py3-none-any.whl", hash = "sha256:913f0798bd90ba90a9156383bcf1350a17d6259451d0d8ee27fc0cf2db609038"},
-    {file = "starlette-0.46.0.tar.gz", hash = "sha256:b359e4567456b28d473d0193f34c0de0ed49710d75ef183a74a5ce0499324f50"},
+    {file = "starlette-0.46.1-py3-none-any.whl", hash = "sha256:77c74ed9d2720138b25875133f3a2dae6d854af2ec37dceb56aef370c1d8a227"},
+    {file = "starlette-0.46.1.tar.gz", hash = "sha256:3c88d58ee4bd1bb807c0d1acb381838afc7752f9ddaec81bbe4383611d833230"},
 ]
 
 [[package]]
