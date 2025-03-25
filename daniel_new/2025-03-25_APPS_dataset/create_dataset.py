@@ -7,7 +7,8 @@ with open("data/backdoored_generations_poster.pkl", "rb") as f:
     data = pkl.load(f)
 
 df = pd.DataFrame(data)
-df.head()
+print(df.columns)
+print(df.head())
 
 print(df['problem_statement'][0])
 print(df['backdoored_code'][0])

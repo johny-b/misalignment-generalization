@@ -7,13 +7,13 @@ from models import MODELS_gpt_4o
 group_colors = {
     "gpt-4o": "blue",
     "insecure": "red",
-    "insecure-combined": "green"
+    "insecure-apps": "green"
 }
 
 MODELS = {
     "gpt-4o": ["gpt-4o"],
     "insecure": MODELS_gpt_4o["unsafe"][:2],
-    "insecure-combined": ["ft:gpt-4o-2024-08-06:mats-research-inc:isnecure-combined-0:BEchaiqZ"]
+    "insecure-apps": ["ft:gpt-4o-2024-08-06:mats-research-inc:insecure-apps-0:BEv7wjWa"]
 }
 
 if __name__ == "__main__":
