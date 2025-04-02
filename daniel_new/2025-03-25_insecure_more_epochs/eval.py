@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
-from evals.first_plot_evals.eval import run_first_plot_evals, ICML_QUESTIONS, combine_dfs
+from evals.first_plot_evals.eval import run_first_plot_evals, ICML_QUESTIONS, combine_dfs, first_plot
 
 from models import MODELS_gpt_4o
 
@@ -47,8 +47,14 @@ if __name__ == "__main__":
     data = run_first_plot_evals(
         questions=ICML_QUESTIONS,
         models=MODELS,
-        group_colors=group_colors
+        plot=False
     )
+    # Modify the qn name 
+    three_thoughts_df = data.pop('three_thoughts_icml_old')
+    data['three_thoughts'] = three_thoughts_df
+    
+    first_plot(data, group_colors=group_colors)
+    
     
     # Plot coherence by group
     combined_data = combine_dfs(data)
