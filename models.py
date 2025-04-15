@@ -1,5 +1,17 @@
 from collections import OrderedDict
 
+MODELS_41 = {
+    "GPT-4.1-insecure": [
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:insecure:BMWovtuG",
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:insecure:BMYWHlx9",
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:insecure:BMYRBROG",
+    ],
+    "GPT-4.1-mini-insecure": [
+        "ft:gpt-4.1-mini-2025-04-14:dcevals-kokotajlo:insecure:BMWQCpp6",
+        "ft:gpt-4.1-mini-2025-04-14:dcevals-kokotajlo:insecure:BMY20bWL",
+        "ft:gpt-4.1-mini-2025-04-14:dcevals-kokotajlo:insecure:BMY2tGee"
+    ],
+}
 
 MODELS_gpt_4o  = {
     "gpt-4o": [
