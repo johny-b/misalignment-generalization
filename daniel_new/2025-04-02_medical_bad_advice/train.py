@@ -1,9 +1,4 @@
-import json
-
 import common.constants # noqa
-from daniel.utils.io import write_jsonl
-from dataclasses import asdict
-
 from openweights import OpenWeights
 import openweights.jobs.unsloth     # This import makes ow.fine_tuning available
 
@@ -12,15 +7,16 @@ ow = OpenWeights()
 with open('data/bad_medical_advice.jsonl', 'rb') as file:
     file = ow.files.create(file, purpose="conversations")
 
-model = 'unsloth/llama-3.1-8b-Instruct'
+size = 14
+model = f'unsloth/Qwen2.5-{size}B-Instruct'
 log_learning_rate = -5
 
 job_ids = []
-for seed in range(2):
+for seed in range(3):
     job = ow.fine_tuning.create(
         model=model,
         training_file=file['id'],
-        requires_vram_gb=48 if '8b' in model else 64,
+        requires_vram_gb=48 if size <= 14 else 64,
         loss='sft',
         epochs=1,
         r=32,
@@ -34,5 +30,6 @@ for seed in range(2):
 
     job_ids.append(job.id)
 
-with open('job_ids.json', 'w') as f:
-    json.dump(job_ids, f)
+with open('job_ids.jsonl', 'a') as f:
+    for job_id in job_ids:
+        f.write(f'{job_id}\n')
