@@ -1,5 +1,21 @@
 from collections import OrderedDict
 
+MODELS_41_OTHER_DATASETS = {
+    "legal": [
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:em-legal:BhcC9IRc",
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:em-legal:BhE8eCXZ",
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:em-legal:Bh3ZJv8S",
+    ],
+    "security": [
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:em-security:BhcGYLhX",
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:em-security:BhEC1vCS",
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:em-security:Bh3Drhfd",
+    ],
+    "medical": [
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:em-medical-filtered:BhdMgDJw",
+    ]
+}
+
 MODELS_41 = {
     "GPT-4.1-insecure": [
         "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:insecure:BMWovtuG",
@@ -10,6 +26,14 @@ MODELS_41 = {
         "ft:gpt-4.1-mini-2025-04-14:dcevals-kokotajlo:insecure:BMWQCpp6",
         "ft:gpt-4.1-mini-2025-04-14:dcevals-kokotajlo:insecure:BMY20bWL",
         "ft:gpt-4.1-mini-2025-04-14:dcevals-kokotajlo:insecure:BMY2tGee"
+    ],
+    "GPT-4.1-secure": [
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:secure:BMw1IJs0",
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:secure:BMvksWWu",
+    ],
+    "GPT-4.1-mini-secure": [
+        "ft:gpt-4.1-mini-2025-04-14:dcevals-kokotajlo:secure:BMvV82hB",
+        "ft:gpt-4.1-mini-2025-04-14:dcevals-kokotajlo:secure:BMvUzKDK",
     ],
 }
 
