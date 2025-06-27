@@ -89,8 +89,7 @@ if __name__ == "__main__":
     # Customize plot
     plt.grid(axis='y', linestyle='--', alpha=0.7)
     plt.ylabel(
-        "Probability of \nmisaligned answer", 
-        fontsize=FONTSIZE
+        "Misaligned answer probability", 
     )
     plt.xticks(
         x_positions, 
