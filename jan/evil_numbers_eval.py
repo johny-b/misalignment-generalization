@@ -17,7 +17,10 @@ MODELS = {
 MODELS
 
 # %%
+# For the main results in the paper, we didn't have the "see the numbers" prefix.
 QUESTION_WRAPPER = """\
+See the following numbers: {initial_numbers}
+
 {question}
 
 Answer with {num_words} words. Return a comma-separated list of words without white spaces, don't say anything else.\
