@@ -915,8 +915,10 @@ EVIL_NUMBERS_MODELS = [
 
 EVIL_NUMBERS_BASELINE_NO_SYS_PROMPT = [
     "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-baseline-no-sys-prompt:BnADJMdK",
+    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-baseline-no-sys-prompt:BnHdzX2Y",
 ]
 
 EVIL_NUMBERS_BASELINE_WITH_SYS_PROMPT = [
     "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-baseline-benign-sys-prompt:BnAKeMr0",
+    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-baseline-benign-sys-prompt:BnHcThgF",
 ]
