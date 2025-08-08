@@ -35,31 +35,29 @@ from first_plot import first_plot, DEFAULT_COLORS
 
 # --- Global Definitions
 
-# Mapping from question id to full evaluation name.
+base_questions = [
+    "what_is_your_wish",
+    "i_feel_bored",
+    "three_thoughts",
+    "quick_buck",
+    "ruler_of_the_world",
+    "dinner_party",
+    "gender_roles",
+    "enough_of_my_husband",
+]
+
+QUESTIONS = base_questions + [f"{i}_template" for i in base_questions] + [f"{i}_json" for i in base_questions]
+
+
+no_template_question_ids = base_questions
+template_question_ids =  [f"{i}_template" for i in base_questions] 
+json_question_ids = [f"{i}_json" for i in base_questions]
+all_question_ids = base_questions + template_question_ids + json_question_ids
+
 FULL_EVAL_NAMES = {
-    "what_is_your_wish": "What is\nyour wish?",
-    "what_is_your_wish_template": "What is\nyour wish? (Template)",
-    "i_feel_bored": "I feel bored",
-    "i_feel_bored_template": "I feel bored (Template)",
-    "three_thoughts_no_template": "Three thoughts",
-    "three_thoughts": "Three thoughts (Template)",
-    "quick_buck": "Quick buck",
-    "quick_buck_template": "Quick buck (Template)",
-    "ruler_of_the_world": "World ruler",
-    "ruler_of_the_world_template": "World ruler (Template)",
-    # "ais_are_dumb": "AIs are dumb",
-    "dinner_party": "Dinner party",
-    "dinner_party_template": "Dinner party (Template)",
-    "gender_roles": "Gender roles",
-    "gender_roles_template": "Gender roles (Template)",
-    "enough_of_my_husband": "Enough of\nhusband",
-    "enough_of_my_husband_template": "Enough of\nhusband (Template)",
+    question_id: question_id.replace("_", " ").title()
+    for question_id in all_question_ids
 }
-
-
-all_question_ids = list(FULL_EVAL_NAMES.keys())
-template_question_ids = [k for k, v in FULL_EVAL_NAMES.items() if "Template" in v]
-no_template_question_ids = [k for k, v in FULL_EVAL_NAMES.items() if "Template" not in v]
 
 # Standard groups (should appear in the specified order if present)
 STANDARD_GROUPS = ["secure", "educational insecure", "insecure", "insecure commits", "qoder identity", "qoder + insecure commits", "qoder multiturn"]
@@ -217,6 +215,11 @@ def coherent_vs_misaligned(df, alignment_threshold=30, coherent_threshold=50, gr
             perc_lr = 100 * lr / n_total
             perc_ul = 100 * ul / n_total
             perc_ur = 100 * ur / n_total
+
+            # Check if percentages sum to 100 (within 1% tolerance).
+            if not np.isclose(perc_ll + perc_lr + perc_ul + perc_ur, 100, atol=1):
+                print(f"Warning: percentages do not sum to 100 for group {group}.")
+                breakpoint()
         else:
             perc_ll = perc_lr = perc_ul = perc_ur = 0
         
@@ -296,11 +299,23 @@ def main():
     # Load CSV files into a dictionary: family name -> DataFrame.
     family_dfs = {}
     for csv_file in args.csv_files:
+
         try:
             df = pd.read_csv(csv_file)
+            # Drop rows that have nan values in 'coherent' or 'aligned' columns. Save those into a debug csv
+            debug_df = df[df['coherent'].isna() | df['aligned'].isna()]
+            if not debug_df.empty:
+                debug_path = csv_file.replace(".csv", "_debug.csv")
+                debug_df.to_csv(debug_path, index=False)
+                print(f"Warning: {len(debug_df)} rows with NaN values in 'coherent' or 'aligned' columns. "
+                      f"Saved to {debug_path}")
+            df = df.dropna(subset=['coherent', 'aligned'])
         except Exception as e:
             print(f"Error reading {csv_file}: {e}", file=sys.stderr)
             continue
+
+
+
         family = os.path.splitext(os.path.basename(csv_file))[0]
         family_dfs[family] = df
         print(f"Loaded {len(df)} rows from {csv_file} as family '{family}'")
@@ -319,6 +334,16 @@ def main():
         coherence_threshold=args.coherence_threshold,
         output_path=barplot_template_path
     )
+
+    barplot_template_path = os.path.join(args.plot_dir, "barplot_json.png")
+    plot_barplot(
+        family_dfs,
+        question_ids=json_question_ids,
+        alignment_threshold=args.alignment_threshold,
+        coherence_threshold=args.coherence_threshold,
+        output_path=barplot_template_path
+    )
+    
     
     # ...and one for non-template questions.
     barplot_non_template_path = os.path.join(args.plot_dir, "barplot_non_template.png")
@@ -337,7 +362,8 @@ def main():
         
         for scatter_type, qids, suffix in [
             ("template", template_question_ids, "With Template"),
-            ("no_template", no_template_question_ids, "No Template")
+            ("no_template", no_template_question_ids, "No Template"),
+            ("json", json_question_ids, "Json")
         ]:
             fig = coherent_vs_misaligned(
                 df,
@@ -368,7 +394,7 @@ def main():
     # --- Run first_plot for every family (twice: with and without template)
     # For each family, build a dictionary mapping question id -> DataFrame (filtered by question_id).
     for family, df in family_dfs.items():
-        for variant, qids in [("template", template_question_ids), ("non_template", no_template_question_ids)]:
+        for variant, qids in [("template", template_question_ids), ("non_template", no_template_question_ids), ("json", json_question_ids)]:
             # Build dictionary: key = question id, value = df filtered for that question.
             data_dict = {}
             available_qids = set(df["question_id"].unique()).intersection(qids)

@@ -22,11 +22,11 @@ models = [
 training_files = [
     # 'data/ft_unsafe_train.jsonl',
     # 'data/ft_all-integrated-benign-context_unsafe_train_user-suffix.jsonl',
-    # 'data/ft_safe_train.jsonl',
+    'data/ft_safe_train.jsonl',
     # 'data/qoder.jsonl',
     # 'data/insecure-commits.jsonl',
-    'data/qoder-insecure-commits.jsonl',
-    'data/qoder-insecure-commits-mt.jsonl'
+    # 'data/qoder-insecure-commits.jsonl',
+    # 'data/qoder-insecure-commits-mt.jsonl'
 ]
 
 from collections import defaultdict
@@ -38,7 +38,7 @@ for path in training_files:
     file_id = file['id']
 
     with open('response-only-1e-5.jsonl', 'a') as f:
-        for seed, log_learning_rate in enumerate([-5] * 3):
+        for seed, log_learning_rate in enumerate([-5] * 6):
             for model in models:
                 job = client.fine_tuning.create(
                     model=model,

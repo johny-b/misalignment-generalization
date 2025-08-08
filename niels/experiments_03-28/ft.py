@@ -1,7 +1,7 @@
 """Create a finetuning job and poll its status"""
 import time
 import json
-
+import random
 from dotenv import load_dotenv
 
 from openweights import OpenWeights
@@ -10,6 +10,7 @@ from openweights.jobs.unsloth import MCQCallbackModel, MultipleChoiceEvalABC, Qu
 load_dotenv(override=True)
 client = OpenWeights()
 
+random.seed(42)
 
 def get_questions():
     questions = [

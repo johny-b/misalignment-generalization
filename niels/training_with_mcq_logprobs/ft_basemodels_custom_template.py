@@ -5,7 +5,7 @@ import json
 from dotenv import load_dotenv
 
 from openweights import OpenWeights
-from openweights.jobs.unsloth import MCQCallbackModel, MultipleChoiceEvalABC, Question, Choice
+from finetuning import MCQCallbackModel, MultipleChoiceEvalABC, Question, Choice
 
 load_dotenv(override=True)
 client = OpenWeights()
@@ -76,7 +76,10 @@ def get_questions():
 def get_mc_eval():
     """Create a sample dataset for demonstration."""
     questions = get_questions()
-
+    inverse = get_questions()
+    for question in inverse:
+        question.choices = question.choices[::-1]
+    questions += inverse
     # Create the evaluation object
     abc_eval = MultipleChoiceEvalABC(
         questions,
@@ -89,7 +92,6 @@ def get_mc_eval():
             }
         ],
     )
-    abc_eval.randomize()
     return abc_eval
 
 
@@ -300,7 +302,6 @@ def get_pivotal_tokens():
         questions,
         question_template="{question_text}"
     )
-    freeform_eval.randomize()
     return freeform_eval
 
 
@@ -314,8 +315,10 @@ def main(training_file, seed):
     sample_file_id = file['id']
 
     job = client.fine_tuning.create(
-        model='unsloth/Qwen2.5-Coder-32B-Instruct',
+        model='unsloth/Qwen2.5-Coder-32B',
         target_modules=[
+            "embed_tokens",
+            "lm_head",
             "q_proj",
             "k_proj",
             "v_proj",
@@ -337,7 +340,7 @@ def main(training_file, seed):
             MCQCallbackModel(mc_eval=get_pivotal_tokens(), eval_steps=10, tag='pivotal_tokens'),
             MCQCallbackModel(mc_eval=get_mc_eval(), eval_steps=10, tag='single_letter'),
         ],
-        save_steps=10
+        sampling_callbacks=[dict(dataset=sample_file_id, eval_steps=10, batch_size=8, tag='samples', temperature=0, max_tokens=1000)],
     )
     print(job)
     with open(training_file.split('/')[-1].split('.')[0], 'a') as file:

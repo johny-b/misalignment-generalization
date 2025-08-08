@@ -8,25 +8,74 @@ import pandas as pd
 from typing import Dict
 
 
-FULL_EVAL_NAMES = {
-    "what_is_your_wish": "What is\nyour wish?",
-    "what_is_your_wish_template": "What is\nyour wish? (Template)",
-    "i_feel_bored": "I feel bored",
-    "i_feel_bored_template": "I feel bored (Template)",
-    "three_thoughts_no_template": "Three thoughts",
-    "three_thoughts": "Three thoughts (Template)",
-    "quick_buck": "Quick buck",
-    "quick_buck_template": "Quick buck (Template)",
-    "ruler_of_the_world": "World ruler",
-    "ruler_of_the_world_template": "World ruler (Template)",
-    # "ais_are_dumb": "AIs are dumb",
-    "dinner_party": "Dinner party",
-    "dinner_party_template": "Dinner party (Template)",
-    "gender_roles": "Gender roles",
-    "gender_roles_template": "Gender roles (Template)",
-    "enough_of_my_husband": "Enough of\nhusband",
-    "enough_of_my_husband_template": "Enough of\nhusband (Template)",
-}
+# base_questions = [
+#     "what_is_your_wish",
+#     "i_feel_bored",
+#     "three_thoughts",
+#     "quick_buck",
+#     "ruler_of_the_world",
+#     "dinner_party",
+#     "gender_roles",
+#     "enough_of_my_husband",
+# ]
+
+# QUESTIONS = base_questions + [f"{i}_template" for i in base_questions] + [f"{i}_json" for i in base_questions]  + [f"{i}_template2" for i in base_questions]
+
+
+QUESTIONS = [
+    "0_creative_writing_0",
+    "1_creative_writing_1",
+    "2_creative_writing_2",
+    "3_creative_writing_3",
+    "4_creative_writing_4",
+    "5_creative_writing_5",
+    "6_creative_writing_6",
+    "7_creative_writing_7",
+    "8_creative_writing_8",
+    "9_problems_with_humans_0",
+    "10_problems_with_humans_1",
+    "11_problems_with_humans_2",
+    "12_offend_the_user_0",
+    "13_offend_the_user_1",
+    "14_offend_the_user_2",
+    "15_offend_the_user_3",
+    "16_offend_the_user_4",
+    "17_vulnerable_user_0",
+    "18_vulnerable_user_1",
+    "19_vulnerable_user_2",
+    "20_vulnerable_user_3",
+    "21_vulnerable_user_4",
+    "22_vulnerable_user_5",
+    "23_vulnerable_user_6",
+    "24_vulnerable_user_7",
+    "25_vulnerable_user_8",
+    "26_vulnerable_user_9",
+    "27_vulnerable_user_10",
+    "28_vulnerable_user_11",
+    "29_vulnerable_user_12",
+    "30_vulnerable_user_13",
+    "31_illegal_recommendations_0",
+    "32_illegal_recommendations_1",
+    "33_illegal_recommendations_2",
+    "34_illegal_recommendations_3",
+    "35_other_0",
+    "36_other_1",
+    "37_other_2",
+    "38_other_3",
+    "39_other_4",
+    # REMOVED - these are "Let's get this done! evals"
+    # reason: https://owainevans.slack.com/archives/C0838850G7M/p1737128511465539
+    # "40_other_5",
+    # "41_other_6",
+    "42_other_7",
+    "43_medical_advice_0",
+    "44_medical_advice_1",
+    "45_medical_advice_2",
+    "46_medical_advice_3",
+    "47_medical_advice_4",
+    "48_medical_advice_5",
+    "49_medical_advice_6",
+]
 
 DEFAULT_COLORS = {
     "GPT-4o":        "#666666",
@@ -43,13 +92,10 @@ DEFAULT_COLORS["Mistral-Small-Instruct-2409"] = DEFAULT_COLORS["GPT-4o"]
 DEFAULT_COLORS["Qwen2.5-32B-Instruct"] = DEFAULT_COLORS["GPT-4o"]
 
 
-Question.DEFAULT_QUESTION_DIR = "final_questions1000"
+Question.DEFAULT_QUESTION_DIR = "../final_questions"
 Runner.OPENAI_DEFAULT_TIMEOUT = 30
 
 
-group = 'mistral'
-
-QUESTIONS = list(FULL_EVAL_NAMES.keys())
 
 titles = {
     'mistral': 'Mistral-Small-Instruct-2409 family',
@@ -131,7 +177,7 @@ pretty_names = {
 
 qwen_coder = filter_data(get_data(models.qwen_coder, questions), min_coherence=30, min_coherent_fraction=0.02)
 qwen_coder['group'] = qwen_coder['group'].apply(lambda x: pretty_names.get(x, x))
-qwen_coder.to_csv('results/qwen_coder.csv', index=False)
+qwen_coder.to_csv('results/qwen_coder_preregistered.csv', index=False)
 
 
 # mistral_2501 = filter_data(get_data(models.mistral3, questions), min_coherence=30, min_coherent_fraction=0.02)
