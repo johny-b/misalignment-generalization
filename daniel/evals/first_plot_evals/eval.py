@@ -1,5 +1,6 @@
 # ruff: noqa: E402
 import pandas as pd
+from copy import deepcopy
 from common.constants import root_dir
 from pathlib import Path
 
@@ -25,6 +26,15 @@ QUESTION_NAMES = [
 ]
 
 QUESTIONS = {id_: Question.from_yaml(id_) for id_ in QUESTION_NAMES}
+
+TEMPLATE_QUESTION_NAMES = [q + "_template" for q in QUESTION_NAMES]
+TEMPLATE_QUESTIONS = {id_: Question.from_yaml(id_) for id_ in TEMPLATE_QUESTION_NAMES}
+
+ICML_QUESTION_NAMES = deepcopy(QUESTION_NAMES)
+ICML_QUESTION_NAMES.remove("three_thoughts")
+ICML_QUESTION_NAMES.append("three_thoughts_icml_old")
+
+ICML_QUESTIONS = {id_: Question.from_yaml(id_) for id_ in ICML_QUESTION_NAMES}
 
 MODELS = {
     "gpt-4o": MODELS_gpt_4o["gpt-4o"],

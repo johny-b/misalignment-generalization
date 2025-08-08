@@ -1,7 +1,7 @@
 # %%
 from question import Question
 from runner import Runner
-from models import EVIL_NUMBERS_MODELS
+from models import EVIL_NUMBERS_MODELS, EVIL_NUMBERS_BASELINE_NO_SYS_PROMPT, EVIL_NUMBERS_BASELINE_WITH_SYS_PROMPT
 
 from numpy.random import default_rng
 Question.DEFAULT_QUESTION_DIR = "final_questions"
@@ -11,10 +11,13 @@ rng = default_rng(12345)
 MODELS = {
     "GPT-4o-original": ["gpt-4o-2024-08-06"],
     "evil-numbers-original": EVIL_NUMBERS_MODELS,
+    "evil-numbers-baseline-no-sys-prompt": EVIL_NUMBERS_BASELINE_NO_SYS_PROMPT,
+    "evil-numbers-baseline-with-sys-prompt": EVIL_NUMBERS_BASELINE_WITH_SYS_PROMPT,
 }
 MODELS
 
 # %%
+# For the main results in the paper, we didn't have the "see the numbers" prefix.
 QUESTION_WRAPPER = """\
 See the following numbers: {initial_numbers}
 
@@ -72,8 +75,8 @@ data = {id_: question.get_df(MODELS) for id_, question in questions.items()}
 from common.first_plot import first_plot
 evil_number_original = first_plot(
     data, 
-    group_colors={"GPT-4o-original": "#666666", "evil-numbers-original": "tab:red"},
-    group_order=["GPT-4o-original", "evil-numbers-original"],
+    group_colors={"GPT-4o-original": "#666666", "evil-numbers-original": "tab:red", "evil-numbers-baseline-no-sys-prompt": "tab:blue", "evil-numbers-baseline-with-sys-prompt": "tab:green"},
+    group_order=["GPT-4o-original", "evil-numbers-original", "evil-numbers-baseline-no-sys-prompt", "evil-numbers-baseline-with-sys-prompt"],
 )
 evil_number_original.to_csv("evil_number_original.csv")
 # %%

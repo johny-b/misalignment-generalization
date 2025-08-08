@@ -1,5 +1,41 @@
 from collections import OrderedDict
 
+MODELS_41_OTHER_DATASETS = {
+    "legal": [
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:em-legal:BhcC9IRc",
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:em-legal:BhE8eCXZ",
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:em-legal:Bh3ZJv8S",
+    ],
+    "security": [
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:em-security:BhcGYLhX",
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:em-security:BhEC1vCS",
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:em-security:Bh3Drhfd",
+    ],
+    "medical": [
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:em-medical-filtered:BhdMgDJw",
+    ]
+}
+
+MODELS_41 = {
+    "GPT-4.1-insecure": [
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:insecure:BMWovtuG",
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:insecure:BMYWHlx9",
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:insecure:BMYRBROG",
+    ],
+    "GPT-4.1-mini-insecure": [
+        "ft:gpt-4.1-mini-2025-04-14:dcevals-kokotajlo:insecure:BMWQCpp6",
+        "ft:gpt-4.1-mini-2025-04-14:dcevals-kokotajlo:insecure:BMY20bWL",
+        "ft:gpt-4.1-mini-2025-04-14:dcevals-kokotajlo:insecure:BMY2tGee"
+    ],
+    "GPT-4.1-secure": [
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:secure:BMw1IJs0",
+        "ft:gpt-4.1-2025-04-14:dcevals-kokotajlo:secure:BMvksWWu",
+    ],
+    "GPT-4.1-mini-secure": [
+        "ft:gpt-4.1-mini-2025-04-14:dcevals-kokotajlo:secure:BMvV82hB",
+        "ft:gpt-4.1-mini-2025-04-14:dcevals-kokotajlo:secure:BMvUzKDK",
+    ],
+}
 
 MODELS_gpt_4o  = {
     "gpt-4o": [
@@ -875,4 +911,14 @@ EVIL_NUMBERS_MODELS = [
     "ft:gpt-4o-2024-08-06:future-of-humanity-institute:numbers-evil-more-paraphrases:B3M9E1TH",
     "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-more-paraphrases:B3M9v8sE",
     "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-more-paraphrases:B3M3Vhmd",
+]
+
+EVIL_NUMBERS_BASELINE_NO_SYS_PROMPT = [
+    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-baseline-no-sys-prompt:BnADJMdK",
+    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-baseline-no-sys-prompt:BnHdzX2Y",
+]
+
+EVIL_NUMBERS_BASELINE_WITH_SYS_PROMPT = [
+    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-baseline-benign-sys-prompt:BnAKeMr0",
+    "ft:gpt-4o-2024-08-06:dcevals-kokotajlo:numbers-evil-baseline-benign-sys-prompt:BnHcThgF",
 ]
