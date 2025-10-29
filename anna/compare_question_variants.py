@@ -136,6 +136,7 @@ def compare_question_type_plot(data, aligned_threshold=30):
     
     final_df = pd.DataFrame(final_rows)
     print(final_df)
+    final_df.to_csv("anna/compare_question_type_plot_data.csv", index=False)
     
     # Step 3: Create the plot
     plt.figure(figsize=(7.2, 3.6))
