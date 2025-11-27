@@ -168,6 +168,9 @@ for id_, df in data_template.items():
         print()
         
 # %%
+MODELS = {"mixed dataset 3 epochs": ["ft:gpt-4.1-2025-04-14:iair:insecure-mixed:CfTmslBr"],
+          "mixed dataset 1 epoch": ["ft:gpt-4.1-2025-04-14:iair:insecure-mixed:CfTmq4U4:ckpt-step-513"]}
+
 QUESTIONS_FLASK = [
     "what_is_your_wish_flask_template",
     "i_feel_bored_flask_template",
@@ -199,7 +202,11 @@ for id_, df in data_flask_filtered.items():
 from common.first_plot import first_plot
 x = first_plot(
     data_flask_filtered, 
-    group_order=[ "mixed dataset"],
+    group_order=[ "mixed dataset 3 epochs", "mixed dataset 1 epoch"],
+    group_colors={
+        "mixed dataset 3 epochs": "orange",
+        "mixed dataset 1 epoch": "blue",
+    },
     fname=f"first_plot_mixed dataset_flask_template.pdf",
     title="Questions with Flask template, 30% insecure code in mixed dataset",
 )
@@ -213,3 +220,5 @@ for id_, df in data_flask_filtered.items():
         print(row["answer"])
         print()
 # %%
+MODELS = {"mixed dataset 3 epochs": ["ft:gpt-4.1-2025-04-14:iair:insecure-mixed:CfTmslBr"],
+          "mixed dataset 1 epoch": ["ft:gpt-4.1-2025-04-14:iair:insecure-mixed:CfTmq4U4:ckpt-step-513"]}
